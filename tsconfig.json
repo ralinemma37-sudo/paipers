@@ -15,7 +15,12 @@
     "jsx": "preserve",
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
-    "types": ["node"]
+
+    // 🔽 TRÈS IMPORTANT : ces deux lignes réparent les imports "@/..."
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": [
     "next-env.d.ts",
@@ -28,3 +33,4 @@
     "supabase"
   ]
 }
+
