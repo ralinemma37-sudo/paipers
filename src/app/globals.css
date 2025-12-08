@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+/* --------------------------------------------------
+   🌈 PAIPERS — THEME PASTEL CLAIR
+-------------------------------------------------- */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 10%;
+
+  --primary: 202 100% 82%;
+  --secondary: 328 80% 84%;
+  --accent: 39 100% 85%;
+
+  --muted: 0 0% 97%;
+  --border: 0 0% 88%;
+  --input: 0 0% 96%;
+
+  --radius: 1.5rem;
+}
+
+/* --------------------------------------------------
+   🌙 MODE SOMBRE
+-------------------------------------------------- */
+.dark {
+  --background: 0 0% 8%;
+  --foreground: 0 0% 92%;
+
+  --muted: 0 0% 14%;
+  --border: 0 0% 20%;
+  --input: 0 0% 16%;
+}
+
+/* --------------------------------------------------
+   ✨ BODY
+-------------------------------------------------- */
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-geist-sans), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* --------------------------------------------------
+   🟣 TEXT GRADIENT
+-------------------------------------------------- */
+.gradient-text {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--primary)),
+    hsl(var(--secondary)),
+    hsl(var(--accent))
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* --------------------------------------------------
+   TEXT UTILS — Toujours lisible
+-------------------------------------------------- */
+.text-main {
+  color: hsl(var(--foreground));
+}
+
+.text-muted {
+  color: hsl(var(--foreground) / 0.65);
+}
+
+/* --------------------------------------------------
+   📦 CARDS
+-------------------------------------------------- */
+.card {
+  background-color: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: 0 1px 4px hsl(0 0% 0% / 0.05);
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.dark .card {
+  background-color: hsl(0 0% 14%);
+  border-color: hsl(0 0% 20%);
+}
+
+/* --------------------------------------------------
+   INPUTS
+-------------------------------------------------- */
+input,
+select,
+textarea {
+  background-color: hsl(var(--input));
+  color: hsl(var(--foreground));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  padding: 0.6rem 1rem;
+  transition: all 0.25s ease;
+}
+
+/* --------------------------------------------------
+   LINKS
+-------------------------------------------------- */
+a {
+  color: hsl(var(--primary));
+}
