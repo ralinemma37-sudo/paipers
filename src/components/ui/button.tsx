@@ -1,10 +1,15 @@
-import React from "react";
+import * as React from "react";
 
-export function Button({ children, className = "", ...props }) {
+type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  children: React.ReactNode;
+};
+
+export function Button({ children, className = "", ...props }: ButtonProps) {
   return (
     <button
       className={
-        "px-4 py-2 rounded-xl font-medium bg-pink-500 text-white active:scale-95 transition " +
+        "inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium " +
+        "bg-[hsl(var(--primary))] text-white shadow-sm transition-transform active:scale-95 disabled:opacity-60 " +
         className
       }
       {...props}
