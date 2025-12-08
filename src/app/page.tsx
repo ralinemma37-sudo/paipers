@@ -1,4 +1,11 @@
+import type { ReactNode } from "react";
 import { Home, FileText, Bell, Shield, Leaf, Sparkles } from "lucide-react";
+
+type FeatureCardProps = {
+  icon: ReactNode;
+  title: string;
+  text: string;
+};
 
 export default function HomePage() {
   return (
@@ -102,10 +109,11 @@ export default function HomePage() {
       </section>
 
       {/* CTA FINAL – BANDEAU PASTEL */}
-      <section className="px-6 py-16 text-center 
+      <section
+        className="px-6 py-16 text-center 
         bg-gradient-to-b from-[hsl(202_100%_90%)] via-[hsl(328_80%_92%)] to-[hsl(39_100%_90%)]
-        mt-10 rounded-t-3xl shadow-inner">
-
+        mt-10 rounded-t-3xl shadow-inner"
+      >
         <h2 className="text-3xl font-bold mb-4">
           Prêt à simplifier votre vie administrative ?
         </h2>
@@ -132,7 +140,7 @@ export default function HomePage() {
   );
 }
 
-function FeatureCard({ icon, title, text }) {
+function FeatureCard({ icon, title, text }: FeatureCardProps) {
   return (
     <div className="card p-4 flex flex-col items-start gap-3 h-full">
       <div className="p-3 rounded-xl bg-[hsl(var(--muted))] text-[hsl(var(--primary))] shadow-sm">
