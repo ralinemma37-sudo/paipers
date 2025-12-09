@@ -1,17 +1,12 @@
+// src/components/ThemeInit.tsx
 "use client";
 
 import { useEffect } from "react";
 
 export default function ThemeInit() {
+  // Tu pourras plus tard gérer ici le thème (dark / light, etc.)
   useEffect(() => {
-    // Lire le thème sauvegardé
-    const saved = localStorage.getItem("paipers-theme");
-
-    if (saved === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    // console.log("ThemeInit monté");
   }, []);
 
   return null;

@@ -1,23 +1,28 @@
+// src/components/Protected.tsx
 "use client";
 
+import type { ReactNode } from "react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSupabaseSession } from "@/providers/supabase-provider";
+import { useSession } from "next-auth/react";
 
-export default function Protected({ children }: { children: React.ReactNode }) {
+export default function Protected({ children }: { children: ReactNode }) {
+  const { status } = useSession();
   const router = useRouter();
-  const { session } = useSupabaseSession();
 
   useEffect(() => {
-    // Si la session n’existe pas → redirection vers login
-    if (session === null) {
-      router.replace("/login");
+    if (status === "unauthenticated") {
+      router.push("/login");
     }
-  }, [session, router]);
+  }, [status, router]);
 
-  // Pendant le chargement de la session → on ne montre rien
-  if (session === null) return null;
+  if (status === "loading") {
+    return (
+      <main className="p-6">
+        <p className="text-sm text-slate-500">Chargement…</p>
+      </main>
+    );
+  }
 
-  // Si session OK → contenu protégé
   return <>{children}</>;
 }
