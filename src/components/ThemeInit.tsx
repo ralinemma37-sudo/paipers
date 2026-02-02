@@ -5,17 +5,15 @@ import { useEffect } from "react";
 export default function ThemeInit() {
   useEffect(() => {
     try {
-      const saved = window.localStorage.getItem("theme");
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const theme = saved || (prefersDark ? "dark" : "light");
+      const stored = localStorage.getItem("theme"); // "light" | "dark"
+      const prefersDark =
+        window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-      if (theme === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-    } catch (e) {
-      console.warn("ThemeInit error:", e);
+      const dark = stored ? stored === "dark" : prefersDark;
+
+      document.documentElement.classList.toggle("dark", dark);
+    } catch {
+      // ignore
     }
   }, []);
 
