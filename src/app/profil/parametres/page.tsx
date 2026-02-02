@@ -2,18 +2,21 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { ArrowLeft } from "lucide-react";
 
 export default function ParametresPage() {
   const [dark, setDark] = useState(false);
-  const [lang, setLang] = useState("fr");
 
-  /* Charger thème + langue au chargement */
+  /* Charger thème au chargement */
   useEffect(() => {
     const savedTheme = localStorage.getItem("paipers-theme");
-    const savedLang = localStorage.getItem("paipers-lang");
-
     setDark(savedTheme === "dark");
-    setLang(savedLang || "fr");
+
+    if (savedTheme === "dark") {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
   }, []);
 
   /* Basculer thème */
@@ -30,24 +33,25 @@ export default function ParametresPage() {
     }
   };
 
-  /* Changer langue */
-  const changeLang = (l: string) => {
-    setLang(l);
-    localStorage.setItem("paipers-lang", l);
-  };
-
   return (
-    <div className="px-6 pt-10 pb-24">
+    <div className="px-6 py-6 pb-24">
+      {/* Header avec flèche */}
+      <div className="flex items-center gap-3 mb-6">
+        <Link
+          href="/profil"
+          className="p-2 rounded-full active:scale-95 transition"
+          aria-label="Retour au profil"
+        >
+          <ArrowLeft size={22} />
+        </Link>
 
-      {/* RETOUR */}
-      <Link href="/profil" className="text-[hsl(var(--primary))] block mb-6">
-        ← Retour
-      </Link>
-
-      <h1 className="text-3xl font-bold mb-2">Paramètres généraux</h1>
-      <p className="text-[hsl(var(--foreground)/0.6)] mb-8">
-        Personnalisez votre expérience Paipers ✨
-      </p>
+        <div>
+          <h1 className="text-2xl font-bold">Paramètres</h1>
+          <p className="text-[hsl(var(--foreground)/0.6)] text-sm">
+            Personnalisez votre expérience Paipers
+          </p>
+        </div>
+      </div>
 
       {/* ----------------------------- */}
       {/* 🌙 THÈME SOMBRE */}
@@ -71,41 +75,21 @@ export default function ParametresPage() {
       </div>
 
       {/* ----------------------------- */}
-      {/* 🌎 LANGUE - Version petite */}
+      {/* 🌎 LANGUE */}
       {/* ----------------------------- */}
       <div className="card mb-6">
-        <p className="font-medium text-[hsl(var(--foreground))] mb-4">
+        <p className="font-medium text-[hsl(var(--foreground))] mb-2">
           Langue
         </p>
 
-        <div className="flex gap-3">
-
-          {/* FR */}
-          <button
-            onClick={() => changeLang("fr")}
-            className={`
-              px-4 py-1.5 rounded-full text-sm font-medium transition
-              ${lang === "fr"
-                ? "bg-[hsl(var(--primary))] text-white"
-                : "bg-[hsl(var(--muted))] text-[hsl(var(--foreground))]"}
-            `}
-          >
+        <div className="flex items-center gap-3">
+          <span className="px-4 py-1.5 rounded-full text-sm font-medium bg-[hsl(var(--primary))] text-white">
             Français
-          </button>
+          </span>
 
-          {/* EN */}
-          <button
-            onClick={() => changeLang("en")}
-            className={`
-              px-4 py-1.5 rounded-full text-sm font-medium transition
-              ${lang === "en"
-                ? "bg-[hsl(var(--primary))] text-white"
-                : "bg-[hsl(var(--muted))] text-[hsl(var(--foreground))]"}
-            `}
-          >
-            English
-          </button>
-
+          <span className="text-sm text-[hsl(var(--foreground)/0.55)]">
+            Anglais en préparation
+          </span>
         </div>
       </div>
 
@@ -118,7 +102,6 @@ export default function ParametresPage() {
         </span>
         <span className="text-[hsl(var(--foreground)/0.5)]">Bientôt</span>
       </div>
-
     </div>
   );
 }

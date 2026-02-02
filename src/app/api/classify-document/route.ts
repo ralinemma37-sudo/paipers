@@ -9,46 +9,63 @@ export async function POST(req: Request) {
       apiKey: process.env.OPENAI_API_KEY!,
     });
 
+    // ✅ On demande un JSON strict: { category, title }
     const prompt = `
-    Tu es une IA experte en documents administratifs français.
+Tu es une IA experte en documents administratifs français.
 
-    Voici le nom du fichier :
-    "${fileName}"
+Nom du fichier :
+"${fileName}"
 
-    Voici le texte du document :
-    "${extractedText || "Aucun texte fourni"}"
+Texte du document (peut être vide) :
+"${extractedText || "Aucun texte fourni"}"
 
-    Classe ce document dans UNE seule catégorie parmi :
+Ta mission :
+1) Choisir UNE catégorie parmi :
+- travail
+- facture
+- banque
+- administratif
+- assurance
+- impots
+- contrat
+- autres
 
-    - travail
-    - facture
-    - banque
-    - administratif
-    - assurance
-    - impots
-    - contrat
-    - autres
+2) Proposer un titre COURT et clair (max 80 caractères), ex :
+- "Fiche de paie – 11/2025"
+- "Facture – EDF – 10/2025"
+- "Contrat de location"
+- "Avis d’imposition – 2024"
 
-    Règles :
-    - Bulletin de salaire = travail  
-    - Certificat de travail = travail  
-    - Solde de tout compte = travail  
-    - Reçu employeur = travail  
-    - Paie, salaire, employeur = travail  
-    - PDF contenant “net à payer”, “Siret” + “salaire” = travail  
+Règles importantes :
+- Bulletin de salaire / fiche de paie / salaire / net à payer => travail
+- Certificat de travail => travail
+- Solde de tout compte => travail
+- Reçu employeur => travail
+- "net à payer" + "siret" + "salaire" => travail
 
-    Réponds uniquement par la catégorie, sans phrase.
-    `;
+Réponds uniquement en JSON strict :
+{"category":"...", "title":"..."}
+`;
 
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
+      // ✅ force un JSON parsable
+      response_format: { type: "json_object" },
+      temperature: 0.2,
     });
 
-    let category =
-      completion.choices[0].message?.content
-        ?.trim()
-        ?.toLowerCase() || "autres";
+    const raw = completion.choices[0].message?.content?.trim() || "{}";
+
+    let parsed: any = {};
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      parsed = {};
+    }
+
+    let category = (parsed.category || "autres").toString().trim().toLowerCase();
+    let title = (parsed.title || "").toString().trim();
 
     const allowed = [
       "travail",
@@ -61,12 +78,16 @@ export async function POST(req: Request) {
       "autres",
     ];
 
-    if (!allowed.includes(category)) {
-      category = "autres";
+    if (!allowed.includes(category)) category = "autres";
+
+    // fallback titre si vide
+    if (!title || title.length < 3) {
+      title = (fileName || "Document").replace(/\.[a-z0-9]+$/i, "");
     }
 
-    return NextResponse.json({ category });
+    if (title.length > 80) title = title.slice(0, 80);
 
+    return NextResponse.json({ category, title });
   } catch (e: any) {
     return NextResponse.json(
       { error: e.message || "Erreur IA classification" },

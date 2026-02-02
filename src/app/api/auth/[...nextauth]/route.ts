@@ -24,28 +24,22 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async jwt({ token, account, profile }) {
-      // Quand l'utilisateur vient de se connecter avec Google
       if (account) {
         token.accessToken = account.access_token;
-        token.refreshToken = account.refresh_token;
-        token.expiresAt = account.expires_at
-          ? account.expires_at * 1000
-          : null;
-        token.googleEmail = profile?.email ?? token.email;
+        token.refreshToken = account.refresh_token; // ✅ important pour enregistrer en DB
+        token.expiresAt = account.expires_at ? account.expires_at * 1000 : null;
+        token.googleEmail = (profile as any)?.email ?? token.email;
       }
-
       return token;
     },
 
     async session({ session, token }) {
-      // On expose l'accessToken Google côté client
-      (session as any).accessToken = token.accessToken;
-      (session.user as any).googleEmail = token.googleEmail;
+      (session as any).accessToken = (token as any).accessToken;
+      (session.user as any).googleEmail = (token as any).googleEmail;
       return session;
     },
   },
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };

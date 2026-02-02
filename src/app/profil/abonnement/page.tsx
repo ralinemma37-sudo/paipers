@@ -1,25 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, ArrowLeft } from "lucide-react";
 
 export default function AbonnementPage() {
   return (
-    <div className="px-6 pt-10 pb-24">
+    <div className="px-6 py-6 pb-24">
+      {/* Header avec flèche */}
+      <div className="flex items-center gap-3 mb-8">
+        <Link
+          href="/profil"
+          className="p-2 rounded-full active:scale-95 transition"
+          aria-label="Retour au profil"
+        >
+          <ArrowLeft size={22} />
+        </Link>
 
-      {/* RETOUR */}
-      <Link href="/profil" className="text-[hsl(var(--primary))] block mb-6">
-        ← Retour
-      </Link>
-
-      <h1 className="text-3xl font-bold text-center mb-2">Abonnement</h1>
-      <p className="text-[hsl(var(--foreground)/0.6)] text-center mb-10">
-        Choisissez l’offre qui vous convient 🌸
-      </p>
+        <div>
+          <h1 className="text-2xl font-bold">Abonnement</h1>
+          <p className="text-[hsl(var(--foreground)/0.6)] text-sm">
+            Choisissez l’offre qui vous convient 🌸
+          </p>
+        </div>
+      </div>
 
       {/* ⬅️⬅️ CONTAINER → même hauteur grâce à items-stretch */}
       <div className="flex flex-col md:flex-row justify-center items-stretch gap-6">
-
         {/* PACK GRATUIT */}
         <div className="card p-6 w-full max-w-sm border-2 border-[hsl(var(--primary))] flex flex-col text-center">
           <h2 className="text-2xl font-bold mb-1">Gratuit</h2>
@@ -37,7 +43,6 @@ export default function AbonnementPage() {
             <Feature>Publicités présentes</Feature>
           </ul>
 
-          {/* 🟣 BOUTON EN BAS — aligné grâce à flex-col + mt-auto */}
           <div className="mt-auto">
             <button
               disabled
@@ -67,7 +72,6 @@ export default function AbonnementPage() {
             <Feature>Support premium</Feature>
           </ul>
 
-          {/* 🟣 BOUTON EN BAS — grâce à mt-auto */}
           <div className="mt-auto">
             <button
               className="
@@ -80,7 +84,6 @@ export default function AbonnementPage() {
             </button>
           </div>
         </div>
-
       </div>
     </div>
   );

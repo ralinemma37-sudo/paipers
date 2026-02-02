@@ -1,21 +1,26 @@
+// src/app/layout.tsx
 import "./globals.css";
+import type { ReactNode } from "react";
 import AppProviders from "./Providers";
-import BottomNav from "@/components/BottomNav";
+import BottomNavGate from "@/components/BottomNavGate";
 
 export const metadata = {
   title: "Paipers",
-  description: "Assistant administratif personnel",
+  description: "Votre coffre-fort administratif intelligent",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fr">
-      <body className="min-h-screen flex flex-col bg-[hsl(var(--background))]">
+      <body>
         <AppProviders>
-          <main className="flex-1 pb-28">{children}</main>
-          <BottomNav />
+          <div className="min-h-screen">
+            <main className="pb-20">{children}</main>
+            <BottomNavGate />
+          </div>
         </AppProviders>
       </body>
     </html>
   );
 }
+

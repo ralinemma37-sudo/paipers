@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { Home, FileText, Bell, Shield, Leaf, Sparkles } from "lucide-react";
 
 type FeatureCardProps = {
@@ -10,22 +11,22 @@ type FeatureCardProps = {
 export default function HomePage() {
   return (
     <div className="min-h-screen w-full overflow-x-hidden bg-white">
-
       {/* HERO */}
-      <section className="pt-10 pb-12 px-6 bg-gradient-to-b from-[hsl(202_100%_95%)] via-white to-[hsl(328_80%_96%)]">
-
+      <section className="pt-6 pb-12 px-6 bg-gradient-to-b from-[hsl(202_100%_95%)] via-white to-[hsl(328_80%_96%)]">
         {/* LOGO EN HAUT À GAUCHE */}
-        <div className="w-full flex justify-start">
-          <img
-            src="/logo-paipers.png"
-            alt="Logo Paipers"
-            className="w-20 h-auto"
-          />
+        <div className="w-full flex justify-between items-start">
+          <img src="/logo-paipers.png" alt="Logo Paipers" className="w-20 h-auto" />
+
+          <Link
+            href="/login"
+            className="text-sm font-medium text-slate-700 underline underline-offset-4"
+          >
+            Se connecter
+          </Link>
         </div>
 
-        <div className="text-center mt-6">
-          <p className="text-sm text-slate-500">Votre coffre-fort administratif</p>
-
+        {/* CONTENU CENTRAL */}
+        <div className="text-center mt-4">
           <h1 className="text-4xl font-bold leading-tight mt-4">
             Votre coffre-fort administratif <br />
             <span className="gradient-text">intelligent</span>.
@@ -37,14 +38,14 @@ export default function HomePage() {
           </p>
 
           <div className="mt-8 flex flex-col items-center gap-3">
-            <a
+            <Link
               href="/signup"
-              className="w-full max-w-xs py-3 rounded-full text-white font-medium
+              className="w-full max-w-xs py-3 rounded-full !text-white font-medium
                 bg-gradient-to-r from-[hsl(202_100%_82%)] via-[hsl(328_80%_84%)] to-[hsl(39_100%_85%)]
                 shadow-md transition-transform active:scale-95"
             >
               Commencer gratuitement
-            </a>
+            </Link>
 
             <a
               href="#features"
@@ -68,47 +69,16 @@ export default function HomePage() {
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-
-          <FeatureCard
-            icon={<Home size={30} />}
-            title="Import automatique"
-            text="Téléversez vos documents en un clic."
-          />
-
-          <FeatureCard
-            icon={<Sparkles size={30} />}
-            title="IA intelligente"
-            text="Extraction automatique des infos importantes."
-          />
-
-          <FeatureCard
-            icon={<FileText size={30} />}
-            title="Classement parfait"
-            text="Vos documents triés automatiquement."
-          />
-
-          <FeatureCard
-            icon={<Bell size={30} />}
-            title="Rappels"
-            text="Contrats qui expirent ? On vous avertit."
-          />
-
-          <FeatureCard
-            icon={<Shield size={30} />}
-            title="Sécurité maximale"
-            text="Chiffrement + hébergement en France."
-          />
-
-          <FeatureCard
-            icon={<Leaf size={30} />}
-            title="Écologique"
-            text="Passez au tout numérique."
-          />
-
+          <FeatureCard icon={<Home size={30} />} title="Import automatique" text="Téléversez vos documents en un clic." />
+          <FeatureCard icon={<Sparkles size={30} />} title="IA intelligente" text="Extraction automatique des infos importantes." />
+          <FeatureCard icon={<FileText size={30} />} title="Classement parfait" text="Vos documents triés automatiquement." />
+          <FeatureCard icon={<Bell size={30} />} title="Rappels" text="Contrats qui expirent ? On vous avertit." />
+          <FeatureCard icon={<Shield size={30} />} title="Sécurité maximale" text="Chiffrement + hébergement en France." />
+          <FeatureCard icon={<Leaf size={30} />} title="Écologique" text="Passez au tout numérique." />
         </div>
       </section>
 
-      {/* CTA FINAL – BANDEAU PASTEL */}
+      {/* CTA FINAL */}
       <section
         className="px-6 py-16 text-center 
         bg-gradient-to-b from-[hsl(202_100%_90%)] via-[hsl(328_80%_92%)] to-[hsl(39_100%_90%)]
@@ -122,20 +92,19 @@ export default function HomePage() {
           Rejoignez des milliers d’utilisateurs qui ont déjà repris le contrôle de leurs documents.
         </p>
 
-        <a
+        <Link
           href="/signup"
           className="w-full max-w-xs mx-auto py-3 rounded-full font-medium
             bg-white text-black border border-slate-200
             shadow-md transition-transform active:scale-95 block"
         >
           Créer mon compte gratuit
-        </a>
+        </Link>
 
         <p className="text-xs text-slate-500 mt-8">
           © 2025 Paipers — Données hébergées en France 🇫🇷
         </p>
       </section>
-
     </div>
   );
 }

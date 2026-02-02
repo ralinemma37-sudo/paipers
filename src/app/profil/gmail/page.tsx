@@ -1,75 +1,96 @@
+
 "use client";
 
-import { signIn, signOut, useSession } from "next-auth/react";
-import { useState } from "react";
+import Protected from "@/components/Protected";
+import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { ArrowLeft, Mail } from "lucide-react";
 
 export default function GmailPage() {
-  const { data: session, status } = useSession();
-  const [watchActivated, setWatchActivated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [connected, setConnected] = useState(false);
+  const [email, setEmail] = useState<string>("");
 
-  const isLoading = status === "loading";
-  const isConnected = !!session?.accessToken;
+  useEffect(() => {
+    const run = async () => {
+      setLoading(true);
+      const { data } = await supabase.auth.getUser();
+      const user = data?.user;
 
-  async function activateWatch() {
-    const res = await fetch("/api/google/activate-watch", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        access_token: session?.accessToken,
-      }),
-    });
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
-    const data = await res.json();
+      setEmail(user.email || "");
 
-    if (data.success) {
-      alert("Watch Gmail activé !");
-      setWatchActivated(true);
-    } else {
-      console.error(data.error);
-      alert("Erreur activation watch Gmail");
-    }
-  }
+      // ✅ MVP: si tu as déjà une logique “gmail connecté” en DB, tu peux la brancher ici
+      // Pour l’instant on met un placeholder "connected" à false.
+      // Exemple futur: fetch profil/emails table etc.
+      setConnected(false);
+
+      setLoading(false);
+    };
+
+    run();
+  }, []);
 
   return (
-    <div className="px-6 pt-14 pb-24 space-y-6">
-      <h1 className="text-2xl font-bold text-main">Connexion Gmail</h1>
-      <p className="text-muted text-sm">
-        Connectez Gmail pour permettre à Paipers de détecter automatiquement les documents reçus.
-      </p>
+    <Protected>
+      <div className="px-6 pt-6 pb-24">
+        <div className="flex items-center gap-3 mb-5">
+          <Link
+            href="/profil"
+            className="w-10 h-10 rounded-full border border-slate-200 bg-white flex items-center justify-center active:scale-95 transition"
+            aria-label="Retour"
+          >
+            <ArrowLeft className="text-slate-700" size={18} />
+          </Link>
 
-      {isLoading && <p className="text-muted">Chargement...</p>}
+          <div className="min-w-0">
+            <p className="text-xs text-slate-500">Profil</p>
+            <h1 className="text-xl font-bold truncate">Gmail</h1>
+          </div>
+        </div>
 
-      {!isConnected && !isLoading && (
-        <button
-          onClick={() => signIn("google")}
-          className="w-full py-3 rounded-full bg-[hsl(var(--primary))] text-white font-medium"
-        >
-          Connecter mon compte Gmail
-        </button>
-      )}
-
-      {isConnected && (
-        <>
-          <div className="card p-4">
-            <p className="text-sm text-muted">Compte Gmail connecté</p>
-            <p className="font-medium text-main">{session.user.googleEmail}</p>
+        <div className="card p-4">
+          <div className="flex items-center gap-2 text-slate-700">
+            <Mail size={18} />
+            <p className="text-sm font-semibold">Connexion Gmail</p>
           </div>
 
-          <button
-            onClick={activateWatch}
-            className="w-full py-3 rounded-full bg-green-500 text-white font-medium"
-          >
-            Activer le WATCH Gmail
-          </button>
+          {loading ? (
+            <p className="mt-3 text-sm text-slate-500">Chargement…</p>
+          ) : (
+            <>
+              <p className="mt-3 text-sm text-slate-600">
+                Compte : <span className="font-semibold">{email || "—"}</span>
+              </p>
 
-          <button
-            onClick={() => signOut()}
-            className="w-full py-3 rounded-full border border-[hsl(var(--border))] text-main font-medium"
-          >
-            Déconnecter Gmail
-          </button>
-        </>
-      )}
-    </div>
+              <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
+                <p className="text-sm font-medium text-slate-800">
+                  Statut :{" "}
+                  <span className={connected ? "text-green-600" : "text-slate-500"}>
+                    {connected ? "Connecté" : "Non connecté (placeholder)"}
+                  </span>
+                </p>
+
+                <p className="mt-2 text-xs text-slate-500">
+                  Cette page a été simplifiée pour corriger le build. On peut réactiver l’UI Gmail juste après.
+                </p>
+              </div>
+
+              <Link
+                href="/profil"
+                className="mt-4 inline-block text-sm font-semibold text-[hsl(var(--primary))]"
+              >
+                Retour au profil →
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+    </Protected>
   );
 }
