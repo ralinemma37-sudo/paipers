@@ -20,16 +20,14 @@ async function exchangeCodeForTokens(code: string, redirectUri: string) {
     access_token: string;
     refresh_token?: string;
     expires_in: number;
+    token_type?: string;
   };
 }
 
 async function getGmailProfile(accessToken: string) {
-  const res = await fetch(
-    "https://gmail.googleapis.com/gmail/v1/users/me/profile",
-    {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }
-  );
+  const res = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/profile", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
   const json = await res.json();
   if (!res.ok) throw new Error(JSON.stringify(json));
   return json as { emailAddress: string };
@@ -42,7 +40,7 @@ export default async function GmailCallbackPage({
 }) {
   try {
     const code = searchParams.code;
-    if (!code) redirect("paipersmobile://profil/gmail?status=error");
+    if (!code) redirect("/auth/gmail/open?status=error");
 
     let platform = "web";
     let userId = "";
@@ -53,8 +51,7 @@ export default async function GmailCallbackPage({
       userId = st?.userId ?? "";
     } catch {}
 
-    const redirectUri =
-      "https://paipers.vercel.app/auth/gmail/callback";
+    const redirectUri = "https://paipers.vercel.app/auth/gmail/callback";
 
     const tokens = await exchangeCodeForTokens(code!, redirectUri);
     const profile = await getGmailProfile(tokens.access_token);
@@ -64,8 +61,7 @@ export default async function GmailCallbackPage({
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    if (!userId)
-      redirect("paipersmobile://profil/gmail?status=missing_user");
+    if (!userId) redirect("/auth/gmail/open?status=error");
 
     const { error } = await supabase
       .from("gmail_connections")
@@ -80,12 +76,13 @@ export default async function GmailCallbackPage({
 
     if (error) throw new Error(error.message);
 
+    // ✅ MVP MOBILE: on ne deep-link pas (Expo Go), on montre une page "ok"
     if (platform === "mobile") {
-      redirect("paipersmobile://profil/gmail?status=connected");
+      redirect("/auth/gmail/open?status=connected");
     }
 
     redirect("/profil/gmail?status=connected");
   } catch {
-    redirect("paipersmobile://profil/gmail?status=error");
+    redirect("/auth/gmail/open?status=error");
   }
 }

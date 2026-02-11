@@ -1,49 +1,28 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
-
 export default function GmailOpenPage({
   searchParams,
 }: {
-  searchParams: { to?: string };
+  searchParams: { status?: string };
 }) {
-  const to = useMemo(() => {
-    try {
-      return searchParams.to ? decodeURIComponent(searchParams.to) : "";
-    } catch {
-      return "";
-    }
-  }, [searchParams.to]);
-
-  useEffect(() => {
-    if (!to) return;
-    // tentative auto
-    window.location.href = to;
-  }, [to]);
+  const status = searchParams.status ?? "connected";
 
   return (
-    <main style={{ padding: 24, fontFamily: "system-ui" }}>
-      <h1 style={{ fontSize: 20, fontWeight: 800, marginBottom: 8 }}>
-        Ouvrir Paipers
-      </h1>
-      <p style={{ opacity: 0.75, marginBottom: 16 }}>
-        Clique si l’ouverture ne se fait pas automatiquement.
-      </p>
+    <main className="min-h-screen flex items-center justify-center px-6">
+      <div className="card p-6 w-full max-w-md text-center">
+        <h1 className="text-2xl font-bold">Gmail</h1>
 
-      <a
-        href={to}
-        style={{
-          display: "inline-block",
-          padding: "12px 16px",
-          borderRadius: 12,
-          background: "black",
-          color: "white",
-          textDecoration: "none",
-          fontWeight: 800,
-        }}
-      >
-        Ouvrir l’app
-      </a>
+        <p className="mt-3 text-slate-600">
+          {status === "connected"
+            ? "✅ Gmail est connecté. Tu peux revenir dans l’app Paipers."
+            : "❌ Erreur pendant la connexion. Retourne dans l’app et réessaie."}
+        </p>
+
+        <p className="mt-4 text-sm text-slate-500">
+          Sur iPhone : appuie sur <b>Terminé</b> (en haut) pour fermer cette page,
+          puis reviens dans l’app.
+        </p>
+      </div>
     </main>
   );
 }
