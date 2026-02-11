@@ -20,30 +20,19 @@ async function exchangeCodeForTokens(code: string, redirectUri: string) {
     access_token: string;
     refresh_token?: string;
     expires_in: number;
-    token_type: string;
   };
 }
 
 async function getGmailProfile(accessToken: string) {
-  const res = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/profile", {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
+  const res = await fetch(
+    "https://gmail.googleapis.com/gmail/v1/users/me/profile",
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }
+  );
   const json = await res.json();
   if (!res.ok) throw new Error(JSON.stringify(json));
   return json as { emailAddress: string };
-}
-
-// ✅ Expo Go URL (ton LAN)
-const EXPO_GO_BASE = "exp://192.168.1.20:8081";
-
-function expoGoLink(path: string) {
-  // Expo Router deep link format: exp://.../--/<route>
-  const clean = path.startsWith("/") ? path.slice(1) : path;
-  return `${EXPO_GO_BASE}/--/${clean}`;
-}
-
-function openPage(url: string) {
-  return `https://paipers.vercel.app/auth/gmail/open?to=${encodeURIComponent(url)}`;
 }
 
 export default async function GmailCallbackPage({
@@ -53,19 +42,19 @@ export default async function GmailCallbackPage({
 }) {
   try {
     const code = searchParams.code;
-    if (!code) {
-      redirect(openPage(expoGoLink("profil/gmail?status=error")));
-    }
+    if (!code) redirect("paipersmobile://profil/gmail?status=error");
 
     let platform = "web";
     let userId = "";
+
     try {
       const st = JSON.parse(decodeURIComponent(searchParams.state ?? "{}"));
       platform = st?.platform ?? "web";
       userId = st?.userId ?? "";
     } catch {}
 
-    const redirectUri = "https://paipers.vercel.app/auth/gmail/callback";
+    const redirectUri =
+      "https://paipers.vercel.app/auth/gmail/callback";
 
     const tokens = await exchangeCodeForTokens(code!, redirectUri);
     const profile = await getGmailProfile(tokens.access_token);
@@ -75,10 +64,8 @@ export default async function GmailCallbackPage({
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    // upsert par user_id (source de vérité)
-    if (!userId) {
-      redirect(openPage(expoGoLink("profil/gmail?status=missing_user")));
-    }
+    if (!userId)
+      redirect("paipersmobile://profil/gmail?status=missing_user");
 
     const { error } = await supabase
       .from("gmail_connections")
@@ -94,11 +81,11 @@ export default async function GmailCallbackPage({
     if (error) throw new Error(error.message);
 
     if (platform === "mobile") {
-      redirect(openPage(expoGoLink("profil/gmail?status=connected")));
+      redirect("paipersmobile://profil/gmail?status=connected");
     }
 
     redirect("/profil/gmail?status=connected");
   } catch {
-    redirect(openPage(expoGoLink("profil/gmail?status=error")));
+    redirect("paipersmobile://profil/gmail?status=error");
   }
 }
