@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
+
   const platform = url.searchParams.get("platform") ?? "web";
+  const userId = url.searchParams.get("user_id") ?? "";
 
   const clientId = process.env.GOOGLE_CLIENT_ID!;
   const redirectUri =
@@ -15,15 +17,24 @@ export async function GET(req: Request) {
   ].join(" ");
 
   const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+
   authUrl.searchParams.set("client_id", clientId);
   authUrl.searchParams.set("redirect_uri", redirectUri);
   authUrl.searchParams.set("response_type", "code");
   authUrl.searchParams.set("access_type", "offline");
-  authUrl.searchParams.set("prompt", "consent"); // IMPORTANT pour refresh_token
+  authUrl.searchParams.set("prompt", "consent");
   authUrl.searchParams.set("scope", scope);
 
-  // On passe platform au callback
-  authUrl.searchParams.set("state", JSON.stringify({ platform }));
+  // ✅ ON PASSE userId DANS LE STATE
+  authUrl.searchParams.set(
+    "state",
+    encodeURIComponent(
+      JSON.stringify({
+        platform,
+        userId,
+      })
+    )
+  );
 
   return NextResponse.redirect(authUrl.toString());
 }
