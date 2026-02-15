@@ -21,25 +21,34 @@ async function getAccessToken(refreshToken: string) {
 }
 
 function pickHeader(headers: any[] | undefined, name: string) {
-  const h = (headers || []).find((x) => String(x?.name).toLowerCase() === name.toLowerCase());
+  const h = (headers || []).find(
+    (x) => String(x?.name).toLowerCase() === name.toLowerCase()
+  );
   return h?.value ?? "";
 }
 
-function hasPdfAttachment(payload: any): boolean {
-  let found = false;
+type Att = { filename: string; attachmentId: string; mimeType: string };
+
+function collectPdfAttachments(payload: any): Att[] {
+  const out: Att[] = [];
   const walk = (p: any) => {
-    if (!p || found) return;
+    if (!p) return;
+
     const filename = String(p.filename || "");
     const mimeType = String(p.mimeType || "");
-    const hasAtt = !!p?.body?.attachmentId;
-    if (hasAtt && (filename.toLowerCase().endsWith(".pdf") || mimeType === "application/pdf")) {
-      found = true;
-      return;
+    const attachmentId = String(p?.body?.attachmentId || "");
+
+    const isPdf =
+      filename.toLowerCase().endsWith(".pdf") || mimeType === "application/pdf";
+
+    if (attachmentId && filename && isPdf) {
+      out.push({ filename, attachmentId, mimeType: mimeType || "application/pdf" });
     }
+
     if (Array.isArray(p.parts)) p.parts.forEach(walk);
   };
   walk(payload);
-  return found;
+  return out;
 }
 
 export async function POST(req: Request) {
@@ -53,7 +62,6 @@ export async function POST(req: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    // 1) récupérer la connexion gmail du user
     const { data: conn, error: connErr } = await supabase
       .from("gmail_connections")
       .select("user_id,email,refresh_token")
@@ -65,7 +73,6 @@ export async function POST(req: Request) {
 
     const accessToken = await getAccessToken(conn.refresh_token);
 
-    // 2) lister messages récents avec PJ
     const listRes = await fetch(
       "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=20&q=has:attachment%20newer_than:14d",
       { headers: { Authorization: `Bearer ${accessToken}` } }
@@ -80,46 +87,51 @@ export async function POST(req: Request) {
 
     let created = 0;
 
-    // 3) pour chaque message: check PDF + insert si pas déjà vu
     for (const m of messages) {
-      if (!m?.id) continue;
-
-      // skip si déjà dans documents
-      const { data: existing } = await supabase
-        .from("documents")
-        .select("id")
-        .eq("user_id", userId)
-        .eq("gmail_message_id", m.id)
-        .limit(1);
-
-      if (existing && existing.length > 0) continue;
+      const msgId = m?.id;
+      if (!msgId) continue;
 
       const msgRes = await fetch(
-        `https://gmail.googleapis.com/gmail/v1/users/me/messages/${m.id}?format=full`,
+        `https://gmail.googleapis.com/gmail/v1/users/me/messages/${msgId}?format=full`,
         { headers: { Authorization: `Bearer ${accessToken}` } }
       );
       const msgJson = await msgRes.json();
       if (!msgRes.ok) continue;
-
-      if (!hasPdfAttachment(msgJson?.payload)) continue;
 
       const headers = msgJson?.payload?.headers || [];
       const subject = pickHeader(headers, "Subject") || "Document Gmail";
       const from = pickHeader(headers, "From") || "";
       const date = pickHeader(headers, "Date") || "";
 
-      const { error: insErr } = await supabase.from("documents").insert({
-        user_id: userId,
-        title: subject,
-        needs_review: true,
-        is_ready: false,
-        source: "gmail",
-        gmail_email: conn.email,
-        gmail_message_id: m.id,
-        metadata: { from, date },
-      });
+      const pdfs = collectPdfAttachments(msgJson?.payload);
+      if (pdfs.length === 0) continue;
 
-      if (!insErr) created += 1;
+      for (const att of pdfs) {
+        // ✅ dédup par (message + attachment)
+        const { data: existing } = await supabase
+          .from("documents")
+          .select("id")
+          .eq("user_id", userId)
+          .eq("gmail_message_id", msgId)
+          .eq("gmail_attachment_id", att.attachmentId)
+          .limit(1);
+
+        if (existing && existing.length > 0) continue;
+
+        const { error: insErr } = await supabase.from("documents").insert({
+          user_id: userId,
+          title: att.filename || subject,
+          needs_review: true,
+          is_ready: false,
+          source: "gmail",
+          gmail_email: conn.email,
+          gmail_message_id: msgId,
+          gmail_attachment_id: att.attachmentId,
+          metadata: { from, date, subject },
+        });
+
+        if (!insErr) created += 1;
+      }
     }
 
     return NextResponse.json({ created });
