@@ -58,32 +58,25 @@ export default function GmailPage() {
 
   useEffect(() => {
     load();
-    // refresh quand on revient sur l’onglet (simple MVP)
     const onFocus = () => load();
     window.addEventListener("focus", onFocus);
     return () => window.removeEventListener("focus", onFocus);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const connectUrl =
-    userId
-      ? `/auth/gmail?platform=web&user_id=${encodeURIComponent(userId)}`
-      : "/profil/gmail";
+  const connectUrl = userId
+    ? `/auth/gmail?platform=web&user_id=${encodeURIComponent(userId)}`
+    : "";
 
   const disconnect = async () => {
     if (!userId) return;
     setError("");
 
-    const { error } = await supabase
-      .from("gmail_connections")
-      .delete()
-      .eq("user_id", userId);
-
+    const { error } = await supabase.from("gmail_connections").delete().eq("user_id", userId);
     if (error) {
       setError(error.message);
       return;
     }
-
     await load();
   };
 
@@ -116,9 +109,21 @@ export default function GmailPage() {
           ) : (
             <>
               <p className="mt-3 text-sm text-slate-600">
-                Compte Paipers :{" "}
-                <span className="font-semibold">{userEmail || "—"}</span>
+                Compte Paipers : <span className="font-semibold">{userEmail || "—"}</span>
               </p>
+
+              {/* DEBUG VISUEL (temporaire) */}
+              <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-3">
+                <p className="text-xs text-slate-500">
+                  Debug userId : <span className="font-mono text-slate-700">{userId || "VIDE"}</span>
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Debug URL :{" "}
+                  <span className="font-mono text-slate-700 break-all">
+                    {connectUrl || "VIDE (userId manquant)"}
+                  </span>
+                </p>
+              </div>
 
               <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
                 <p className="text-sm font-medium text-slate-800">
@@ -133,17 +138,9 @@ export default function GmailPage() {
                     Gmail : <span className="font-semibold">{connEmail || "—"}</span>
                   </p>
                 )}
-
-                {!connected && (
-                  <p className="mt-2 text-xs text-slate-500">
-                    Clique sur “Connecter Gmail” pour activer l’import automatique.
-                  </p>
-                )}
               </div>
 
-              {error ? (
-                <p className="mt-3 text-sm text-red-600">Erreur : {error}</p>
-              ) : null}
+              {error ? <p className="mt-3 text-sm text-red-600">Erreur : {error}</p> : null}
 
               <div className="mt-4 flex gap-3">
                 <button
@@ -163,12 +160,19 @@ export default function GmailPage() {
                     Déconnecter
                   </button>
                 ) : (
-                  <Link
-                    href={connectUrl}
-                    className="px-4 py-2 rounded-xl bg-[hsl(var(--primary))] text-white text-sm font-semibold active:scale-[0.99] transition"
+                  <a
+                    href={connectUrl || "#"}
+                    onClick={(e) => {
+                      if (!connectUrl) e.preventDefault();
+                    }}
+                    className={`px-4 py-2 rounded-xl text-sm font-semibold active:scale-[0.99] transition ${
+                      connectUrl
+                        ? "bg-[hsl(var(--primary))] text-white"
+                        : "bg-slate-200 text-slate-500 cursor-not-allowed"
+                    }`}
                   >
                     Connecter Gmail
-                  </Link>
+                  </a>
                 )}
               </div>
 
