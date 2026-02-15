@@ -16,7 +16,8 @@ export default function GmailAuthPage({
     "https://www.googleapis.com/auth/gmail.modify",
   ].join(" ");
 
-  const state = encodeURIComponent(JSON.stringify({ platform, userId }));
+  // ✅ IMPORTANT: PAS de encodeURIComponent ici
+  const state = JSON.stringify({ platform, userId });
 
   const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
   authUrl.searchParams.set("client_id", clientId);

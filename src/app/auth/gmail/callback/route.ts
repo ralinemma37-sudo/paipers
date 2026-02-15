@@ -29,43 +29,60 @@ async function getGmailProfile(accessToken: string) {
 }
 
 function safeParseState(state?: string) {
-  if (!state) return { platform: "web", userId: "" };
+  const fallback = { platform: "web", userId: "" };
+  if (!state) return fallback;
+
+  const tries = [state];
   try {
-    const decoded = decodeURIComponent(state);
-    const obj = JSON.parse(decoded);
-    return { platform: obj?.platform ?? "web", userId: obj?.userId ?? "" };
-  } catch {
-    return { platform: "web", userId: "" };
+    tries.push(decodeURIComponent(state));
+  } catch {}
+  try {
+    tries.push(decodeURIComponent(decodeURIComponent(state)));
+  } catch {}
+
+  for (const s of tries) {
+    try {
+      const obj = JSON.parse(s);
+      return {
+        platform: obj?.platform ?? "web",
+        userId: obj?.userId ?? "",
+      };
+    } catch {}
   }
+
+  return fallback;
 }
 
 export async function GET(request: Request) {
-  const url = new URL(request.url);
-  const code = url.searchParams.get("code");
-  const state = url.searchParams.get("state");
-  const error = url.searchParams.get("error");
-
-  // ✅ marqueur: si tu vois ce JSON, c’est bien route.ts qui tourne
-  if (!code) {
-    return NextResponse.json({
-      route_handler: "OK",
-      error: error ?? "Missing code (route.ts)",
-      params: Object.fromEntries(url.searchParams.entries()),
-    });
-  }
-
-  const { platform, userId } = safeParseState(state ?? undefined);
-
-  // ⚠️ IMPORTANT: dans ton URL on voit userId = "" => ça cassera l’upsert après
-  if (!userId) {
-    return NextResponse.json({
-      route_handler: "OK",
-      error: "Missing userId in state",
-      received_state: state,
-    });
-  }
-
   try {
+    const url = new URL(request.url);
+
+    const code = url.searchParams.get("code");
+    const state = url.searchParams.get("state");
+    const error = url.searchParams.get("error");
+
+    if (error) {
+      return NextResponse.json({ error });
+    }
+
+    if (!code) {
+      return NextResponse.json({
+        route_handler: "OK",
+        error: "Missing code",
+        params: Object.fromEntries(url.searchParams.entries()),
+      });
+    }
+
+    const { platform, userId } = safeParseState(state ?? undefined);
+
+    if (!userId) {
+      return NextResponse.json({
+        route_handler: "OK",
+        error: "Missing userId in state",
+        received_state: state,
+      });
+    }
+
     const redirectUri = "https://paipers.vercel.app/auth/gmail/callback";
 
     const tokens = await exchangeCodeForTokens(code, redirectUri);
@@ -86,14 +103,15 @@ export async function GET(request: Request) {
     );
 
     if (upsertError) {
-      return NextResponse.json({ route_handler: "OK", error: upsertError.message });
+      return NextResponse.json({ error: upsertError.message });
     }
 
     if (platform === "mobile") {
       return NextResponse.redirect(new URL("/auth/gmail/open?status=connected", url.origin));
     }
+
     return NextResponse.redirect(new URL("/profil/gmail?status=connected", url.origin));
   } catch (e: any) {
-    return NextResponse.json({ route_handler: "OK", error: String(e?.message ?? e) });
+    return NextResponse.json({ error: String(e?.message ?? e) });
   }
 }
