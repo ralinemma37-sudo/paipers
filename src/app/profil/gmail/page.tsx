@@ -1,4 +1,3 @@
-
 "use client";
 
 import Protected from "@/components/Protected";
@@ -7,41 +6,93 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Mail } from "lucide-react";
 
+type GmailConnection = {
+  email: string | null;
+};
+
 export default function GmailPage() {
   const [loading, setLoading] = useState(true);
   const [connected, setConnected] = useState(false);
-  const [email, setEmail] = useState<string>("");
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [connEmail, setConnEmail] = useState<string>("");
+  const [userId, setUserId] = useState<string>("");
+  const [error, setError] = useState<string>("");
+
+  const load = async () => {
+    setLoading(true);
+    setError("");
+
+    const { data, error: userErr } = await supabase.auth.getUser();
+    if (userErr) setError(userErr.message);
+
+    const user = data?.user;
+    if (!user) {
+      setUserId("");
+      setUserEmail("");
+      setConnected(false);
+      setConnEmail("");
+      setLoading(false);
+      return;
+    }
+
+    setUserId(user.id);
+    setUserEmail(user.email || "");
+
+    const { data: conn, error: connErr } = await supabase
+      .from("gmail_connections")
+      .select("email")
+      .eq("user_id", user.id)
+      .maybeSingle<GmailConnection>();
+
+    if (connErr) {
+      setError(connErr.message);
+      setConnected(false);
+      setConnEmail("");
+    } else {
+      setConnected(!!conn);
+      setConnEmail(conn?.email ?? "");
+    }
+
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const run = async () => {
-      setLoading(true);
-      const { data } = await supabase.auth.getUser();
-      const user = data?.user;
-
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
-      setEmail(user.email || "");
-
-      // ✅ MVP: si tu as déjà une logique “gmail connecté” en DB, tu peux la brancher ici
-      // Pour l’instant on met un placeholder "connected" à false.
-      // Exemple futur: fetch profil/emails table etc.
-      setConnected(false);
-
-      setLoading(false);
-    };
-
-    run();
+    load();
+    // refresh quand on revient sur l’onglet (simple MVP)
+    const onFocus = () => load();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const connectUrl =
+    userId
+      ? `/auth/gmail?platform=web&user_id=${encodeURIComponent(userId)}`
+      : "/profil/gmail";
+
+  const disconnect = async () => {
+    if (!userId) return;
+    setError("");
+
+    const { error } = await supabase
+      .from("gmail_connections")
+      .delete()
+      .eq("user_id", userId);
+
+    if (error) {
+      setError(error.message);
+      return;
+    }
+
+    await load();
+  };
 
   return (
     <Protected>
       <div className="px-6 pt-6 pb-24">
         <div className="flex items-center gap-3 mb-5">
           <Link
-            href="/profil"
+            href="/profil/emails"
             className="w-10 h-10 rounded-full border border-slate-200 bg-white flex items-center justify-center active:scale-95 transition"
             aria-label="Retour"
           >
@@ -49,7 +100,7 @@ export default function GmailPage() {
           </Link>
 
           <div className="min-w-0">
-            <p className="text-xs text-slate-500">Profil</p>
+            <p className="text-xs text-slate-500">Connexions emails</p>
             <h1 className="text-xl font-bold truncate">Gmail</h1>
           </div>
         </div>
@@ -65,27 +116,67 @@ export default function GmailPage() {
           ) : (
             <>
               <p className="mt-3 text-sm text-slate-600">
-                Compte : <span className="font-semibold">{email || "—"}</span>
+                Compte Paipers :{" "}
+                <span className="font-semibold">{userEmail || "—"}</span>
               </p>
 
               <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
                 <p className="text-sm font-medium text-slate-800">
                   Statut :{" "}
                   <span className={connected ? "text-green-600" : "text-slate-500"}>
-                    {connected ? "Connecté" : "Non connecté (placeholder)"}
+                    {connected ? "Connecté" : "Non connecté"}
                   </span>
                 </p>
 
-                <p className="mt-2 text-xs text-slate-500">
-                  Cette page a été simplifiée pour corriger le build. On peut réactiver l’UI Gmail juste après.
-                </p>
+                {connected && (
+                  <p className="mt-2 text-xs text-slate-500">
+                    Gmail : <span className="font-semibold">{connEmail || "—"}</span>
+                  </p>
+                )}
+
+                {!connected && (
+                  <p className="mt-2 text-xs text-slate-500">
+                    Clique sur “Connecter Gmail” pour activer l’import automatique.
+                  </p>
+                )}
+              </div>
+
+              {error ? (
+                <p className="mt-3 text-sm text-red-600">Erreur : {error}</p>
+              ) : null}
+
+              <div className="mt-4 flex gap-3">
+                <button
+                  type="button"
+                  onClick={load}
+                  className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-sm font-semibold active:scale-[0.99] transition"
+                >
+                  Rafraîchir
+                </button>
+
+                {connected ? (
+                  <button
+                    type="button"
+                    onClick={disconnect}
+                    className="px-4 py-2 rounded-xl bg-red-100 text-red-700 text-sm font-semibold active:scale-[0.99] transition"
+                  >
+                    Déconnecter
+                  </button>
+                ) : (
+                  <Link
+                    href={connectUrl}
+                    className="px-4 py-2 rounded-xl bg-[hsl(var(--primary))] text-white text-sm font-semibold active:scale-[0.99] transition"
+                  >
+                    Connecter Gmail
+                  </Link>
+                )}
               </div>
 
               <Link
-                href="/profil"
-                className="mt-4 inline-block text-sm font-semibold text-[hsl(var(--primary))]"
+                href="/profil/emails"
+                className="mt-5 inline-block text-sm font-semibold text-[hsl(var(--primary))]"
               >
-                Retour au profil →
+                Retour →
               </Link>
             </>
           )}
