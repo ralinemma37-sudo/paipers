@@ -39,6 +39,37 @@ function collectAttachmentParts(payload: any) {
   return out;
 }
 
+// ✅ IMPORTANT: rend un nom safe pour Supabase Storage
+function sanitizeFilename(name: string) {
+  const fallback = "piece-jointe.pdf";
+  const s = String(name || "").trim();
+  if (!s) return fallback;
+
+  // garde une extension si possible
+  const dot = s.lastIndexOf(".");
+  const ext = dot > 0 && dot < s.length - 1 ? s.slice(dot).toLowerCase() : "";
+  const base = dot > 0 ? s.slice(0, dot) : s;
+
+  // enlève accents + caractères non ASCII
+  const ascii = base
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "") // diacritiques
+    .replace(/[^\x00-\x7F]/g, ""); // non-ascii
+
+  // remplace tout ce qui n'est pas alphanum par _
+  let clean = ascii.replace(/[^a-zA-Z0-9._-]+/g, "_").replace(/^_+|_+$/g, "");
+
+  if (!clean) clean = "piece-jointe";
+
+  // limite longueur
+  clean = clean.slice(0, 80);
+
+  // extension safe
+  const safeExt = ext && /^[.][a-z0-9]{1,10}$/.test(ext) ? ext : "";
+
+  return clean + safeExt;
+}
+
 export async function POST(req: Request) {
   try {
     const { documentId } = await req.json();
@@ -77,7 +108,6 @@ export async function POST(req: Request) {
     const accessToken = await getAccessToken(conn.refresh_token);
 
     // 3) récupérer les derniers emails avec PJ (simple MVP)
-    // Tip: on ajoute newer_than:7d pour limiter un peu
     const listRes = await fetch(
       "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=15&q=has:attachment%20newer_than:7d",
       { headers: { Authorization: `Bearer ${accessToken}` } }
@@ -85,7 +115,10 @@ export async function POST(req: Request) {
 
     const listJson = await listRes.json();
     if (!listRes.ok) {
-      return NextResponse.json({ error: `Gmail list error: ${JSON.stringify(listJson)}` }, { status: 500 });
+      return NextResponse.json(
+        { error: `Gmail list error: ${JSON.stringify(listJson)}` },
+        { status: 500 }
+      );
     }
 
     const messages = listJson?.messages ?? [];
@@ -93,7 +126,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Aucun email avec pièce jointe trouvé." }, { status: 500 });
     }
 
-    // 4) Choisir un message "nouveau" (pas le dernier déjà traité)
+    // 4) Choisir un message "nouveau"
     const lastProcessed = conn.last_processed_message_id as string | null;
 
     for (const m of messages) {
@@ -101,7 +134,6 @@ export async function POST(req: Request) {
       if (!msgId) continue;
 
       if (lastProcessed && msgId === lastProcessed) {
-        // On saute celui déjà traité
         continue;
       }
 
@@ -118,7 +150,8 @@ export async function POST(req: Request) {
 
       // on prend la 1ère pièce jointe (MVP)
       const first = parts[0];
-      const filename = first.filename || "piece-jointe";
+      const originalFilename = first.filename || "piece-jointe.pdf";
+      const filename = sanitizeFilename(originalFilename);
       const attachmentId = first.body?.attachmentId;
       const mimeType = first.mimeType || "application/octet-stream";
       if (!attachmentId) continue;
@@ -135,8 +168,7 @@ export async function POST(req: Request) {
       const bytes = base64UrlToUint8Array(attJson.data);
 
       // 7) upload storage
-      const safeName = String(filename).replaceAll(" ", "_");
-      const filePath = `${doc.user_id}/${documentId}_${safeName}`;
+      const filePath = `${doc.user_id}/${documentId}_${filename}`;
 
       const { error: uploadError } = await supabase.storage
         .from("documents")
@@ -146,12 +178,12 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: `Upload error: ${uploadError.message}` }, { status: 500 });
       }
 
-      // 8) update document -> prêt, catégorie par défaut = "autres"
+      // 8) update document
       await supabase
         .from("documents")
         .update({
-          title: filename,
-          original_filename: filename,
+          title: originalFilename, // on garde le nom original pour l’UI
+          original_filename: originalFilename,
           mime_type: mimeType,
           file_path: filePath,
           is_ready: true,
@@ -163,13 +195,13 @@ export async function POST(req: Request) {
         })
         .eq("id", documentId);
 
-      // 9) garde-fou pour éviter de reprendre le même email la prochaine fois
+      // 9) éviter de reprendre le même email
       await supabase
         .from("gmail_connections")
         .update({ last_processed_message_id: msgId })
         .eq("email", doc.gmail_email);
 
-      return NextResponse.json({ success: true, filePath });
+      return NextResponse.json({ success: true, filePath, filename, originalFilename });
     }
 
     return NextResponse.json(
