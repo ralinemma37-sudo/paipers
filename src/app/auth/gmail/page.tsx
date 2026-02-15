@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default function GmailAuthPage({
   searchParams,
 }: {
@@ -7,6 +9,25 @@ export default function GmailAuthPage({
 }) {
   const platform = searchParams.platform ?? "web";
   const userId = searchParams.user_id ?? "";
+
+  if (!userId) {
+    return (
+      <main style={{ padding: 24, fontFamily: "system-ui" }}>
+        <h1 style={{ fontSize: 20, fontWeight: 800 }}>
+          Erreur : user_id manquant
+        </h1>
+        <p style={{ marginTop: 8 }}>
+          L’URL doit être :
+        </p>
+        <pre style={{ marginTop: 12 }}>
+          /auth/gmail?platform=web&user_id=TON_USER_ID
+        </pre>
+        <pre style={{ marginTop: 12, background: "#f5f5f5", padding: 12 }}>
+          {JSON.stringify(searchParams, null, 2)}
+        </pre>
+      </main>
+    );
+  }
 
   const clientId = process.env.GOOGLE_CLIENT_ID!;
   const redirectUri = "https://paipers.vercel.app/auth/gmail/callback";
@@ -16,7 +37,6 @@ export default function GmailAuthPage({
     "https://www.googleapis.com/auth/gmail.modify",
   ].join(" ");
 
-  // ✅ IMPORTANT: PAS de encodeURIComponent ici
   const state = JSON.stringify({ platform, userId });
 
   const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
