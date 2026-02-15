@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 async function exchangeCodeForTokens(code: string, redirectUri: string) {
   const res = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
@@ -23,31 +25,44 @@ async function getGmailProfile(accessToken: string) {
   const res = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/profile", {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
+
   const json = await res.json();
   if (!res.ok) throw new Error(JSON.stringify(json));
   return json as { emailAddress: string };
+}
+
+function decodeTries(input: string) {
+  const tries: string[] = [input];
+  try {
+    tries.push(decodeURIComponent(input));
+  } catch {}
+  try {
+    tries.push(decodeURIComponent(decodeURIComponent(input)));
+  } catch {}
+  return tries;
+}
+
+function extractUuid(str: string) {
+  const m = str.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+  return m?.[0] ?? "";
 }
 
 function safeParseState(state?: string) {
   const fallback = { platform: "web", userId: "" };
   if (!state) return fallback;
 
-  const tries = [state];
-  try {
-    tries.push(decodeURIComponent(state));
-  } catch {}
-  try {
-    tries.push(decodeURIComponent(decodeURIComponent(state)));
-  } catch {}
-
-  for (const s of tries) {
+  for (const s of decodeTries(state)) {
+    // 1) Essai JSON
     try {
       const obj = JSON.parse(s);
-      return {
-        platform: obj?.platform ?? "web",
-        userId: obj?.userId ?? "",
-      };
+      const platform = obj?.platform ?? "web";
+      const userId = obj?.userId ?? obj?.user_id ?? "";
+      if (userId) return { platform, userId };
     } catch {}
+
+    // 2) Fallback UUID dans la string
+    const uuid = extractUuid(s);
+    if (uuid) return { platform: "web", userId: uuid };
   }
 
   return fallback;
@@ -56,13 +71,12 @@ function safeParseState(state?: string) {
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
-
     const code = url.searchParams.get("code");
     const state = url.searchParams.get("state");
     const error = url.searchParams.get("error");
 
     if (error) {
-      return NextResponse.json({ error });
+      return NextResponse.json({ error, params: Object.fromEntries(url.searchParams.entries()) });
     }
 
     if (!code) {
@@ -80,6 +94,7 @@ export async function GET(request: Request) {
         route_handler: "OK",
         error: "Missing userId in state",
         received_state: state,
+        decoded_tries: state ? decodeTries(state) : [],
       });
     }
 
