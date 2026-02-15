@@ -16,69 +16,57 @@ async function exchangeCodeForTokens(code: string, redirectUri: string) {
 
   const json = await res.json();
   if (!res.ok) throw new Error(JSON.stringify(json));
-
-  return json as {
-    access_token: string;
-    refresh_token?: string;
-  };
+  return json as { access_token: string; refresh_token?: string };
 }
 
 async function getGmailProfile(accessToken: string) {
-  const res = await fetch(
-    "https://gmail.googleapis.com/gmail/v1/users/me/profile",
-    {
-      headers: { Authorization: `Bearer ${accessToken}` },
-    }
-  );
-
+  const res = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/profile", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
   const json = await res.json();
   if (!res.ok) throw new Error(JSON.stringify(json));
-
   return json as { emailAddress: string };
 }
 
 function safeParseState(state?: string) {
   if (!state) return { platform: "web", userId: "" };
-
   try {
     const decoded = decodeURIComponent(state);
     const obj = JSON.parse(decoded);
-    return {
-      platform: obj?.platform ?? "web",
-      userId: obj?.userId ?? "",
-    };
+    return { platform: obj?.platform ?? "web", userId: obj?.userId ?? "" };
   } catch {
     return { platform: "web", userId: "" };
   }
 }
 
 export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code");
+  const state = url.searchParams.get("state");
+  const error = url.searchParams.get("error");
+
+  // ✅ marqueur: si tu vois ce JSON, c’est bien route.ts qui tourne
+  if (!code) {
+    return NextResponse.json({
+      route_handler: "OK",
+      error: error ?? "Missing code (route.ts)",
+      params: Object.fromEntries(url.searchParams.entries()),
+    });
+  }
+
+  const { platform, userId } = safeParseState(state ?? undefined);
+
+  // ⚠️ IMPORTANT: dans ton URL on voit userId = "" => ça cassera l’upsert après
+  if (!userId) {
+    return NextResponse.json({
+      route_handler: "OK",
+      error: "Missing userId in state",
+      received_state: state,
+    });
+  }
+
   try {
-    const { searchParams } = new URL(request.url);
-
-    const code = searchParams.get("code");
-    const state = searchParams.get("state");
-    const error = searchParams.get("error");
-
-    if (error) {
-      return NextResponse.json({ error });
-    }
-
-    if (!code) {
-      return NextResponse.json({
-        error: "Missing code",
-        params: Object.fromEntries(searchParams.entries()),
-      });
-    }
-
-    const { platform, userId } = safeParseState(state ?? undefined);
-
-    if (!userId) {
-      return NextResponse.json({ error: "Missing userId in state" });
-    }
-
-    const redirectUri =
-      "https://paipers.vercel.app/auth/gmail/callback";
+    const redirectUri = "https://paipers.vercel.app/auth/gmail/callback";
 
     const tokens = await exchangeCodeForTokens(code, redirectUri);
     const profile = await getGmailProfile(tokens.access_token);
@@ -88,7 +76,7 @@ export async function GET(request: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    await supabase.from("gmail_connections").upsert(
+    const { error: upsertError } = await supabase.from("gmail_connections").upsert(
       {
         user_id: userId,
         email: profile.emailAddress,
@@ -97,16 +85,15 @@ export async function GET(request: Request) {
       { onConflict: "user_id" }
     );
 
-    if (platform === "mobile") {
-      return NextResponse.redirect(
-        new URL("/auth/gmail/open?status=connected", request.url)
-      );
+    if (upsertError) {
+      return NextResponse.json({ route_handler: "OK", error: upsertError.message });
     }
 
-    return NextResponse.redirect(
-      new URL("/profil/gmail?status=connected", request.url)
-    );
+    if (platform === "mobile") {
+      return NextResponse.redirect(new URL("/auth/gmail/open?status=connected", url.origin));
+    }
+    return NextResponse.redirect(new URL("/profil/gmail?status=connected", url.origin));
   } catch (e: any) {
-    return NextResponse.json({ error: String(e?.message ?? e) });
+    return NextResponse.json({ route_handler: "OK", error: String(e?.message ?? e) });
   }
 }
