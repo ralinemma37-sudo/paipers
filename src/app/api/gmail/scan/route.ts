@@ -16,9 +16,11 @@ async function getAccessToken(refreshToken: string) {
   });
 
   const json = await res.json();
-  if (!res.ok) throw new Error(`Google token error: ${JSON.stringify(json)}`);
+  if (!res.ok) throw new Error("Google token error");
   return json.access_token as string;
 }
+
+type Att = { filename: string; attachmentId: string; mimeType: string };
 
 function pickHeader(headers: any[] | undefined, name: string) {
   const h = (headers || []).find(
@@ -26,8 +28,6 @@ function pickHeader(headers: any[] | undefined, name: string) {
   );
   return h?.value ?? "";
 }
-
-type Att = { filename: string; attachmentId: string; mimeType: string };
 
 function collectPdfAttachments(payload: any): Att[] {
   const out: Att[] = [];
@@ -51,6 +51,27 @@ function collectPdfAttachments(payload: any): Att[] {
   return out;
 }
 
+async function gmailGetProfile(accessToken: string) {
+  const res = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/profile", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error("Gmail profile error");
+  return json as { historyId: string };
+}
+
+async function gmailListMessages(accessToken: string, q: string, maxResults = 20) {
+  const url =
+    "https://gmail.googleapis.com/gmail/v1/users/me/messages" +
+    `?maxResults=${maxResults}` +
+    `&q=${encodeURIComponent(q)}`;
+
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${accessToken}` } });
+  const json = await res.json();
+  if (!res.ok) throw new Error("Gmail list error");
+  return (json?.messages ?? []) as { id: string }[];
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
@@ -64,7 +85,7 @@ export async function POST(req: Request) {
 
     const { data: conn, error: connErr } = await supabase
       .from("gmail_connections")
-      .select("user_id,email,refresh_token")
+      .select("user_id,email,refresh_token,last_history_id")
       .eq("user_id", userId)
       .maybeSingle();
 
@@ -73,17 +94,28 @@ export async function POST(req: Request) {
 
     const accessToken = await getAccessToken(conn.refresh_token);
 
-    const listRes = await fetch(
-      "https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=20&q=has:attachment%20newer_than:14d",
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
-    const listJson = await listRes.json();
-    if (!listRes.ok) {
-      return NextResponse.json({ error: `Gmail list error: ${JSON.stringify(listJson)}` }, { status: 500 });
+    // 1) Lire le historyId actuel
+    const profile = await gmailGetProfile(accessToken);
+    const currentHistoryId = String(profile.historyId || "");
+
+    // 2) PREMIÈRE FOIS : on enregistre et on NE remonte RIEN (évite les vieux emails)
+    if (!conn.last_history_id) {
+      await supabase
+        .from("gmail_connections")
+        .update({ last_history_id: currentHistoryId, last_scanned_at: new Date().toISOString() })
+        .eq("user_id", userId);
+
+      return NextResponse.json({ created: 0, firstTime: true });
     }
 
-    const messages: { id: string }[] = listJson?.messages ?? [];
-    if (messages.length === 0) return NextResponse.json({ created: 0 });
+    // 3) Mode MVP “nouveaux seulement” :
+    // on ne prend que les emails récents (24h) + PDF + attachment
+    // (simple, robuste, pas de vieux spam)
+    const messages = await gmailListMessages(
+      accessToken,
+      "has:attachment filename:pdf newer_than:1d",
+      20
+    );
 
     let created = 0;
 
@@ -107,7 +139,6 @@ export async function POST(req: Request) {
       if (pdfs.length === 0) continue;
 
       for (const att of pdfs) {
-        // ✅ dédup par (message + attachment)
         const { data: existing } = await supabase
           .from("documents")
           .select("id")
@@ -133,6 +164,12 @@ export async function POST(req: Request) {
         if (!insErr) created += 1;
       }
     }
+
+    // 4) On avance le curseur
+    await supabase
+      .from("gmail_connections")
+      .update({ last_history_id: currentHistoryId, last_scanned_at: new Date().toISOString() })
+      .eq("user_id", userId);
 
     return NextResponse.json({ created });
   } catch (e: any) {
