@@ -45,6 +45,7 @@ export async function GET(request: Request) {
     "openid",
     "profile",
     "email",
+    "User.Read",
     "Mail.Read",
   ].join(" ");
 

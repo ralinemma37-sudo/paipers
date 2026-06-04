@@ -8,6 +8,7 @@ const OUTLOOK_SCOPES = [
   "openid",
   "profile",
   "email",
+  "User.Read",
   "Mail.Read",
 ];
 
