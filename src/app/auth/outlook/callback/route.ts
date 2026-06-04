@@ -90,16 +90,77 @@ async function exchangeCodeForTokens(code: string, redirectUri: string) {
     access_token: string;
     refresh_token?: string;
     expires_in?: number;
+    id_token?: string;
   };
 }
 
-async function getMicrosoftProfile(accessToken: string) {
-  const res = await fetch("https://graph.microsoft.com/v1.0/me", {
-    headers: { Authorization: `Bearer ${accessToken}` },
+function emailFromIdToken(idToken?: string): string | null {
+  if (!idToken) return null;
+  try {
+    const parts = idToken.split(".");
+    if (parts.length < 2) return null;
+    const payload = JSON.parse(
+      Buffer.from(parts[1].replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8")
+    ) as Record<string, unknown>;
+    const candidates = [
+      payload.preferred_username,
+      payload.email,
+      payload.upn,
+      payload.unique_name,
+    ];
+    for (const c of candidates) {
+      if (typeof c === "string" && c.includes("@")) return c;
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+async function fetchGraphMe(accessToken: string): Promise<{
+  mail?: string;
+  userPrincipalName?: string;
+  id?: string;
+} | null> {
+  const url =
+    "https://graph.microsoft.com/v1.0/me?$select=id,mail,userPrincipalName,displayName";
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: "application/json",
+    },
   });
   const json = await res.json();
-  if (!res.ok) throw new Error(`Graph profile error: ${JSON.stringify(json)}`);
+  if (!res.ok) return null;
   return json as { mail?: string; userPrincipalName?: string; id?: string };
+}
+
+/** Ne bloque pas la connexion si Graph /me échoue (comptes perso MSA parfois UnknownError). */
+async function resolveMicrosoftIdentity(
+  accessToken: string,
+  idToken?: string
+): Promise<{ accountEmail: string | null; providerAccountId: string | null; graphOk: boolean }> {
+  let profile = await fetchGraphMe(accessToken);
+  if (!profile) {
+    await new Promise((r) => setTimeout(r, 400));
+    profile = await fetchGraphMe(accessToken);
+  }
+
+  if (profile) {
+    const accountEmail = profile.mail?.trim() || profile.userPrincipalName?.trim() || null;
+    return {
+      accountEmail,
+      providerAccountId: profile.id ?? null,
+      graphOk: true,
+    };
+  }
+
+  const fromId = emailFromIdToken(idToken);
+  return {
+    accountEmail: fromId,
+    providerAccountId: null,
+    graphOk: false,
+  };
 }
 
 export async function GET(request: Request) {
@@ -147,9 +208,10 @@ export async function GET(request: Request) {
       );
     }
 
-    const profile = await getMicrosoftProfile(tokens.access_token);
-    const accountEmail = profile.mail || profile.userPrincipalName || null;
-    const providerAccountId = profile.id ?? null;
+    const identity = await resolveMicrosoftIdentity(
+      tokens.access_token,
+      tokens.id_token
+    );
 
     const supabase = createClient(
       requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
@@ -164,13 +226,17 @@ export async function GET(request: Request) {
         user_id: userId,
         provider: "outlook",
         account_scope,
-        account_email: accountEmail,
-        provider_account_id: providerAccountId,
+        account_email: identity.accountEmail,
+        provider_account_id: identity.providerAccountId,
         refresh_token: tokens.refresh_token,
         access_token: tokens.access_token,
         expires_at: expiresAt,
         scopes: OUTLOOK_SCOPES,
-        metadata: { connected_via: "vercel_oauth_outlook", platform },
+        metadata: {
+          connected_via: "vercel_oauth_outlook",
+          platform,
+          graph_profile_ok: identity.graphOk,
+        },
         updated_at: new Date().toISOString(),
       },
       { onConflict: "user_id,provider,account_scope" }
