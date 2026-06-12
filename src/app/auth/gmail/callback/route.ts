@@ -1,154 +1,119 @@
+import { oauthSuccessHtml } from "../../../../lib/oauthSuccessHtml";
+import { decodeOAuthState } from "../../../../lib/oauthState";
+import {
+  upsertEmailConnection,
+  userFacingEmailConnectionDbError,
+} from "../../../../lib/upsertEmailConnection";
 import { createClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export const dynamic = "force-dynamic";
+const GMAIL_SCOPES = [
+  "https://www.googleapis.com/auth/gmail.readonly",
+  "https://www.googleapis.com/auth/userinfo.email",
+  "openid",
+];
 
-function requireEnv(name: string) {
-  const v = process.env[name];
-  if (!v) throw new Error(`Missing env: ${name}`);
-  return v;
-}
+/**
+ * Callback OAuth Google → upsert external_connections (provider = gmail).
+ */
+export async function GET(req: NextRequest) {
+  const url = req.nextUrl;
+  const err = url.searchParams.get("error");
+  if (err) {
+    return NextResponse.json({ error: err }, { status: 400 });
+  }
 
-async function exchangeCodeForTokens(code: string, redirectUri: string) {
-  const client_id = requireEnv("GOOGLE_CLIENT_ID");
-  const client_secret = requireEnv("GOOGLE_CLIENT_SECRET");
+  const code = url.searchParams.get("code");
+  const stateB64 = url.searchParams.get("state");
+  if (!code || !stateB64) {
+    return NextResponse.json({ error: "missing_code_or_state" }, { status: 400 });
+  }
 
-  const res = await fetch("https://oauth2.googleapis.com/token", {
+  const state = decodeOAuthState(stateB64);
+  if (!state) {
+    return NextResponse.json({ error: "invalid_state" }, { status: 400 });
+  }
+
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+  const redirectUri = process.env.GOOGLE_REDIRECT_URI;
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!clientId || !clientSecret || !redirectUri || !supabaseUrl || !serviceKey) {
+    return NextResponse.json({ error: "server_misconfigured" }, { status: 500 });
+  }
+
+  const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
       code,
-      client_id,
-      client_secret,
       redirect_uri: redirectUri,
       grant_type: "authorization_code",
     }),
   });
 
-  const json = await res.json();
-
-  if (!res.ok) {
-    throw new Error(`Google token error: ${JSON.stringify(json)}`);
+  const tokenJson = await tokenRes.json();
+  if (!tokenRes.ok) {
+    return NextResponse.json({ error: "token_exchange_failed", detail: tokenJson }, { status: 502 });
   }
 
-  return json as { access_token: string; refresh_token?: string };
-}
+  const refreshToken = tokenJson.refresh_token as string | undefined;
+  const accessToken = tokenJson.access_token as string | undefined;
+  if (!refreshToken) {
+    return NextResponse.json(
+      { error: "no_refresh_token", hint: "use prompt=consent and access_type=offline" },
+      { status: 502 }
+    );
+  }
 
-async function getGmailProfile(accessToken: string) {
-  const res = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/profile", {
-    headers: { Authorization: `Bearer ${accessToken}` },
+  let accountEmail: string | null = null;
+  if (accessToken) {
+    const meRes = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (meRes.ok) {
+      const me = await meRes.json();
+      accountEmail = typeof me.email === "string" ? me.email : null;
+    }
+  }
+
+  const supabase = createClient(supabaseUrl, serviceKey);
+  const expiresIn = typeof tokenJson.expires_in === "number" ? tokenJson.expires_in : 3600;
+  const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
+
+  const { error: upErr, userMessage } = await upsertEmailConnection(supabase, {
+    user_id: state.user_id,
+    provider: "gmail",
+    account_scope: state.account_scope,
+    account_email: accountEmail,
+    refresh_token: refreshToken,
+    access_token: accessToken ?? null,
+    expires_at: expiresAt,
+    scopes: GMAIL_SCOPES,
+    metadata: {
+      connected_via: "vercel_oauth_gmail",
+      platform: state.platform,
+    },
+    updated_at: new Date().toISOString(),
   });
 
-  const json = await res.json();
-  if (!res.ok) throw new Error(`Gmail profile error: ${JSON.stringify(json)}`);
-  return json as { emailAddress: string };
-}
-
-function decodeTries(input: string) {
-  const tries: string[] = [input];
-  try {
-    tries.push(decodeURIComponent(input));
-  } catch {}
-  try {
-    tries.push(decodeURIComponent(decodeURIComponent(input)));
-  } catch {}
-  return tries;
-}
-
-function extractUuid(str: string) {
-  const m = str.match(
-    /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i
-  );
-  return m?.[0] ?? "";
-}
-
-function safeParseState(state?: string) {
-  const fallback = { platform: "web", userId: "" };
-  if (!state) return fallback;
-
-  for (const s of decodeTries(state)) {
-    try {
-      const obj = JSON.parse(s);
-      const platform = obj?.platform ?? "web";
-      const userId = obj?.userId ?? obj?.user_id ?? "";
-      if (userId) return { platform, userId };
-    } catch {}
-
-    const uuid = extractUuid(s);
-    if (uuid) return { platform: "web", userId: uuid };
-  }
-
-  return fallback;
-}
-
-export async function GET(request: Request) {
-  try {
-    const url = new URL(request.url);
-
-    const code = url.searchParams.get("code");
-    const state = url.searchParams.get("state");
-    const error = url.searchParams.get("error");
-
-    if (error) {
-      return NextResponse.json({
-        error,
-        params: Object.fromEntries(url.searchParams.entries()),
-      });
-    }
-
-    if (!code) {
-      return NextResponse.json({
-        error: "Missing code",
-        params: Object.fromEntries(url.searchParams.entries()),
-      });
-    }
-
-    const { platform, userId } = safeParseState(state ?? undefined);
-
-    if (!userId) {
-      return NextResponse.json({
-        error: "Missing userId in state",
-        received_state: state,
-        decoded_tries: state ? decodeTries(state) : [],
-      });
-    }
-
-    const redirectUri = "https://paipers.vercel.app/auth/gmail/callback";
-
-    const tokens = await exchangeCodeForTokens(code, redirectUri);
-    const profile = await getGmailProfile(tokens.access_token);
-
-    const supabase = createClient(
-      requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
-      requireEnv("SUPABASE_SERVICE_ROLE_KEY")
+  if (upErr) {
+    return NextResponse.json(
+      {
+        error: "supabase_upsert_failed",
+        userMessage: userMessage ?? userFacingEmailConnectionDbError(upErr),
+        detail: upErr,
+      },
+      { status: 500 }
     );
-
-    // ✅ Payload base (on met last_history_id pour satisfaire NOT NULL)
-    const upsertPayload: any = {
-      user_id: userId,
-      email: profile.emailAddress,
-      last_history_id: "0",
-    };
-
-    // ✅ Ne pas écraser refresh_token par null
-    if (tokens.refresh_token) {
-      upsertPayload.refresh_token = tokens.refresh_token;
-    }
-
-    const { error: upsertError } = await supabase
-      .from("gmail_connections")
-      .upsert(upsertPayload, { onConflict: "user_id" });
-
-    if (upsertError) {
-      return NextResponse.json({ error: upsertError.message }, { status: 500 });
-    }
-
-    if (platform === "mobile") {
-      return NextResponse.redirect(new URL("/auth/gmail/open?status=connected", url.origin));
-    }
-
-    return NextResponse.redirect(new URL("/profil/gmail?status=connected", url.origin));
-  } catch (e: any) {
-    return NextResponse.json({ error: String(e?.message ?? e) }, { status: 500 });
   }
+
+  return new NextResponse(oauthSuccessHtml("Gmail"), {
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  });
 }
