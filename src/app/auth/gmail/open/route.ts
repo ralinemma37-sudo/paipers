@@ -1,4 +1,5 @@
 import { parseAccountScope } from "../../../../lib/accountScope";
+import { resolveGmailOAuthEnv } from "../../../../lib/gmailOAuthEnv";
 import { encodeOAuthState } from "../../../../lib/oauthState";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -21,11 +22,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "missing_user_id" }, { status: 400 });
   }
 
-  const clientId = process.env.GOOGLE_CLIENT_ID;
-  const redirectUri = process.env.GOOGLE_REDIRECT_URI;
-  if (!clientId || !redirectUri) {
-    return NextResponse.json({ error: "missing_google_oauth_env" }, { status: 500 });
+  const oauth = resolveGmailOAuthEnv();
+  if (!oauth.ok) {
+    return NextResponse.json(
+      { error: oauth.error, missing: oauth.missing },
+      { status: 500 }
+    );
   }
+  const { clientId, redirectUri } = oauth;
 
   const state = encodeOAuthState({ user_id: userId, platform, account_scope: accountScope });
 
