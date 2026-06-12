@@ -1,3 +1,7 @@
+import {
+  upsertEmailConnection,
+  userFacingEmailConnectionDbError,
+} from "@/lib/upsertEmailConnection";
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
@@ -164,60 +168,6 @@ async function resolveMicrosoftIdentity(
   };
 }
 
-function isMissingAccountScopeColumn(message: string): boolean {
-  const m = message.toLowerCase();
-  return m.includes("account_scope") && (m.includes("schema cache") || m.includes("column"));
-}
-
-async function upsertOutlookConnection(
-  supabase: ReturnType<typeof createClient>,
-  row: {
-    user_id: string;
-    account_scope: string;
-    account_email: string | null;
-    provider_account_id: string | null;
-    refresh_token: string;
-    access_token: string;
-    expires_at: string;
-    platform: string;
-    graphOk: boolean;
-  }
-): Promise<{ error: string | null }> {
-  const base = {
-    user_id: row.user_id,
-    provider: "outlook" as const,
-    account_email: row.account_email,
-    provider_account_id: row.provider_account_id,
-    refresh_token: row.refresh_token,
-    access_token: row.access_token,
-    expires_at: row.expires_at,
-    scopes: OUTLOOK_SCOPES,
-    metadata: {
-      connected_via: "vercel_oauth_outlook",
-      platform: row.platform,
-      graph_profile_ok: row.graphOk,
-    },
-    updated_at: new Date().toISOString(),
-  };
-
-  const scoped = await supabase.from("external_connections").upsert(
-    { ...base, account_scope: row.account_scope },
-    { onConflict: "user_id,provider,account_scope" }
-  );
-
-  if (!scoped.error) return { error: null };
-
-  if (!isMissingAccountScopeColumn(scoped.error.message)) {
-    return { error: scoped.error.message };
-  }
-
-  const legacy = await supabase.from("external_connections").upsert(base, {
-    onConflict: "user_id,provider",
-  });
-
-  return { error: legacy.error?.message ?? null };
-}
-
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url);
@@ -276,20 +226,33 @@ export async function GET(request: Request) {
     const expiresIn = typeof tokens.expires_in === "number" ? tokens.expires_in : 3600;
     const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
 
-    const { error: upsertError } = await upsertOutlookConnection(supabase, {
+    const { error: upsertError, userMessage } = await upsertEmailConnection(supabase, {
       user_id: userId,
+      provider: "outlook",
       account_scope,
       account_email: identity.accountEmail,
       provider_account_id: identity.providerAccountId,
       refresh_token: tokens.refresh_token,
       access_token: tokens.access_token,
       expires_at: expiresAt,
-      platform,
-      graphOk: identity.graphOk,
+      scopes: OUTLOOK_SCOPES,
+      metadata: {
+        connected_via: "vercel_oauth_outlook",
+        platform,
+        graph_profile_ok: identity.graphOk,
+      },
+      updated_at: new Date().toISOString(),
     });
 
     if (upsertError) {
-      return NextResponse.json({ error: upsertError.message }, { status: 500 });
+      return NextResponse.json(
+        {
+          error: "supabase_upsert_failed",
+          userMessage: userMessage ?? userFacingEmailConnectionDbError(upsertError),
+          detail: upsertError,
+        },
+        { status: 500 }
+      );
     }
 
     if (platform === "mobile") {

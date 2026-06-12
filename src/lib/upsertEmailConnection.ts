@@ -30,8 +30,11 @@ function isMissingAccountScopeColumn(message: string): boolean {
  * Upsert `external_connections` aligné sur UNIQUE(user_id, provider, account_scope).
  * Repli legacy UNIQUE(user_id, provider) si la migration scope n’est pas encore appliquée.
  */
+/** Client sans types générés `external_connections` (évite `never` au build Next). */
+type UntypedSupabase = SupabaseClient<any, "public", any>;
+
 export async function upsertEmailConnection(
-  supabase: SupabaseClient,
+  supabase: UntypedSupabase,
   row: EmailConnectionUpsertRow
 ): Promise<{ error: string | null; userMessage: string | null }> {
   const scoped = await supabase.from("external_connections").upsert(row, {
