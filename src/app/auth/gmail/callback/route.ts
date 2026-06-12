@@ -1,4 +1,4 @@
-import { GMAIL_OAUTH_REDIRECT_URI } from "../../../../lib/gmailOAuthEnv";
+import { resolveGmailServerEnv } from "../../../../lib/gmailOAuthEnv";
 import { oauthSuccessHtml } from "../../../../lib/oauthSuccessHtml";
 import { decodeOAuthState } from "../../../../lib/oauthState";
 import {
@@ -35,23 +35,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "invalid_state" }, { status: 400 });
   }
 
-  const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
-  const redirectUri = GMAIL_OAUTH_REDIRECT_URI;
-
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const serviceKey =
-    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ||
-    process.env.supabase_service_role_key?.trim();
-
-  const missing: string[] = [];
-  if (!clientId) missing.push("GOOGLE_CLIENT_ID");
-  if (!clientSecret) missing.push("GOOGLE_CLIENT_SECRET");
-  if (!supabaseUrl) missing.push("NEXT_PUBLIC_SUPABASE_URL");
-  if (!serviceKey) missing.push("SUPABASE_SERVICE_ROLE_KEY");
-  if (missing.length > 0) {
-    return NextResponse.json({ error: "server_misconfigured", missing }, { status: 500 });
+  const serverEnv = resolveGmailServerEnv();
+  if (!serverEnv.ok) {
+    return NextResponse.json(
+      { error: "server_misconfigured", missing: serverEnv.missing },
+      { status: 500 }
+    );
   }
+  const { clientId, clientSecret, redirectUri, supabaseUrl, serviceKey } = serverEnv.env;
 
   const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
