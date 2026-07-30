@@ -22,7 +22,9 @@ export default function DesktopSidebarGate() {
     pathname.startsWith("/login") ||
     pathname.startsWith("/signup") ||
     pathname.startsWith("/design-system") ||
-    pathname.startsWith("/auth");
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/legal") ||
+    pathname.startsWith("/onboarding");
 
   if (hide) return null;
 

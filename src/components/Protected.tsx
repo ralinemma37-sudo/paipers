@@ -17,7 +17,9 @@ export default function Protected({ children }: { children: React.ReactNode }) {
       const session = data.session;
 
       if (!session) {
-        router.replace(`/auth?next=${encodeURIComponent(pathname || "/dashboard")}`);
+        router.replace(
+          `/login?next=${encodeURIComponent(pathname || "/assistant")}`,
+        );
         return;
       }
 
@@ -27,7 +29,11 @@ export default function Protected({ children }: { children: React.ReactNode }) {
     run();
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) router.replace(`/auth?next=${encodeURIComponent(pathname || "/dashboard")}`);
+      if (!session) {
+        router.replace(
+          `/login?next=${encodeURIComponent(pathname || "/assistant")}`,
+        );
+      }
     });
 
     return () => {
@@ -38,7 +44,7 @@ export default function Protected({ children }: { children: React.ReactNode }) {
 
   if (!ready) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center text-sm text-gray-500">
+      <div className="flex min-h-[60vh] items-center justify-center text-sm text-[color:var(--paipers-text-muted)]">
         Chargement…
       </div>
     );

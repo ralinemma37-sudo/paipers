@@ -1,31 +1,47 @@
 "use client";
 
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { supabase } from "@/lib/supabase";
+/**
+ * Ancienne page Auth UI (anglais / thème sombre) → redirection vers /login.
+ * Conserve le paramètre ?next= pour Protected.
+ */
+
+import { Suspense, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { PAIPERS_PALETTES } from "@/lib/paipersTheme";
+
+function AuthRedirect() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const next = searchParams.get("next");
+    const q = next ? `?next=${encodeURIComponent(next)}` : "";
+    router.replace(`/login${q}`);
+  }, [router, searchParams]);
+
+  return (
+    <div
+      className="min-h-screen flex items-center justify-center"
+      style={{ color: PAIPERS_PALETTES.light.textMuted }}
+    >
+      Chargement…
+    </div>
+  );
+}
 
 export default function AuthPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white">
-      <div className="w-full max-w-md p-6 bg-gray-900 rounded-xl shadow-xl">
-        <h1 className="text-3xl font-bold mb-6 text-center">Paipers</h1>
-        <Auth
-          supabaseClient={supabase}
-          appearance={{
-            theme: ThemeSupa,
-            variables: {
-              default: {
-                colors: {
-                  brand: "#6366f1",
-                  brandAccent: "#4f46e5",
-                },
-              },
-            },
-          }}
-          providers={[]}
-          theme="dark"
-        />
-      </div>
-    </div>
+    <Suspense
+      fallback={
+        <div
+          className="min-h-screen flex items-center justify-center"
+          style={{ color: PAIPERS_PALETTES.light.textMuted }}
+        >
+          Chargement…
+        </div>
+      }
+    >
+      <AuthRedirect />
+    </Suspense>
   );
 }
