@@ -1,6 +1,7 @@
 "use client";
 
 import Protected from "@/components/Protected";
+import AppShell from "@/components/AppShell";
 import Link from "next/link";
 import { ChevronRight, User, Mail, Cloud, Settings, CreditCard } from "lucide-react";
 
@@ -40,7 +41,8 @@ const items = [
 export default function ProfilHomePage() {
   return (
     <Protected>
-      <div className="px-6 py-8 pb-24">
+      <AppShell>
+      <div className="px-6 py-8 pb-24 md:pb-8">
         <h1 className="text-3xl font-bold mb-1 text-[hsl(var(--foreground))]">
           Mon <span className="gradient-text">profil</span>
         </h1>
@@ -79,6 +81,7 @@ export default function ProfilHomePage() {
           </div>
         </section>
       </div>
+      </AppShell>
     </Protected>
   );
 }

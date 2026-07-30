@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Protected from "@/components/Protected";
+import AppShell from "@/components/AppShell";
 import { supabase } from "@/lib/supabase";
 import { FileText, Folder, Wand2, Bell, ChevronRight } from "lucide-react";
 
@@ -183,7 +184,8 @@ export default function DashboardPage() {
 
   return (
     <Protected>
-      <div className="px-6 py-8 pb-24">
+      <AppShell>
+      <div className="px-6 py-8 pb-24 md:pb-8">
         <h1 className="text-3xl font-bold mb-1">
           Bonjour <span className="gradient-text">{fullName}</span> 👋
         </h1>
@@ -329,6 +331,7 @@ export default function DashboardPage() {
           )}
         </section>
       </div>
+      </AppShell>
     </Protected>
   );
 }

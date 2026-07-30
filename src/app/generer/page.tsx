@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Sparkles, FileText, Save } from "lucide-react";
+import AppShell from "@/components/AppShell";
 import { supabase } from "@/lib/supabase";
 import jsPDF from "jspdf";
 
@@ -179,7 +180,8 @@ export default function GenererPage() {
   };
 
   return (
-    <div className="px-6 pt-14 pb-24">
+    <AppShell>
+    <div className="px-6 pt-14 pb-24 md:pt-8 md:pb-8">
       <h1 className="text-3xl font-bold mb-1">Générer un document</h1>
       <p className="text-slate-500 mb-8">Créez des documents administratifs avec l’IA</p>
 
@@ -270,5 +272,6 @@ export default function GenererPage() {
         </div>
       )}
     </div>
+    </AppShell>
   );
 }

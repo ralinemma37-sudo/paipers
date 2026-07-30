@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import AppShell from "@/components/AppShell";
 import { supabase } from "@/lib/supabase";
 import { Search, FileText, ChevronRight } from "lucide-react";
 
@@ -98,7 +99,8 @@ export default function DocumentsPage() {
   }, [search, categoryList, groups]);
 
   return (
-    <div className="px-6 py-8 pb-24">
+    <AppShell>
+    <div className="px-6 py-8 pb-24 md:pb-8">
       <h1 className="text-3xl font-bold mb-1">Documents</h1>
       <p className="text-slate-500 mb-6">Retrouvez vos documents par catégorie ✨</p>
 
@@ -153,5 +155,6 @@ export default function DocumentsPage() {
         ))}
       </div>
     </div>
+    </AppShell>
   );
 }

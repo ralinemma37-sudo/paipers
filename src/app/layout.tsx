@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <AppProviders>
           <div className="min-h-screen">
-            <main className="pb-20">{children}</main>
+            <main className="pb-20 md:pb-0">{children}</main>
             <BottomNavGate />
           </div>
         </AppProviders>
