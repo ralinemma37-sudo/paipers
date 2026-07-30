@@ -1,0 +1,250 @@
+/**
+ * Paipers design tokens — CSS
+ * Source de vérité visuelle alignée sur paipers-mobile :
+ * - src/theme/paipersColors.ts
+ * - src/theme/paipers.ts
+ * - src/theme/paipersElevatedCard.ts
+ * - src/theme/spaceTheme.ts
+ * - src/components/PaipersButton.tsx
+ * - src/components/assistant/assistantChatTheme.ts
+ *
+ * Ne pas inventer de couleurs ici.
+ */
+
+:root {
+  /* —— Brand (paipersColors) —— */
+  --paipers-navy: #1a2b4a;
+  --paipers-navy-light: hsl(220 42% 38%);
+  --paipers-navy-muted: hsl(220 30% 96%);
+  --paipers-navy-soft: hsl(220 32% 92%);
+
+  --paipers-family-orange: hsl(28 88% 50%);
+  --paipers-family-orange-hex: #ed7a1a;
+  --paipers-family-orange-light: hsl(28 82% 62%);
+  --paipers-family-orange-muted: hsl(28 45% 96%);
+  --paipers-family-orange-soft: hsl(28 52% 93%);
+
+  --paipers-gradient-start: #ace4ff;
+  --paipers-gradient-middle: #f7c4e8;
+  --paipers-gradient-end: #ffecc9;
+  --paipers-gradient-soft-start: #eaf3ff;
+  --paipers-gradient-soft-middle: #faddea;
+  --paipers-gradient-soft-end: #fff2c9;
+
+  --paipers-vivid-blue: hsl(202 90% 38%);
+  --paipers-vivid-rose: hsl(328 75% 40%);
+  --paipers-vivid-yellow: hsl(39 95% 36%);
+
+  --paipers-error: hsl(0 65% 42%);
+  --paipers-success: hsl(168 45% 32%);
+  --paipers-warning: hsl(32 65% 38%);
+  --paipers-neutral: hsl(220 20% 55%);
+
+  /* —— Semantic light (paipers.ts light) —— */
+  --paipers-background: #ffffff;
+  --paipers-foreground: #1a1a1a;
+  --paipers-muted: #f5f5f5;
+  --paipers-card: #ffffff;
+  --paipers-border: #e5e5e5;
+  --paipers-text-muted: rgba(0, 0, 0, 0.6);
+  --paipers-primary: hsl(202 100% 82%);
+  --paipers-secondary: hsl(328 80% 84%);
+  --paipers-accent: hsl(39 100% 85%);
+
+  /* —— Radius (paipers.ts) —— */
+  --paipers-radius-card: 24px;
+  --paipers-radius-button: 999px;
+  --paipers-radius-input: 12px;
+
+  /* —— Spacing (patterns mobile) —— */
+  --paipers-space-screen: 24px;
+  --paipers-space-card: 18px;
+  --paipers-space-grid: 14px;
+
+  /* —— Type (typography.ts) —— */
+  --paipers-title-size: 28px;
+  --paipers-title-weight: 800;
+
+  /* —— Shadows (paipersElevatedCard + PaipersButton) —— */
+  --paipers-shadow-card: -3px 5px 6px rgba(0, 0, 0, 0.22);
+  --paipers-shadow-button: 0 4px 8px rgba(0, 0, 0, 0.15);
+
+  /* —— Gradients —— */
+  --paipers-gradient-personal: linear-gradient(
+    135deg,
+    #ace4ff,
+    #f7c4e8,
+    #ffecc9
+  );
+  --paipers-gradient-personal-soft: linear-gradient(
+    135deg,
+    #eaf3ff,
+    #faddea,
+    #fff2c9
+  );
+  --paipers-gradient-button: linear-gradient(
+    90deg,
+    hsl(202 100% 82%),
+    hsl(328 80% 84%),
+    hsl(39 100% 85%)
+  );
+  --paipers-gradient-wash: linear-gradient(
+    135deg,
+    hsl(202 78% 82%),
+    hsl(328 62% 84%),
+    hsl(39 72% 83%)
+  );
+  --paipers-gradient-soft-fill: linear-gradient(
+    135deg,
+    hsl(202 45% 97%),
+    hsl(328 35% 97%),
+    hsl(39 40% 96%)
+  );
+  --paipers-gradient-pro: linear-gradient(135deg, #1a2b4a, #243a6e, #152447);
+  --paipers-gradient-pro-soft: linear-gradient(
+    135deg,
+    hsl(220 30% 96%),
+    hsl(220 32% 92%),
+    hsl(214 72% 98%)
+  );
+  --paipers-gradient-family: linear-gradient(
+    135deg,
+    #fff0e5,
+    #ffe8d4,
+    #ffecd9
+  );
+
+  /* —— Assistant chat —— */
+  --paipers-assistant-user-bg: #ace4ff;
+  --paipers-assistant-action-bg: #ffecc9;
+  --paipers-assistant-idle-bg: #eaf3ff;
+  --paipers-assistant-tab-sky: #ace4ff;
+  --paipers-assistant-tab-gray: #9aa3b5;
+
+  /* —— Compat Tailwind existant (canaux HSL pour hsl(var(--x))) ——
+     Valeurs calées sur la palette light mobile. */
+  --background: 0 0% 100%;
+  --foreground: 0 0% 10.2%; /* #1A1A1A */
+  --primary: 202 100% 82%;
+  --secondary: 328 80% 84%;
+  --accent: 39 100% 85%;
+  --muted: 0 0% 96.1%; /* #F5F5F5 */
+  --border: 0 0% 90%; /* #E5E5E5 */
+  --input: 0 0% 96.1%;
+  --radius: 24px;
+  --card: 0 0% 100%;
+}
+
+.dark {
+  --paipers-background: #0b1220;
+  --paipers-foreground: #f3f4f6;
+  --paipers-muted: #151d2e;
+  --paipers-card: #1a2332;
+  --paipers-border: #2d3a4f;
+  --paipers-text-muted: rgba(255, 255, 255, 0.65);
+  --paipers-shadow-card: -3px 4px 8px rgba(0, 0, 0, 0.45);
+
+  --paipers-gradient-wash: linear-gradient(
+    135deg,
+    hsl(202 32% 36%),
+    hsl(328 26% 34%),
+    hsl(39 28% 34%)
+  );
+  --paipers-gradient-soft-fill: linear-gradient(
+    135deg,
+    hsl(202 22% 18%),
+    hsl(328 18% 17%),
+    hsl(39 20% 16%)
+  );
+
+  /* Compat canaux HSL dark = paipers.ts dark */
+  --background: 217 48% 8%; /* #0B1220 */
+  --foreground: 220 13% 96%; /* #F3F4F6 */
+  --muted: 217 36% 13%; /* #151D2E */
+  --border: 215 26% 24%; /* #2D3A4F */
+  --input: 217 36% 13%;
+  --card: 213 28% 15%; /* #1A2332 */
+}
+
+/* —— Tailwind v4 theme bridge —— */
+@theme inline {
+  --color-paipers-navy: var(--paipers-navy);
+  --color-paipers-primary: var(--paipers-primary);
+  --color-paipers-secondary: var(--paipers-secondary);
+  --color-paipers-accent: var(--paipers-accent);
+  --color-paipers-muted: var(--paipers-muted);
+  --color-paipers-border: var(--paipers-border);
+  --color-paipers-card: var(--paipers-card);
+  --color-paipers-foreground: var(--paipers-foreground);
+  --color-paipers-success: var(--paipers-success);
+  --color-paipers-error: var(--paipers-error);
+  --color-paipers-warning: var(--paipers-warning);
+  --radius-paipers-card: var(--paipers-radius-card);
+  --radius-paipers-button: var(--paipers-radius-button);
+  --radius-paipers-input: var(--paipers-radius-input);
+}
+
+/* —— Surfaces officielles (miroir mobile, sans inventer) —— */
+
+.paipers-elevated-card {
+  background-color: var(--paipers-card);
+  border: 1px solid var(--paipers-border);
+  border-radius: var(--paipers-radius-card);
+  padding: var(--paipers-space-card);
+  box-shadow: var(--paipers-shadow-card);
+}
+
+.paipers-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 24px;
+  border-radius: var(--paipers-radius-button);
+  border: none;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 800;
+  background-image: var(--paipers-gradient-button);
+  box-shadow: var(--paipers-shadow-button);
+  cursor: pointer;
+}
+
+.paipers-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.paipers-button:not(:disabled):active {
+  opacity: 0.92;
+}
+
+.paipers-screen-title {
+  font-size: var(--paipers-title-size);
+  font-weight: var(--paipers-title-weight);
+  color: var(--paipers-foreground);
+  letter-spacing: -0.5px;
+}
+
+.paipers-text-muted {
+  color: var(--paipers-text-muted);
+}
+
+.paipers-gradient-personal {
+  background-image: var(--paipers-gradient-personal);
+}
+
+.paipers-gradient-personal-soft {
+  background-image: var(--paipers-gradient-personal-soft);
+}
+
+.paipers-gradient-pro {
+  background-image: var(--paipers-gradient-pro);
+}
+
+.paipers-gradient-wash {
+  background-image: var(--paipers-gradient-wash);
+}
+
+.paipers-gradient-soft-fill {
+  background-image: var(--paipers-gradient-soft-fill);
+}

@@ -6,11 +6,12 @@ import BottomNavClient from "@/components/BottomNavClient";
 export default function BottomNavGate() {
   const pathname = usePathname();
 
-  // Pages où on NE veut PAS la barre
   const hide =
     pathname === "/" ||
     pathname.startsWith("/login") ||
-    pathname.startsWith("/signup");
+    pathname.startsWith("/signup") ||
+    pathname.startsWith("/design-system") ||
+    pathname.startsWith("/auth");
 
   if (hide) return null;
 

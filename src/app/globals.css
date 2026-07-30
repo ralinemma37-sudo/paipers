@@ -1,105 +1,75 @@
 @import "tailwindcss";
+@import "../styles/paipers-tokens.css";
 
 /* --------------------------------------------------
-   🌈 PAIPERS — THEME PASTEL CLAIR
+   PAIPERS WEB — styles globaux
+   Tokens officiels : src/styles/paipers-tokens.css
+   (miroir paipers-mobile/src/theme/*)
 -------------------------------------------------- */
-:root {
-  --background: 0 0% 100%;
-  --foreground: 0 0% 10%;
 
-  --primary: 202 100% 82%;
-  --secondary: 328 80% 84%;
-  --accent: 39 100% 85%;
-
-  --muted: 0 0% 97%;
-  --border: 0 0% 88%;
-  --input: 0 0% 96%;
-
-  --radius: 1.5rem;
-}
-
-/* --------------------------------------------------
-   🌙 MODE SOMBRE
--------------------------------------------------- */
-.dark {
-  --background: 0 0% 8%;
-  --foreground: 0 0% 92%;
-
-  --muted: 0 0% 14%;
-  --border: 0 0% 20%;
-  --input: 0 0% 16%;
-}
-
-/* --------------------------------------------------
-   ✨ BODY
--------------------------------------------------- */
 body {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-  font-family: var(--font-geist-sans), sans-serif;
+  background-color: var(--paipers-background);
+  color: var(--paipers-foreground);
+  /* Mobile = police système (pas de font custom UI chargée) */
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* --------------------------------------------------
-   🟣 TEXT GRADIENT
--------------------------------------------------- */
+/* Dégradé texte — pastels primary/secondary/accent (paipers.ts) */
 .gradient-text {
   background: linear-gradient(
     90deg,
-    hsl(var(--primary)),
-    hsl(var(--secondary)),
-    hsl(var(--accent))
+    var(--paipers-primary),
+    var(--paipers-secondary),
+    var(--paipers-accent)
   );
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* --------------------------------------------------
-   TEXT UTILS — Toujours lisible
--------------------------------------------------- */
 .text-main {
-  color: hsl(var(--foreground));
+  color: var(--paipers-foreground);
 }
 
 .text-muted {
-  color: hsl(var(--foreground) / 0.65);
+  color: var(--paipers-text-muted);
 }
 
-/* --------------------------------------------------
-   📦 CARDS
--------------------------------------------------- */
+/**
+ * .card — aligné sur getPaipersElevatedCard() (paipersElevatedCard.ts)
+ * Fond card (#FFFFFF / dark #1A2332), radius 24, ombre RN light/dark.
+ */
 .card {
-  background-color: hsl(var(--muted));
-  border: 1px solid hsl(var(--border));
-  border-radius: var(--radius);
-  padding: 1.25rem;
-  box-shadow: 0 1px 4px hsl(0 0% 0% / 0.05);
-  transition: background-color 0.25s ease, border-color 0.25s ease;
+  background-color: var(--paipers-card);
+  border: 1px solid var(--paipers-border);
+  border-radius: var(--paipers-radius-card);
+  padding: var(--paipers-space-card);
+  box-shadow: var(--paipers-shadow-card);
+  transition: background-color 0.25s ease, border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
-.dark .card {
-  background-color: hsl(0 0% 14%);
-  border-color: hsl(0 0% 20%);
-}
-
-/* --------------------------------------------------
-   INPUTS
--------------------------------------------------- */
 input,
 select,
 textarea {
-  background-color: hsl(var(--input));
-  color: hsl(var(--foreground));
-  border: 1px solid hsl(var(--border));
-  border-radius: 0.75rem;
+  background-color: var(--paipers-muted);
+  color: var(--paipers-foreground);
+  border: 1px solid var(--paipers-border);
+  border-radius: var(--paipers-radius-input);
   padding: 0.6rem 1rem;
   transition: all 0.25s ease;
 }
 
-/* --------------------------------------------------
-   LINKS
--------------------------------------------------- */
 a {
-  color: hsl(var(--primary));
+  color: var(--paipers-navy);
 }
