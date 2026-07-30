@@ -1,99 +1,103 @@
 "use client";
 
-import Link from "next/link";
-import { Check, ArrowLeft } from "lucide-react";
+/**
+ * Abonnements — réf. textes hub mobile ; statut réel depuis profiles.subscription_plan.
+ * Pas de checkout web / pas de setTestSubscriptionPlan trompeur.
+ */
 
-export default function AbonnementPage() {
-  return (
-    <div className="px-6 py-6 pb-24">
-      {/* Header avec flèche */}
-      <div className="flex items-center gap-3 mb-8">
-        <Link
-          href="/profil"
-          className="p-2 rounded-full active:scale-95 transition"
-          aria-label="Retour au profil"
-        >
-          <ArrowLeft size={22} />
-        </Link>
+import { useEffect, useState } from "react";
+import Protected from "@/components/Protected";
+import AppShell from "@/components/AppShell";
+import ProfilSubpageHeader from "@/components/profil/ProfilSubpageHeader";
+import { supabase } from "@/lib/supabase";
+import { PAIPERS_COLORS, PAIPERS_SPACE } from "@/lib/paipersTheme";
 
-        <div>
-          <h1 className="text-2xl font-bold">Abonnement</h1>
-          <p className="text-[hsl(var(--foreground)/0.6)] text-sm">
-            Choisissez l’offre qui vous convient 🌸
-          </p>
-        </div>
-      </div>
+type Plan = "free" | "premium" | "pro" | string;
 
-      {/* ⬅️⬅️ CONTAINER → même hauteur grâce à items-stretch */}
-      <div className="flex flex-col md:flex-row justify-center items-stretch gap-6">
-        {/* PACK GRATUIT */}
-        <div className="card p-6 w-full max-w-sm border-2 border-[hsl(var(--primary))] flex flex-col text-center">
-          <h2 className="text-2xl font-bold mb-1">Gratuit</h2>
-          <p className="text-[hsl(var(--foreground)/0.6)] mb-6">
-            Parfait pour débuter ✨
-          </p>
-
-          <ul className="space-y-3 mb-8 text-left mx-auto w-fit">
-            <Feature>100% des fonctionnalités</Feature>
-            <Feature>IA incluse</Feature>
-            <Feature>Renommage intelligent</Feature>
-            <Feature>Catégorisation automatique</Feature>
-            <Feature>Documents illimités</Feature>
-            <Feature>Import automatique Gmail</Feature>
-            <Feature>Publicités présentes</Feature>
-          </ul>
-
-          <div className="mt-auto">
-            <button
-              disabled
-              className="
-                w-full py-3 rounded-full 
-                bg-gray-200 dark:bg-gray-700
-                text-gray-500 font-semibold cursor-not-allowed
-              "
-            >
-              Offre actuelle
-            </button>
-          </div>
-        </div>
-
-        {/* PACK PREMIUM */}
-        <div className="card p-6 w-full max-w-sm border-2 border-[hsl(var(--secondary))] flex flex-col text-center">
-          <h2 className="text-2xl font-bold mb-1">Premium</h2>
-          <p className="text-[hsl(var(--foreground)/0.6)] mb-6">
-            Pour une expérience optimale 💎
-          </p>
-
-          <ul className="space-y-3 mb-8 text-left mx-auto w-fit">
-            <Feature>Sans publicité</Feature>
-            <Feature>Stockage augmenté</Feature>
-            <Feature>Analyse avancée des factures</Feature>
-            <Feature>Priorité serveur IA</Feature>
-            <Feature>Support premium</Feature>
-          </ul>
-
-          <div className="mt-auto">
-            <button
-              className="
-                w-full py-3 rounded-full font-semibold text-white
-                bg-gradient-to-r from-[hsl(var(--primary))] via-[hsl(var(--secondary))] to-[hsl(var(--accent))]
-                shadow-md active:scale-95 transition
-              "
-            >
-              S’inscrire au Premium
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+function planLabel(plan: Plan): string {
+  if (plan === "pro") return "Professionnel";
+  if (plan === "premium") return "Particulier Premium";
+  return "Particulier Gratuit";
 }
 
-function Feature({ children }: any) {
+export default function AbonnementPage() {
+  const [loading, setLoading] = useState(true);
+  const [plan, setPlan] = useState<Plan>("free");
+
+  useEffect(() => {
+    void (async () => {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) {
+        setLoading(false);
+        return;
+      }
+      const { data } = await supabase
+        .from("profiles")
+        .select("subscription_plan,account_type")
+        .eq("id", auth.user.id)
+        .maybeSingle();
+      const raw = (data?.subscription_plan || data?.account_type || "free") as string;
+      setPlan(raw === "pro" ? "pro" : raw === "premium" ? "premium" : "free");
+      setLoading(false);
+    })();
+  }, []);
+
   return (
-    <li className="flex items-center gap-2 text-[hsl(var(--foreground))]">
-      <Check size={18} className="text-[hsl(var(--primary))]" />
-      <span>{children}</span>
-    </li>
+    <Protected>
+      <AppShell>
+        <div
+          className="pb-24 md:pb-8"
+          style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 720 }}
+        >
+          <ProfilSubpageHeader
+            title="Abonnements"
+            subtitle="Choisissez l’offre adaptée à vos besoins"
+          />
+
+          {loading ? (
+            <p className="paipers-text-muted">Chargement…</p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div className="paipers-elevated-card">
+                <p
+                  style={{
+                    fontSize: 12,
+                    fontWeight: 800,
+                    letterSpacing: 0.4,
+                    textTransform: "uppercase",
+                    color: PAIPERS_COLORS.navy,
+                    margin: 0,
+                  }}
+                >
+                  Formule actuelle
+                </p>
+                <p
+                  style={{
+                    marginTop: 8,
+                    fontSize: 20,
+                    fontWeight: 800,
+                    marginBottom: 0,
+                    color: PAIPERS_COLORS.textPrimary,
+                  }}
+                >
+                  {planLabel(plan)}
+                </p>
+              </div>
+
+              <div className="paipers-elevated-card">
+                <p style={{ fontWeight: 800, margin: "0 0 8px", fontSize: 15 }}>
+                  Gestion de l’abonnement
+                </p>
+                <p className="paipers-text-muted" style={{ margin: 0, fontSize: 14, lineHeight: "20px" }}>
+                  Le checkout et le portail client ne sont pas disponibles sur le web pour le
+                  moment. Les essais / changements de formule de démonstration existent sur
+                  l’app mobile uniquement. Aucun paiement n’est simulé ici.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </AppShell>
+    </Protected>
   );
 }

@@ -1,39 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Protected from "@/components/Protected";
-import { supabase } from "@/lib/supabase";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+/**
+ * Informations — réf. paipers-mobile/app/(tabs)/profil/informations.tsx
+ * Upsert profiles existant (inchangé côté schéma).
+ */
 
-type ProfileRow = {
-  full_name: string | null;
-  first_name: string | null;
-  last_name: string | null;
-  phone: string | null;
-  address_line1: string | null;
-  address_line2: string | null;
-  postal_code: string | null;
-  city: string | null;
-  country: string | null;
-};
+import { useEffect, useState, type CSSProperties } from "react";
+import Protected from "@/components/Protected";
+import AppShell from "@/components/AppShell";
+import ProfilSubpageHeader from "@/components/profil/ProfilSubpageHeader";
+import { useNavSpace } from "@/components/NavSpaceProvider";
+import { supabase } from "@/lib/supabase";
+import { PAIPERS_COLORS, PAIPERS_RADIUS, PAIPERS_SPACE } from "@/lib/paipersTheme";
 
 export default function InformationsPage() {
+  const { showProTabs } = useNavSpace();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-
-  // Champs profil
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [birthdate, setBirthdate] = useState("");
   const [phone, setPhone] = useState("");
   const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("");
+  const [birthdateSupported, setBirthdateSupported] = useState(true);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -42,28 +37,47 @@ export default function InformationsPage() {
 
       const { data: auth } = await supabase.auth.getUser();
       const user = auth?.user;
-
       if (!user) {
         setLoading(false);
-        setMessage("Vous devez être connectée.");
+        setMessage("Connecte-toi pour modifier ton profil.");
         return;
       }
 
       setEmail(user.email || "");
 
-      const { data: profile, error } = await supabase
+      const withBirth = await supabase
         .from("profiles")
         .select(
-          "full_name,first_name,last_name,phone,address_line1,address_line2,postal_code,city,country"
+          "full_name,first_name,last_name,phone,birthdate,address_line1,address_line2,postal_code,city,country",
         )
         .eq("id", user.id)
-        .single();
+        .maybeSingle();
 
-      if (!error && profile) {
-        const p = profile as ProfileRow;
+      if (withBirth.error) {
+        setBirthdateSupported(false);
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select(
+            "full_name,first_name,last_name,phone,address_line1,address_line2,postal_code,city,country",
+          )
+          .eq("id", user.id)
+          .maybeSingle();
+        if (profile) {
+          setFirstName(profile.first_name || "");
+          setLastName(profile.last_name || "");
+          setPhone(profile.phone || "");
+          setAddress1(profile.address_line1 || "");
+          setAddress2(profile.address_line2 || "");
+          setPostalCode(profile.postal_code || "");
+          setCity(profile.city || "");
+          setCountry(profile.country || "");
+        }
+      } else if (withBirth.data) {
+        const p = withBirth.data;
         setFirstName(p.first_name || "");
         setLastName(p.last_name || "");
         setPhone(p.phone || "");
+        setBirthdate((p as { birthdate?: string | null }).birthdate || "");
         setAddress1(p.address_line1 || "");
         setAddress2(p.address_line2 || "");
         setPostalCode(p.postal_code || "");
@@ -74,7 +88,7 @@ export default function InformationsPage() {
       setLoading(false);
     };
 
-    loadProfile();
+    void loadProfile();
   }, []);
 
   async function handleSave() {
@@ -83,17 +97,14 @@ export default function InformationsPage() {
 
     const { data: auth } = await supabase.auth.getUser();
     const user = auth?.user;
-
     if (!user) {
       setSaving(false);
-      setMessage("Vous devez être connectée.");
+      setMessage("Connecte-toi pour modifier ton profil.");
       return;
     }
 
-    // On reconstruit full_name automatiquement (pratique pour l’accueil)
     const computedFullName = `${firstName} ${lastName}`.trim();
-
-    const { error } = await supabase.from("profiles").upsert({
+    const payload: Record<string, unknown> = {
       id: user.id,
       full_name: computedFullName || null,
       first_name: firstName || null,
@@ -104,180 +115,210 @@ export default function InformationsPage() {
       postal_code: postalCode || null,
       city: city || null,
       country: country || null,
-    });
+    };
+    if (birthdateSupported) {
+      payload.birthdate = birthdate || null;
+    }
 
+    const { error } = await supabase.from("profiles").upsert(payload);
     if (error) {
       setMessage(`Erreur : ${error.message}`);
       setSaving(false);
       return;
     }
 
-    setMessage("Enregistré ✅");
+    setMessage("Informations enregistrées");
     setSaving(false);
   }
 
+  const fieldStyle: CSSProperties = {
+    width: "100%",
+    borderRadius: 14,
+    border: `1px solid ${PAIPERS_COLORS.border}`,
+    background: "#fff",
+    padding: "12px 14px",
+    fontSize: 14,
+    fontFamily: "inherit",
+    outline: "none",
+    color: PAIPERS_COLORS.textPrimary,
+  };
+
   return (
     <Protected>
-      <main className="px-6 py-6 pb-24">
-        {/* Header avec flèche retour */}
-        <div className="flex items-center gap-3 mb-6">
-          <Link
-            href="/profil"
-            className="p-2 rounded-full active:scale-95 transition"
-            aria-label="Retour au profil"
-          >
-            <ArrowLeft size={22} />
-          </Link>
+      <AppShell>
+        <div
+          className="pb-24 md:pb-8"
+          style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 720 }}
+        >
+          <ProfilSubpageHeader
+            title={showProTabs ? "Mon entreprise" : "Informations"}
+            subtitle={
+              showProTabs
+                ? "Raison sociale, SIRET, TVA et adresse professionnelle."
+                : "Tes infos personnelles et préférences."
+            }
+          />
 
-          <div>
-            <h1 className="text-2xl font-bold">
-              Informations <span className="gradient-text">du profil</span>
-            </h1>
-            <p className="text-slate-500 text-sm">
-              Ces infos servent à pré-remplir tes documents (optionnel).
-            </p>
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="card p-4 text-slate-500">Chargement…</div>
-        ) : (
-          <div className="card p-5">
-            {/* Email (lecture seule) */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 text-slate-700">
-                Email
-              </label>
-              <input
-                value={email}
-                disabled
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600"
-              />
-            </div>
-
-            {/* Prénom / Nom */}
-            <div className="grid grid-cols-1 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium mb-2 text-slate-700">
-                  Prénom
-                </label>
-                <input
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="Ex : Marie"
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2 text-slate-700">
-                  Nom
-                </label>
-                <input
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  placeholder="Ex : Dupont"
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none"
-                />
-              </div>
-            </div>
-
-            {/* Téléphone */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 text-slate-700">
-                Téléphone
-              </label>
-              <input
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Ex : 06 12 34 56 78"
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none"
-              />
-            </div>
-
-            {/* Adresse */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 text-slate-700">
-                Adresse (ligne 1)
-              </label>
-              <input
-                value={address1}
-                onChange={(e) => setAddress1(e.target.value)}
-                placeholder="Ex : 10 rue de la Paix"
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2 text-slate-700">
-                Adresse (ligne 2) (optionnel)
-              </label>
-              <input
-                value={address2}
-                onChange={(e) => setAddress2(e.target.value)}
-                placeholder="Ex : Bâtiment A, appartement 12"
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 mb-5">
-              <div>
-                <label className="block text-sm font-medium mb-2 text-slate-700">
-                  Code postal
-                </label>
-                <input
-                  value={postalCode}
-                  onChange={(e) => setPostalCode(e.target.value)}
-                  placeholder="Ex : 75001"
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2 text-slate-700">
-                  Ville
-                </label>
-                <input
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="Ex : Paris"
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2 text-slate-700">
-                  Pays
-                </label>
-                <input
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  placeholder="Ex : France"
-                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none"
-                />
-              </div>
-            </div>
-
-            {/* Message */}
-            {message && (
-              <div className="mb-4 text-sm text-slate-600">{message}</div>
-            )}
-
-            {/* Bouton */}
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="w-full rounded-full px-4 py-3 text-white text-sm font-medium
-                bg-gradient-to-r from-[hsl(202_100%_82%)]
-                via-[hsl(328_80%_84%)]
-                to-[hsl(39_100%_85%)]
-                shadow-md active:scale-95 transition disabled:opacity-60"
+          {showProTabs ? (
+            <div
+              className="paipers-elevated-card"
+              style={{ marginBottom: 16, fontSize: 13, lineHeight: "18px" }}
             >
-              {saving ? "Enregistrement…" : "Enregistrer"}
-            </button>
-          </div>
-        )}
-      </main>
+              <p className="paipers-text-muted" style={{ margin: 0 }}>
+                Les champs SIRET / TVA / raison sociale Pro ne sont pas encore branchés sur le
+                web. Les informations personnelles ci-dessous restent éditables.
+              </p>
+            </div>
+          ) : null}
+
+          {loading ? (
+            <p className="paipers-text-muted">Chargement…</p>
+          ) : (
+            <div className="paipers-elevated-card" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <section>
+                <p style={{ fontWeight: 800, margin: "0 0 10px", fontSize: 15 }}>Compte</p>
+                <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
+                  Email
+                </label>
+                <input value={email} disabled style={{ ...fieldStyle, background: "#F5F5F5" }} />
+              </section>
+
+              <section>
+                <p style={{ fontWeight: 800, margin: "0 0 10px", fontSize: 15 }}>Identité</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
+                      Prénom
+                    </label>
+                    <input
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      style={fieldStyle}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
+                      Nom
+                    </label>
+                    <input
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      style={fieldStyle}
+                    />
+                  </div>
+                </div>
+                {birthdateSupported ? (
+                  <div style={{ marginTop: 12 }}>
+                    <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
+                      Date de naissance
+                    </label>
+                    <input
+                      value={birthdate}
+                      onChange={(e) => setBirthdate(e.target.value)}
+                      placeholder="AAAA-MM-JJ"
+                      style={fieldStyle}
+                    />
+                  </div>
+                ) : null}
+              </section>
+
+              <section>
+                <p style={{ fontWeight: 800, margin: "0 0 10px", fontSize: 15 }}>Contact</p>
+                <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
+                  Téléphone
+                </label>
+                <input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  style={fieldStyle}
+                />
+              </section>
+
+              <section>
+                <p style={{ fontWeight: 800, margin: "0 0 10px", fontSize: 15 }}>Adresse</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  <div>
+                    <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
+                      Rue et numéro
+                    </label>
+                    <input
+                      value={address1}
+                      onChange={(e) => setAddress1(e.target.value)}
+                      style={fieldStyle}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
+                      Complément
+                    </label>
+                    <input
+                      value={address2}
+                      onChange={(e) => setAddress2(e.target.value)}
+                      style={fieldStyle}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
+                        Code postal
+                      </label>
+                      <input
+                        value={postalCode}
+                        onChange={(e) => setPostalCode(e.target.value)}
+                        style={fieldStyle}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
+                        Ville
+                      </label>
+                      <input
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        style={fieldStyle}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
+                        Pays
+                      </label>
+                      <input
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        style={fieldStyle}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {message ? (
+                <p role="status" style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>
+                  {message}
+                </p>
+              ) : null}
+
+              <button
+                type="button"
+                onClick={() => void handleSave()}
+                disabled={saving}
+                style={{
+                  padding: "14px 16px",
+                  borderRadius: PAIPERS_RADIUS.button,
+                  border: "none",
+                  background: PAIPERS_COLORS.navy,
+                  color: "#fff",
+                  fontWeight: 800,
+                  cursor: saving ? "wait" : "pointer",
+                  opacity: saving ? 0.6 : 1,
+                }}
+              >
+                {saving ? "Enregistrement…" : "Enregistrer"}
+              </button>
+            </div>
+          )}
+        </div>
+      </AppShell>
     </Protected>
   );
 }

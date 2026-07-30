@@ -1,160 +1,97 @@
 "use client";
 
-import { useState } from "react";
-import Protected from "@/components/Protected";
+/**
+ * Mails — réf. AddMailboxScreen / emails.tsx (prioritaires Gmail + Outlook branchés).
+ */
+
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-
-function Logo({
-  src,
-  alt,
-}: {
-  src: string;
-  alt: string;
-}) {
-  return (
-    <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center">
-      <img
-        src={src}
-        alt={alt}
-        className="w-8 h-8 object-contain"
-      />
-    </div>
-  );
-}
-
-function EmailCard({
-  title,
-  desc,
-  logo,
-  href,
-  disabled = false,
-  badge,
-  onDisabledClick,
-}: {
-  title: string;
-  desc: string;
-  logo: React.ReactNode;
-  href?: string;
-  disabled?: boolean;
-  badge?: string;
-  onDisabledClick?: (title: string) => void;
-}) {
-  const content = (
-    <div
-      className={`card p-5 flex flex-col justify-between min-h-[150px] ${
-        disabled ? "opacity-70" : ""
-      }`}
-    >
-      <div className="flex items-start justify-between">
-        {logo}
-        {badge ? (
-          <span className="text-xs text-slate-400 border border-slate-200 px-2 py-1 rounded-full">
-            {badge}
-          </span>
-        ) : null}
-      </div>
-
-      <div className="mt-4">
-        <p className="font-semibold">{title}</p>
-        <p className="text-slate-500 text-sm mt-1">{desc}</p>
-      </div>
-    </div>
-  );
-
-  if (disabled || !href) {
-    return (
-      <button
-        type="button"
-        onClick={() => onDisabledClick?.(title)}
-        className="text-left active:scale-[0.99] transition"
-      >
-        {content}
-      </button>
-    );
-  }
-
-  return (
-    <Link href={href} className="block active:scale-[0.99] transition">
-      {content}
-    </Link>
-  );
-}
+import Protected from "@/components/Protected";
+import AppShell from "@/components/AppShell";
+import ProfilSubpageHeader from "@/components/profil/ProfilSubpageHeader";
+import { useNavSpace } from "@/components/NavSpaceProvider";
+import { PAIPERS_COLORS, PAIPERS_SPACE } from "@/lib/paipersTheme";
 
 export default function EmailsPage() {
-  const [toast, setToast] = useState("");
-
-  function showSoon(name: string) {
-    setToast(`${name} : pas encore disponible 🙂`);
-    setTimeout(() => setToast(""), 2500);
-  }
+  const { showProTabs, spaceLabel } = useNavSpace();
 
   return (
     <Protected>
-      <main className="px-6 py-6 pb-24">
-        <div className="flex items-center gap-3 mb-6">
-          <Link
-            href="/profil"
-            className="p-2 rounded-full active:scale-95 transition"
-            aria-label="Retour au profil"
-          >
-            <ArrowLeft size={22} />
-          </Link>
+      <AppShell>
+        <div
+          className="pb-24 md:pb-8"
+          style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 720 }}
+        >
+          <ProfilSubpageHeader
+            title="Mails"
+            subtitle={
+              showProTabs
+                ? `Boîtes connectées pour l’espace ${spaceLabel}. Ajoutez d’autres fournisseurs ci-dessous.`
+                : `Paipers analyse vos emails administratifs. Choisissez un fournisseur pour l’espace ${spaceLabel}.`
+            }
+          />
 
-          <div>
-            <h1 className="text-2xl font-bold">
-              Connexions <span className="gradient-text">emails</span>
-            </h1>
-            <p className="text-slate-500 text-sm">
-              Choisis ton service email pour importer tes documents.
+          <p
+            style={{
+              fontSize: 13,
+              fontWeight: 800,
+              color: PAIPERS_COLORS.textPrimary,
+              marginBottom: 10,
+            }}
+          >
+            Fournisseurs prioritaires
+          </p>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 22 }}>
+            <Link
+              href="/profil/gmail"
+              className="paipers-elevated-card"
+              style={{
+                display: "block",
+                padding: 16,
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <p style={{ fontWeight: 800, margin: 0, fontSize: 15 }}>Gmail</p>
+              <p className="paipers-text-muted" style={{ margin: "4px 0 0", fontSize: 13 }}>
+                Connecter ou gérer ton compte Google
+              </p>
+            </Link>
+            <Link
+              href="/profil/outlook"
+              className="paipers-elevated-card"
+              style={{
+                display: "block",
+                padding: 16,
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <p style={{ fontWeight: 800, margin: 0, fontSize: 15 }}>Outlook</p>
+              <p className="paipers-text-muted" style={{ margin: "4px 0 0", fontSize: 13 }}>
+                Comptes Microsoft personnels et Microsoft 365
+              </p>
+            </Link>
+          </div>
+
+          <p
+            style={{
+              fontSize: 13,
+              fontWeight: 800,
+              color: PAIPERS_COLORS.textPrimary,
+              marginBottom: 10,
+            }}
+          >
+            Autres fournisseurs
+          </p>
+          <div className="paipers-elevated-card" style={{ opacity: 0.7 }}>
+            <p className="paipers-text-muted" style={{ margin: 0, fontSize: 13, lineHeight: "18px" }}>
+              iCloud Mail, Yahoo, Orange, SFR, La Poste, Free/Zimbra et IMAP personnalisé sont
+              disponibles sur mobile. Non branchés sur le web pour le moment.
             </p>
           </div>
         </div>
-
-        <section className="grid grid-cols-2 gap-4">
-          <EmailCard
-            title="Gmail"
-            desc="Disponible"
-            logo={<Logo src="/email-logos/gmail.png" alt="Gmail" />}
-            href="/profil/gmail"
-          />
-
-          <EmailCard
-            title="Outlook"
-            desc="Bientôt disponible"
-            logo={<Logo src="/email-logos/outlook.png" alt="Outlook" />}
-            disabled
-            badge="Bientôt"
-            onDisabledClick={showSoon}
-          />
-
-          <EmailCard
-            title="Yahoo"
-            desc="Bientôt disponible"
-            logo={<Logo src="/email-logos/yahoo.png" alt="Yahoo Mail" />}
-            disabled
-            badge="Bientôt"
-            onDisabledClick={showSoon}
-          />
-
-          <EmailCard
-            title="iCloud"
-            desc="Bientôt disponible"
-            logo={<Logo src="/email-logos/icloud.png" alt="iCloud Mail" />}
-            disabled
-            badge="Bientôt"
-            onDisabledClick={showSoon}
-          />
-        </section>
-
-        {toast && (
-          <div className="fixed left-0 right-0 bottom-20 flex justify-center px-6 z-50">
-            <div className="card px-4 py-3 text-sm text-slate-700 shadow-md">
-              {toast}
-            </div>
-          </div>
-        )}
-      </main>
+      </AppShell>
     </Protected>
   );
 }
