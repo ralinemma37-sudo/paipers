@@ -3,12 +3,12 @@ import "./globals.css";
 import type { ReactNode } from "react";
 import AppProviders from "./Providers";
 import BottomNavGate from "@/components/BottomNavGate";
-import DesktopSidebarGate from "@/components/DesktopSidebarGate";
+import DesktopTopNavGate from "@/components/DesktopTopNavGate";
 import SpaceSwitcherGate from "@/components/SpaceSwitcherGate";
 
 export const metadata = {
   title: "Paipers",
-  description: "Votre coffre-fort administratif intelligent",
+  description: "Ton administratif, enfin sous contrôle.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -16,12 +16,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="fr">
       <body className="overflow-x-hidden">
         <AppProviders>
-          <div className="min-h-screen md:flex">
-            <DesktopSidebarGate />
-            <div className="flex-1 min-w-0 flex flex-col min-h-screen">
-              <SpaceSwitcherGate />
-              <main className="flex-1 pb-20 md:pb-0 min-w-0 overflow-x-hidden">{children}</main>
-            </div>
+          <div className="min-h-screen flex flex-col">
+            <DesktopTopNavGate />
+            <SpaceSwitcherGate />
+            <main className="flex-1 pb-20 md:pb-0 min-w-0 overflow-x-hidden">
+              {children}
+            </main>
             <BottomNavGate />
           </div>
         </AppProviders>

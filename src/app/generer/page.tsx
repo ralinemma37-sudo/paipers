@@ -58,7 +58,7 @@ export default function GenererPage() {
       <AppShell>
         <div
           className="pb-24 md:pb-8"
-          style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 720 }}
+          style={{ padding: PAIPERS_SPACE.screenPad }}
         >
           <GenererHub />
         </div>

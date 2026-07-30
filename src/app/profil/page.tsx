@@ -74,7 +74,7 @@ export default function ProfilHomePage() {
       <AppShell>
         <div
           className="pb-24 md:pb-8"
-          style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 720 }}
+          style={{ padding: PAIPERS_SPACE.screenPad }}
         >
           <h1 className="paipers-screen-title" style={{ marginBottom: 6 }}>
             Mon profil
@@ -88,12 +88,14 @@ export default function ProfilHomePage() {
             </p>
           ) : null}
 
-          <ProfilIdentityCard
-            name={displayName}
-            email={email}
-            badge={isPro ? "Professionnel" : "Personnel"}
-            href="/profil/informations"
-          />
+          <div className="max-w-2xl">
+            <ProfilIdentityCard
+              name={displayName}
+              email={email}
+              badge={isPro ? "Professionnel" : "Personnel"}
+              href="/profil/informations"
+            />
+          </div>
 
           <h2
             style={{
@@ -106,7 +108,7 @@ export default function ProfilHomePage() {
             Réglages & compte
           </h2>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div className="flex flex-col gap-2.5 md:grid md:grid-cols-2 xl:grid-cols-3 md:gap-4">
             <ProfilMenuRow
               href="/profil/informations"
               title={isPro ? "Mon entreprise" : "Informations"}
@@ -166,8 +168,9 @@ export default function ProfilHomePage() {
           <button
             type="button"
             onClick={() => setLogoutOpen(true)}
+            className="md:max-w-sm"
             style={{
-              marginTop: 20,
+              marginTop: 28,
               width: "100%",
               padding: "14px 18px",
               borderRadius: PAIPERS_RADIUS.button,

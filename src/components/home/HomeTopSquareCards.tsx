@@ -2,7 +2,7 @@
 
 /**
  * Réf. : paipers-mobile/src/components/home/HomeTopSquareCards.tsx
- * Tuiles : Démarches administratives + Agenda (calendrier).
+ * Desktop : calendrier plus large, tuile Démarches plus compacte.
  */
 
 import { Compass } from "lucide-react";
@@ -18,21 +18,17 @@ import {
 
 type Props = {
   eventDays: Set<number>;
-  /** Démarches : route officielle absente sur le web — signalé, pas de fausse nav. */
   onAgendaClick?: () => void;
 };
 
 export default function HomeTopSquareCards({ eventDays, onAgendaClick }: Props) {
   const { showProTabs } = useNavSpace();
-  const iconColor = showProTabs ? PAIPERS_COLORS.navy : PAIPERS_COLORS.navy;
+  const iconColor = PAIPERS_COLORS.navy;
 
   return (
-    <div
-      className="grid grid-cols-2 gap-[14px]"
-      style={{ gap: 14 }}
-    >
+    <div className="grid grid-cols-2 gap-[14px] md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.55fr)] md:items-stretch">
       <div
-        className="paipers-elevated-card relative overflow-hidden flex flex-col aspect-square"
+        className="paipers-elevated-card relative overflow-hidden flex flex-col aspect-square md:aspect-auto md:min-h-[168px] md:max-h-[220px]"
         style={{
           padding: 14,
           backgroundImage: gradientCss(
@@ -91,7 +87,7 @@ export default function HomeTopSquareCards({ eventDays, onAgendaClick }: Props) 
       <button
         type="button"
         onClick={onAgendaClick}
-        className="paipers-elevated-card text-left aspect-square"
+        className="paipers-elevated-card text-left aspect-square md:aspect-auto md:min-h-[168px]"
         style={{
           padding: 12,
           borderRadius: PAIPERS_RADIUS.card,

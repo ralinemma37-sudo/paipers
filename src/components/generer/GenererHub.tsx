@@ -83,7 +83,7 @@ export default function GenererHub({ embedded = false }: Props) {
         </p>
       )}
 
-      <div style={{ marginTop: 22, display: "flex", flexDirection: "column", gap: 14 }}>
+      <div className="mt-[22px] flex flex-col gap-3.5 md:grid md:grid-cols-3 md:gap-4">
         <GenererActionCard
           href="/generer/rediger-document"
           title="Rédiger un document"
@@ -130,7 +130,7 @@ export default function GenererHub({ embedded = false }: Props) {
           Tes documents rédigés, complétés ou signés apparaîtront ici.
         </p>
       ) : (
-        <div className="paipers-elevated-card" style={{ marginTop: 12, padding: 0, overflow: "hidden" }}>
+        <div className="mt-3 flex flex-col gap-0 md:grid md:grid-cols-2 md:gap-3">
           {recents.map((doc, index) => {
             const badge = BADGES[doc.kind];
             const when = formatRelativeFr(doc.created_at);
@@ -138,6 +138,7 @@ export default function GenererHub({ embedded = false }: Props) {
               <Link
                 key={doc.id}
                 href={`/documents/view?id=${doc.id}`}
+                className="paipers-elevated-card"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -145,7 +146,10 @@ export default function GenererHub({ embedded = false }: Props) {
                   padding: "14px 16px",
                   textDecoration: "none",
                   color: "inherit",
-                  borderTop: index === 0 ? "none" : `1px solid ${PAIPERS_COLORS.border}`,
+                  borderTop:
+                    index === 0
+                      ? undefined
+                      : undefined,
                 }}
               >
                 <span style={{ flex: 1, minWidth: 0 }}>

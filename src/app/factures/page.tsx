@@ -127,7 +127,7 @@ function FacturesPageInner() {
     <>
       <div
         className="pb-24 md:pb-8"
-        style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 720 }}
+        style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 960 }}
       >
         <div style={{ marginBottom: 12 }}>
           <FacturesGenererSegment value={section} onChange={setSection} />

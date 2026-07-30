@@ -86,6 +86,22 @@ export default function AbonnementPage() {
 
               <div className="paipers-elevated-card">
                 <p style={{ fontWeight: 800, margin: "0 0 8px", fontSize: 15 }}>
+                  Offres
+                </p>
+                <p className="paipers-text-muted" style={{ margin: 0, fontSize: 14, lineHeight: "20px" }}>
+                  Personnel : 6,99 € / mois · 7 jours d’essai.
+                </p>
+                <p
+                  className="paipers-text-muted"
+                  style={{ margin: "8px 0 0", fontSize: 14, lineHeight: "20px" }}
+                >
+                  Offre Professionnelle : tarif bientôt disponible · 14 jours d’essai au
+                  lancement.
+                </p>
+              </div>
+
+              <div className="paipers-elevated-card">
+                <p style={{ fontWeight: 800, margin: "0 0 8px", fontSize: 15 }}>
                   Gestion de l’abonnement
                 </p>
                 <p className="paipers-text-muted" style={{ margin: 0, fontSize: 14, lineHeight: "20px" }}>

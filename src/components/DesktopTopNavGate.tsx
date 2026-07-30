@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import DesktopSidebar from "@/components/DesktopSidebar";
+import DesktopTopNav from "@/components/DesktopTopNav";
 import { useNavSpace } from "@/components/NavSpaceProvider";
 import {
   PAIPERS_COLORS,
@@ -10,10 +10,9 @@ import {
 } from "@/lib/paipersTheme";
 
 /**
- * Sidebar desktop globale — même rôle que les Tabs mobiles.
- * Masquée sur landing / auth / design-system.
+ * Top nav desktop + fond soft — masquée sur pages publiques / auth.
  */
-export default function DesktopSidebarGate() {
+export default function DesktopTopNavGate() {
   const pathname = usePathname();
   const { showProTabs, loaded } = useNavSpace();
 
@@ -33,9 +32,9 @@ export default function DesktopSidebarGate() {
         showProTabs
           ? PAIPERS_GRADIENTS.professionalSoft
           : PAIPERS_GRADIENTS.personalSoft,
-        160,
+        200,
       )
-    : gradientCss(PAIPERS_GRADIENTS.personalSoft, 160);
+    : gradientCss(PAIPERS_GRADIENTS.personalSoft, 200);
 
   return (
     <>
@@ -47,7 +46,7 @@ export default function DesktopSidebarGate() {
         }}
         aria-hidden
       />
-      <DesktopSidebar />
+      <DesktopTopNav />
     </>
   );
 }

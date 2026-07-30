@@ -216,7 +216,6 @@ export default function DashboardPage() {
           className="pb-24 md:pb-8"
           style={{
             padding: PAIPERS_SPACE.screenPad,
-            maxWidth: 1100,
           }}
         >
           {spaceLoaded ? (

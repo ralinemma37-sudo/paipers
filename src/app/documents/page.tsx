@@ -144,7 +144,6 @@ export default function DocumentsPage() {
           className="pb-24 md:pb-8"
           style={{
             padding: PAIPERS_SPACE.screenPad,
-            maxWidth: 1100,
             position: "relative",
           }}
           onDragOver={(e) => {
@@ -244,35 +243,31 @@ export default function DocumentsPage() {
                 />
               </div>
 
-              <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 10 }}>
-                <div className="grid grid-cols-2 gap-[10px]">
-                  <DocumentsQuickActionCard
-                    label={importBusy ? "Import…" : "Importer"}
-                    Icon={Upload}
-                    onClick={() => setImportOpen(true)}
-                    disabled={importBusy}
-                  />
-                  <DocumentsQuickActionCard
-                    label="Scanner"
-                    Icon={ScanLine}
-                    onClick={() => showUnavailable("Scanner")}
-                    unavailable
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-[10px]">
-                  <DocumentsQuickActionCard
-                    label="Favoris"
-                    Icon={Star}
-                    onClick={() => showUnavailable("Favoris")}
-                    unavailable
-                  />
-                  <DocumentsQuickActionCard
-                    label="Fusionner des PDF"
-                    Icon={Layers}
-                    onClick={() => showUnavailable("Fusionner des PDF")}
-                    unavailable
-                  />
-                </div>
+              <div className="mt-3.5 grid grid-cols-2 gap-2.5 md:grid-cols-4">
+                <DocumentsQuickActionCard
+                  label={importBusy ? "Import…" : "Importer"}
+                  Icon={Upload}
+                  onClick={() => setImportOpen(true)}
+                  disabled={importBusy}
+                />
+                <DocumentsQuickActionCard
+                  label="Scanner"
+                  Icon={ScanLine}
+                  onClick={() => showUnavailable("Scanner")}
+                  unavailable
+                />
+                <DocumentsQuickActionCard
+                  label="Favoris"
+                  Icon={Star}
+                  onClick={() => showUnavailable("Favoris")}
+                  unavailable
+                />
+                <DocumentsQuickActionCard
+                  label="Fusionner des PDF"
+                  Icon={Layers}
+                  onClick={() => showUnavailable("Fusionner des PDF")}
+                  unavailable
+                />
               </div>
 
               {listError ? (

@@ -72,7 +72,6 @@ export default function GenererActionCard({
 
   const style: CSSProperties = {
     display: "flex",
-    flexDirection: "row",
     alignItems: "center",
     gap: 16,
     padding: "20px 18px",
@@ -83,6 +82,7 @@ export default function GenererActionCard({
     border: "none",
     background: "inherit",
     width: "100%",
+    height: "100%",
     textAlign: "left",
     cursor: "pointer",
     font: "inherit",
@@ -93,7 +93,7 @@ export default function GenererActionCard({
     return (
       <button
         type="button"
-        className="paipers-elevated-card"
+        className="paipers-elevated-card flex flex-row md:flex-col md:items-start md:min-h-[210px]"
         style={style}
         onClick={onUnavailable}
         title="Non disponible sur le web pour le moment"
@@ -104,7 +104,11 @@ export default function GenererActionCard({
   }
 
   return (
-    <Link href={href} className="paipers-elevated-card" style={style}>
+    <Link
+      href={href}
+      className="paipers-elevated-card flex flex-row md:flex-col md:items-start md:min-h-[210px]"
+      style={style}
+    >
       {inner}
     </Link>
   );

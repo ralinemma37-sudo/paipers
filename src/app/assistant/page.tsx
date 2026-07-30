@@ -273,11 +273,12 @@ export default function AssistantPage() {
       <AppShell>
         <AssistantPupoFloatStyles />
         <div
+          className="md:max-w-[1100px]"
           style={{
             padding: PAIPERS_SPACE.screenPad,
             paddingBottom: 96,
-            maxWidth: 720,
             margin: "0 auto",
+            width: "100%",
             minHeight: "100%",
             display: "flex",
             flexDirection: "column",

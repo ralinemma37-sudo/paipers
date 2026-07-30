@@ -3,7 +3,7 @@
  * Réf. mobile :
  * - src/lib/signup/signupSpaceContent.ts
  * - src/features/onboarding/onboardingPricing.ts
- * - src/config/plansConfig.ts (free 20 docs, premium 7.99, pro 29.99, trial 10j)
+ * - src/config/plansConfig.ts (free 20 docs, premium 7.99, pro 29.99, trial 14j)
  */
 
 import { PAIPERS_COLORS } from "@/lib/paipersTheme";
@@ -73,8 +73,8 @@ export const SIGNUP_SPACE_CARDS: Record<OnboardingSpaceChoice, SignupSpaceCard> 
       "Trésorerie et relances",
       "Pré-comptabilité et assistant IA",
     ],
-    priceLine: "29,99 €/mois · essai 10 jours",
-    trialLine: "10 jours d'essai gratuit",
+    priceLine: "29,99 €/mois · essai 14 jours",
+    trialLine: "14 jours d'essai gratuit",
     cta: "Choisir Professionnel",
   },
 };

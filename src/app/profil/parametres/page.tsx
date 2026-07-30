@@ -25,11 +25,12 @@ export default function ParametresPage() {
   useEffect(() => {
     try {
       const stored = localStorage.getItem("theme");
-      const prefersDark =
-        window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const dark = stored ? stored === "dark" : prefersDark;
+      const dark = stored === "dark";
       setDarkMode(dark);
       document.documentElement.classList.toggle("dark", dark);
+      if (!stored) {
+        localStorage.setItem("theme", "light");
+      }
     } catch {
       /* ignore */
     }

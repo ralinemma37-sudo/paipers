@@ -20,7 +20,7 @@ export default function ProfilMenuRow({ href, title, desc, Icon }: Props) {
   return (
     <Link
       href={href}
-      className="paipers-elevated-card"
+      className="paipers-elevated-card h-full md:min-h-[140px]"
       style={{
         display: "flex",
         alignItems: "center",
