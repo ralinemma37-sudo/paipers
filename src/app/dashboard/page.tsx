@@ -1,10 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+/**
+ * Accueil web — fidélité mobile.
+ * Réf. layout Personnel :
+ *   paipers-mobile/src/features/home/personal/PersonalHomeContent.tsx
+ * Réf. layout Pro :
+ *   paipers-mobile/src/features/proHome/ProHomeContent.tsx
+ * Réf. switch :
+ *   paipers-mobile/app/(tabs)/index.tsx (HomeScreenPersonal → Pro vs Personal)
+ *
+ * Données conservées : pending needs_review + accept/ignore Gmail, reminders (points agenda).
+ * Retiré (absent de l’accueil mobile actuel) : StatCards KPI, « Rappels à venir », score hero.
+ */
+
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Protected from "@/components/Protected";
 import AppShell from "@/components/AppShell";
+import { useNavSpace } from "@/components/NavSpaceProvider";
+import HomeTopSquareCards from "@/components/home/HomeTopSquareCards";
+import HomeDetectedSubscriptionsCard, {
+  type DetectedSubscriptionRow,
+} from "@/components/home/HomeDetectedSubscriptionsCard";
+import HomeImportInboxSection from "@/components/home/HomeImportInboxSection";
+import ProHomeActivitySection from "@/components/home/ProHomeActivitySection";
 import { supabase } from "@/lib/supabase";
-import { FileText, Folder, Wand2, Bell, ChevronRight } from "lucide-react";
+import { PAIPERS_SPACE } from "@/lib/paipersTheme";
 
 type PendingDoc = {
   id: string;
@@ -16,124 +36,130 @@ type PendingDoc = {
 type Reminder = {
   id: string;
   title: string;
-  due_date: string; // on stocke une date en texte (format ISO), ex: "2026-01-20"
+  due_date: string;
 };
 
-function formatDateFr(dateStr: string) {
-  // Affiche une date simple : 20/01/2026
-  // (sans dépendances compliquées)
-  const d = new Date(dateStr);
-  if (Number.isNaN(d.getTime())) return dateStr;
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const yyyy = d.getFullYear();
-  return `${dd}/${mm}/${yyyy}`;
-}
-
 export default function DashboardPage() {
-  const [fullName, setFullName] = useState("");
-
-  // Documents rangés
-  const [docCount, setDocCount] = useState(0);
-
-  // Documents en attente (notifications Gmail)
-  const [pendingCount, setPendingCount] = useState(0);
-
-  const [catCount, setCatCount] = useState(0);
-  const [aiCount, setAiCount] = useState(0);
+  const { showProTabs, spaceLabel, loaded: spaceLoaded } = useNavSpace();
 
   const [pendingDocs, setPendingDocs] = useState<PendingDoc[]>([]);
   const [loadingPending, setLoadingPending] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [uiError, setUiError] = useState<string>("");
+  const [uiError, setUiError] = useState("");
 
-  // ✅ Rappels réels (plus d’exemples)
   const [reminders, setReminders] = useState<Reminder[]>([]);
-  const [loadingReminders, setLoadingReminders] = useState(true);
-  const [reminderError, setReminderError] = useState<string>("");
+  const [subscriptions, setSubscriptions] = useState<DetectedSubscriptionRow[]>([]);
+  const [subscriptionTotal, setSubscriptionTotal] = useState(0);
+  const [subscriptionYearly, setSubscriptionYearly] = useState(0);
+
+  const loadAll = useCallback(async () => {
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) return;
+
+    const { data: pending } = await supabase
+      .from("documents")
+      .select("id,title,original_filename,created_at")
+      .eq("user_id", auth.user.id)
+      .eq("needs_review", true)
+      .order("created_at", { ascending: false });
+
+    setPendingDocs(pending || []);
+    setLoadingPending(false);
+
+    const { data: rems, error: remErr } = await supabase
+      .from("reminders")
+      .select("id,title,due_date")
+      .eq("user_id", auth.user.id)
+      .order("due_date", { ascending: true });
+
+    if (remErr) {
+      setReminders([]);
+    } else {
+      setReminders((rems as Reminder[]) || []);
+    }
+
+    // Abonnements : colonne metadata.subscription (logique mobile).
+    // Si absente / non peuplée sur le web → état vide officiel, sans inventer.
+    const { data: docsWithMeta, error: metaErr } = await supabase
+      .from("documents")
+      .select("id,title,metadata")
+      .eq("user_id", auth.user.id)
+      .eq("is_ready", true);
+
+    if (metaErr || !docsWithMeta) {
+      setSubscriptions([]);
+      setSubscriptionTotal(0);
+      setSubscriptionYearly(0);
+      return;
+    }
+
+    const merged = new Map<
+      string,
+      { name: string; amount: number; docCount: number }
+    >();
+
+    for (const doc of docsWithMeta as {
+      id: string;
+      title: string | null;
+      metadata: Record<string, unknown> | null;
+    }[]) {
+      const sub = doc.metadata?.subscription as
+        | { detected?: boolean; name?: string; amount?: number; mergeKey?: string }
+        | undefined;
+      if (!sub?.detected) continue;
+      const key =
+        (typeof sub.mergeKey === "string" && sub.mergeKey) ||
+        (typeof sub.name === "string" && sub.name) ||
+        doc.id;
+      const name =
+        (typeof sub.name === "string" && sub.name) ||
+        doc.title ||
+        "Abonnement";
+      const amount = typeof sub.amount === "number" ? sub.amount : 0;
+      const prev = merged.get(key);
+      if (prev) {
+        merged.set(key, {
+          name: prev.name,
+          amount: prev.amount + amount,
+          docCount: prev.docCount + 1,
+        });
+      } else {
+        merged.set(key, { name, amount, docCount: 1 });
+      }
+    }
+
+    const rows: DetectedSubscriptionRow[] = Array.from(merged.entries()).map(
+      ([mergeKey, v]) => ({
+        mergeKey,
+        name: v.name,
+        amount: v.amount,
+        docCount: v.docCount,
+      }),
+    );
+    const monthly = rows.reduce((s, r) => s + r.amount, 0);
+    setSubscriptions(rows);
+    setSubscriptionTotal(monthly);
+    setSubscriptionYearly(monthly * 12);
+  }, []);
 
   useEffect(() => {
-    const loadAll = async () => {
-      const { data: auth } = await supabase.auth.getUser();
-      if (!auth.user) return;
+    void loadAll();
+  }, [loadAll]);
 
-      // 👤 Profil
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("id", auth.user.id)
-        .single();
-      setFullName(profile?.full_name || "");
-
-      // 📄 Documents rangés (visibles dans /documents)
-      const { count: readyDocs } = await supabase
-        .from("documents")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", auth.user.id)
-        .eq("is_ready", true);
-      setDocCount(readyDocs || 0);
-
-      // 🔔 Documents en attente (notifications Gmail)
-      const { count: pendingDocsCount } = await supabase
-        .from("documents")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", auth.user.id)
-        .eq("needs_review", true);
-      setPendingCount(pendingDocsCount || 0);
-
-      // 📁 Catégories
-      const { count: cats } = await supabase
-        .from("categories")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", auth.user.id);
-      setCatCount(cats || 0);
-
-      // 🤖 Docs générés par IA
-      const { count: aiDocs } = await supabase
-        .from("documents")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", auth.user.id)
-        .eq("generated_by_ai", true);
-      setAiCount(aiDocs || 0);
-
-      // 🔔 Liste des documents en attente (pour la notif principale)
-      const { data: pending } = await supabase
-        .from("documents")
-        .select("id,title,original_filename,created_at")
-        .eq("user_id", auth.user.id)
-        .eq("needs_review", true)
-        .order("created_at", { ascending: false });
-
-      setPendingDocs(pending || []);
-      setLoadingPending(false);
-
-      // ⏰ Rappels réels
-      // Important : si la table "reminders" n’existe pas encore, ça donnera une erreur.
-      // Dans ce cas, on affiche 0 et un petit message, sans casser la page.
-      setReminderError("");
-      setLoadingReminders(true);
-
-      const { data: rems, error: remErr } = await supabase
-        .from("reminders")
-        .select("id,title,due_date")
-        .eq("user_id", auth.user.id)
-        .order("due_date", { ascending: true });
-
-      if (remErr) {
-        // On ne casse pas l’accueil : on affiche juste 0 rappel
-        setReminders([]);
-        setReminderError(
-          "Les rappels ne sont pas encore configurés (on le fait à la prochaine étape)."
-        );
-      } else {
-        setReminders((rems as Reminder[]) || []);
+  const eventDays = useMemo(() => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = now.getMonth();
+    const days = new Set<number>();
+    for (const r of reminders) {
+      const d = new Date(r.due_date);
+      if (Number.isNaN(d.getTime())) continue;
+      if (d.getFullYear() === y && d.getMonth() === m) {
+        days.add(d.getDate());
       }
-
-      setLoadingReminders(false);
-    };
-
-    loadAll();
-  }, []);
+    }
+    return days;
+  }, [reminders]);
 
   async function handleAccept(docId: string) {
     setUiError("");
@@ -155,8 +181,9 @@ export default function DashboardPage() {
       }
 
       window.location.href = "/documents";
-    } catch (e: any) {
-      setUiError(`Erreur réseau : ${e?.message ?? "inconnue"}`);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "inconnue";
+      setUiError(`Erreur réseau : ${msg}`);
       setActionLoading(null);
     }
   }
@@ -176,173 +203,94 @@ export default function DashboardPage() {
       return;
     }
 
-    window.location.reload();
+    setPendingDocs((prev) => prev.filter((d) => d.id !== docId));
+    setActionLoading(null);
   }
 
-  // Petit affichage : on montre max 3 rappels sur l’accueil
-  const remindersPreview = reminders.slice(0, 3);
+  const isProHome = showProTabs;
 
   return (
     <Protected>
       <AppShell>
-      <div className="px-6 py-8 pb-24 md:pb-8">
-        <h1 className="text-3xl font-bold mb-1">
-          Bonjour <span className="gradient-text">{fullName}</span> 👋
-        </h1>
-        <p className="text-slate-500 mb-6">
-          Voici un aperçu de votre espace Paipers.
-        </p>
+        <div
+          className="pb-24 md:pb-8"
+          style={{
+            padding: PAIPERS_SPACE.screenPad,
+            maxWidth: 1100,
+          }}
+        >
+          {spaceLoaded ? (
+            <p
+              className="paipers-text-muted"
+              style={{
+                fontSize: 12,
+                fontWeight: 700,
+                letterSpacing: 0.2,
+                marginBottom: 16,
+              }}
+            >
+              Espace {spaceLabel}
+            </p>
+          ) : null}
 
-        {/* 🔔 NOTIFICATIONS GMAIL */}
-        <section className="mb-8">
-          {uiError && (
-            <div className="card p-4 mb-3 border border-red-200 bg-red-50 text-red-700">
-              {uiError}
+          {/* Desktop : 2 colonnes pour blocs successifs ; mobile : pile = ordre mobile */}
+          <div
+            className="flex flex-col gap-[22px] lg:grid lg:grid-cols-2 lg:gap-x-6 lg:gap-y-[22px] lg:items-start"
+          >
+            <div className="flex flex-col gap-[22px] lg:col-span-2">
+              <HomeTopSquareCards eventDays={eventDays} />
             </div>
-          )}
 
-          <h2 className="text-xl font-semibold flex items-center gap-2 mb-3">
-            <Bell size={20} /> Notifications
-          </h2>
-
-          {loadingPending ? (
-            <div className="card p-4 text-slate-500">Chargement…</div>
-          ) : pendingDocs.length === 0 ? (
-            <div className="card p-4 text-slate-500">
-              Aucun document Gmail en attente.
-            </div>
-          ) : (
-            <div className="card p-4">
-              <p className="font-semibold">Nouveau document reçu depuis Gmail</p>
-              <p className="text-sm text-slate-500 mt-1">
-                Souhaitez-vous l’ajouter à vos documents ?
-              </p>
-
-              <div className="mt-4">
-                {pendingDocs.slice(0, 1).map((doc) => (
-                  <div
-                    key={doc.id}
-                    className="flex items-center justify-between gap-3"
-                  >
-                    <div className="text-sm">
-                      <p className="font-medium">
-                        {doc.original_filename || doc.title || "Pièce jointe"}
-                      </p>
-                      <p className="text-slate-500">
-                        Elle sera mise dans “Autres”.
-                      </p>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleIgnore(doc.id)}
-                        disabled={actionLoading === doc.id}
-                        className="px-4 py-2 rounded-full border border-slate-200 bg-white text-sm font-medium"
-                      >
-                        Non
-                      </button>
-
-                      <button
-                        onClick={() => handleAccept(doc.id)}
-                        disabled={actionLoading === doc.id}
-                        className="px-4 py-2 rounded-full text-white text-sm font-medium
-                          bg-gradient-to-r from-[hsl(202_100%_82%)]
-                          via-[hsl(328_80%_84%)]
-                          to-[hsl(39_100%_85%)]
-                          shadow-md"
-                      >
-                        {actionLoading === doc.id ? "Ajout…" : "Oui"}
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {pendingDocs.length > 1 && (
-                <p className="text-xs text-slate-500 mt-3">
-                  {pendingDocs.length - 1} autre(s) document(s) en attente
-                </p>
-              )}
-            </div>
-          )}
-        </section>
-
-        {/* 📊 STATS */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
-          <StatCard
-            icon={<FileText className="text-[hsl(var(--primary))]" />}
-            number={docCount}
-            label="Documents"
-            sublabel={pendingCount > 0 ? `${pendingCount} en attente` : ""}
-          />
-          <StatCard
-            icon={<Folder className="text-[hsl(var(--primary))]" />}
-            number={catCount}
-            label="Catégories"
-          />
-          <StatCard
-            icon={<Wand2 className="text-[hsl(var(--primary))]" />}
-            number={aiCount}
-            label="IA générés"
-          />
-          <StatCard
-            icon={<Bell className="text-[hsl(var(--primary))]" />}
-            number={reminders.length}
-            label="Rappels"
-          />
-        </div>
-
-        {/* ⏰ RAPPELS (réels) */}
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Rappels à venir</h2>
-
-          {loadingReminders ? (
-            <div className="card p-4 text-slate-500">Chargement…</div>
-          ) : reminders.length === 0 ? (
-            <div className="card p-4 text-slate-500">
-              Aucun rappel pour le moment.
-              {reminderError ? (
-                <div className="text-xs text-slate-400 mt-2">{reminderError}</div>
-              ) : null}
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {remindersPreview.map((item) => (
-                <div
-                  key={item.id}
-                  className="card flex justify-between items-center py-3"
-                >
-                  <div>
-                    <p className="font-medium">{item.title}</p>
-                    <p className="text-slate-500 text-sm">
-                      Date : {formatDateFr(item.due_date)}
-                    </p>
-                  </div>
-                  <ChevronRight className="text-slate-400" />
+            {isProHome ? (
+              <>
+                <div className="lg:col-span-1">
+                  <ProHomeActivitySection />
                 </div>
-              ))}
-
-              {reminders.length > 3 && (
-                <p className="text-xs text-slate-500">
-                  + {reminders.length - 3} autre(s) rappel(s)
-                </p>
-              )}
-            </div>
-          )}
-        </section>
-      </div>
+                <div className="lg:col-span-1 flex flex-col gap-[22px]">
+                  {subscriptions.length > 0 ? (
+                    <HomeDetectedSubscriptionsCard
+                      items={subscriptions}
+                      totalMonthly={subscriptionTotal}
+                      totalYearly={subscriptionYearly}
+                    />
+                  ) : null}
+                  <HomeImportInboxSection
+                    items={pendingDocs}
+                    alwaysShow
+                    loading={loadingPending}
+                    actionLoadingId={actionLoading}
+                    error={uiError}
+                    onImport={handleAccept}
+                    onIgnore={handleIgnore}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="lg:col-span-1">
+                  <HomeDetectedSubscriptionsCard
+                    items={subscriptions}
+                    totalMonthly={subscriptionTotal}
+                    totalYearly={subscriptionYearly}
+                    showWhenEmpty
+                  />
+                </div>
+                <div className="lg:col-span-1">
+                  <HomeImportInboxSection
+                    items={pendingDocs}
+                    alwaysShow
+                    loading={loadingPending}
+                    actionLoadingId={actionLoading}
+                    error={uiError}
+                    onImport={handleAccept}
+                    onIgnore={handleIgnore}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </AppShell>
     </Protected>
-  );
-}
-
-function StatCard({ icon, number, label, sublabel }: any) {
-  return (
-    <div className="card flex flex-col items-start">
-      <div className="text-2xl mb-2">{icon}</div>
-      <p className="text-xl font-bold">{number}</p>
-      <p className="text-slate-500 text-sm">{label}</p>
-      {sublabel && <p className="text-xs text-slate-400 mt-1">{sublabel}</p>}
-    </div>
   );
 }
