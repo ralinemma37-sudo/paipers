@@ -2,7 +2,10 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import Protected from "@/components/Protected";
+import AppShell from "@/components/AppShell";
 import { supabase } from "@/lib/supabase";
+import { labelCat } from "@/lib/documentCategories";
 import {
   ChevronLeft,
   FileText,
@@ -33,24 +36,6 @@ type DocRow = {
   source: string | null;
   original_filename: string | null;
 };
-
-function labelCat(cat: string | null) {
-  const c = (cat || "autres").toLowerCase().trim();
-  const map: Record<string, string> = {
-    factures: "Factures",
-    facture: "Factures",
-    contrats: "Contrats",
-    contrat: "Contrats",
-    travail: "Travail",
-    banque: "Banque",
-    assurances: "Assurances",
-    assurance: "Assurances",
-    autres: "Autres",
-    "non classé": "Autres",
-    "non classe": "Autres",
-  };
-  return map[c] || c.charAt(0).toUpperCase() + c.slice(1);
-}
 
 function labelSource(source: string | null) {
   const s = (source || "").toLowerCase();
@@ -832,7 +817,8 @@ export default function DocumentViewPage() {
     setUiMsg("");
     if (!doc?.id) return;
 
-    const ok = window.confirm("Supprimer ce document ?\n\nCette action est définitive.");
+    // Réf. mobile documents/[id].tsx — Alert « Supprimer ? » / « Cette action est définitive. »
+    const ok = window.confirm("Supprimer ?\n\nCette action est définitive.");
     if (!ok) return;
 
     setDeleting(true);
@@ -861,21 +847,35 @@ export default function DocumentViewPage() {
     }
   };
 
-  if (loading) return <div className="p-6 text-slate-500">Chargement...</div>;
+  if (loading) {
+    return (
+      <Protected>
+        <AppShell>
+          <div className="p-6 text-slate-500">Chargement…</div>
+        </AppShell>
+      </Protected>
+    );
+  }
   if (errorMsg)
     return (
-      <div className="p-6">
-        <p className="text-slate-700 font-medium">Oups</p>
-        <p className="text-slate-500 text-sm mt-1">{errorMsg}</p>
-        <a href="/documents" className="mt-4 inline-block text-sm font-medium text-[hsl(var(--primary))]">
-          Retour à mes documents →
-        </a>
-      </div>
+      <Protected>
+        <AppShell>
+          <div className="p-6">
+            <p className="text-slate-700 font-medium">Introuvable.</p>
+            <p className="text-slate-500 text-sm mt-1">{errorMsg}</p>
+            <a href="/documents" className="mt-4 inline-block text-sm font-medium text-[hsl(var(--primary))]">
+              Retour à mes documents →
+            </a>
+          </div>
+        </AppShell>
+      </Protected>
     );
 
   return (
-    <div className="px-6 pt-6 pb-24">
-      {/* HEADER */}
+    <Protected>
+    <AppShell>
+    <div className="px-6 pt-6 pb-24 md:pb-8">
+      {/* HEADER — réf. DocumentFilesViewerLayout (titre + retour) */}
       <div className="flex items-center gap-3 mb-5">
         <a
           href="/documents"
@@ -886,7 +886,6 @@ export default function DocumentViewPage() {
         </a>
 
         <div className="min-w-0">
-          <p className="text-xs text-slate-500">Aperçu</p>
           <h1 className="text-xl font-bold truncate">{title}</h1>
         </div>
       </div>
@@ -1001,7 +1000,7 @@ export default function DocumentViewPage() {
             active:scale-95 transition disabled:opacity-60 flex items-center justify-center gap-2"
         >
           <Trash2 size={18} />
-          {deleting ? "Suppression..." : "Supprimer ce document"}
+          {deleting ? "Suppression…" : "Supprimer"}
         </button>
 
         {uiMsg ? <p className="text-sm text-slate-500 mt-3">{uiMsg}</p> : null}
@@ -1129,6 +1128,8 @@ export default function DocumentViewPage() {
         </div>
       </div>
     </div>
+    </AppShell>
+    </Protected>
   );
 }
 
