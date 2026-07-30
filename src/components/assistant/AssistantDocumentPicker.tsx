@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { useEscapeToClose } from "@/hooks/useEscapeToClose";
 import { supabase } from "@/lib/supabase";
 import { PAIPERS_COLORS, PAIPERS_RADIUS } from "@/lib/paipersTheme";
 
@@ -24,6 +25,8 @@ export default function AssistantDocumentPicker({ open, onClose, onPick }: Props
   const [docs, setDocs] = useState<PickableDoc[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEscapeToClose(open, onClose);
 
   useEffect(() => {
     if (!open) return;

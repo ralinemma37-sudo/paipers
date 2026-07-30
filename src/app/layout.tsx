@@ -14,13 +14,13 @@ export const metadata = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fr">
-      <body>
+      <body className="overflow-x-hidden">
         <AppProviders>
           <div className="min-h-screen md:flex">
             <DesktopSidebarGate />
             <div className="flex-1 min-w-0 flex flex-col min-h-screen">
               <SpaceSwitcherGate />
-              <main className="flex-1 pb-20 md:pb-0">{children}</main>
+              <main className="flex-1 pb-20 md:pb-0 min-w-0 overflow-x-hidden">{children}</main>
             </div>
             <BottomNavGate />
           </div>

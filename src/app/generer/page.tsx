@@ -5,7 +5,7 @@
  * Pro : redirection vers /factures (comme mobile Redirect factures).
  */
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Protected from "@/components/Protected";
 import AppShell from "@/components/AppShell";
@@ -16,7 +16,6 @@ import { PAIPERS_COLORS, PAIPERS_SPACE } from "@/lib/paipersTheme";
 export default function GenererPage() {
   const router = useRouter();
   const { showProTabs, loaded } = useNavSpace();
-  const [toast, setToast] = useState("");
 
   useEffect(() => {
     if (!loaded) return;
@@ -61,30 +60,7 @@ export default function GenererPage() {
           className="pb-24 md:pb-8"
           style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 720 }}
         >
-          {toast ? (
-            <div
-              className="paipers-elevated-card"
-              style={{
-                position: "fixed",
-                bottom: 96,
-                left: "50%",
-                transform: "translateX(-50%)",
-                zIndex: 90,
-                padding: "12px 18px",
-                fontWeight: 800,
-                fontSize: 14,
-                maxWidth: "90vw",
-              }}
-            >
-              {toast}
-            </div>
-          ) : null}
-          <GenererHub
-            onUnavailable={(feature) => {
-              setToast(`${feature} : non disponible sur le web pour le moment.`);
-              window.setTimeout(() => setToast(""), 3200);
-            }}
-          />
+          <GenererHub />
         </div>
       </AppShell>
     </Protected>

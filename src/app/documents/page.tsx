@@ -44,6 +44,7 @@ export default function DocumentsPage() {
   const [importBusy, setImportBusy] = useState(false);
   const [importMsg, setImportMsg] = useState("");
   const [toast, setToast] = useState("");
+  const [toastTone, setToastTone] = useState<"info" | "success">("info");
   const [dragOver, setDragOver] = useState(false);
 
   const loadDocs = useCallback(async () => {
@@ -101,6 +102,7 @@ export default function DocumentsPage() {
   const recentDocs = useMemo(() => docs.slice(0, 4), [docs]);
 
   const showUnavailable = (feature: string) => {
+    setToastTone("info");
     setToast(`${feature} : non disponible sur le web pour le moment.`);
     window.setTimeout(() => setToast(""), 3200);
   };
@@ -120,6 +122,7 @@ export default function DocumentsPage() {
       }
 
       setImportOpen(false);
+      setToastTone("success");
       setToast(
         files.length > 1 ? "Documents importés" : "Document importé",
       );
@@ -180,6 +183,7 @@ export default function DocumentsPage() {
 
           {toast ? (
             <div
+              role="status"
               className="paipers-elevated-card"
               style={{
                 position: "fixed",
@@ -190,8 +194,15 @@ export default function DocumentsPage() {
                 padding: "12px 18px",
                 fontWeight: 800,
                 fontSize: 14,
-                color: PAIPERS_COLORS.textPrimary,
+                color:
+                  toastTone === "success"
+                    ? PAIPERS_COLORS.textPrimary
+                    : PAIPERS_COLORS.neutral,
                 maxWidth: "90vw",
+                borderLeft:
+                  toastTone === "info"
+                    ? `4px solid ${PAIPERS_COLORS.neutral}`
+                    : `4px solid ${PAIPERS_COLORS.success}`,
               }}
             >
               {toast}

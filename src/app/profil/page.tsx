@@ -21,6 +21,7 @@ import AppShell from "@/components/AppShell";
 import { useNavSpace } from "@/components/NavSpaceProvider";
 import ProfilIdentityCard from "@/components/profil/ProfilIdentityCard";
 import ProfilMenuRow from "@/components/profil/ProfilMenuRow";
+import { useEscapeToClose } from "@/hooks/useEscapeToClose";
 import { supabase } from "@/lib/supabase";
 import { PAIPERS_COLORS, PAIPERS_RADIUS, PAIPERS_SPACE } from "@/lib/paipersTheme";
 
@@ -32,6 +33,11 @@ export default function ProfilHomePage() {
   const [email, setEmail] = useState("");
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+
+  const closeLogout = useCallback(() => {
+    if (!loggingOut) setLogoutOpen(false);
+  }, [loggingOut]);
+  useEscapeToClose(logoutOpen, closeLogout);
 
   const load = useCallback(async () => {
     const { data: auth } = await supabase.auth.getUser();
@@ -130,7 +136,7 @@ export default function ProfilHomePage() {
             <ProfilMenuRow
               href="/profil/abonnement"
               title="Abonnements"
-              desc="Comparer les offres et tester en mode démo."
+              desc="Consulter la formule actuelle."
               Icon={CreditCard}
             />
             <ProfilMenuRow

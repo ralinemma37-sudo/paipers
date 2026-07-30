@@ -40,8 +40,6 @@ const BADGES = {
 >;
 
 type Props = {
-  /** réservé toast hub (ex. actions futures) */
-  onUnavailable?: (feature: string) => void;
   /** Segment Factures Pro — réf. GenererHubContent embedded */
   embedded?: boolean;
 };

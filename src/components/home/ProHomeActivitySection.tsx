@@ -27,9 +27,17 @@ const CARD_ICONS: Record<ProActivityCardId, LucideIcon> = {
   compliance: AlertTriangle,
 };
 
-/** États vides = libellés mobile quand aucune donnée Pro n’est branchée sur le web. */
+/**
+ * États vides Pro web — pas de montants / compteurs fictifs.
+ * Réf. empty mobile quand aucune donnée ; hub Factures web = aucune donnée branchée.
+ */
 const EMPTY_ACTIVITY_CARDS: ProActivityCard[] = [
-  { id: "invoices", title: "Factures", subtitle: "0 € à encaisser", href: "/factures" },
+  {
+    id: "invoices",
+    title: "Factures",
+    subtitle: "Aucune facture en attente",
+    href: "/factures",
+  },
   {
     id: "treasury",
     title: "Trésorerie",
@@ -39,13 +47,13 @@ const EMPTY_ACTIVITY_CARDS: ProActivityCard[] = [
   {
     id: "suppliers",
     title: "Fournisseurs",
-    subtitle: "0 document à valider",
+    subtitle: "Non disponible sur le web",
     href: null,
   },
   {
     id: "compliance",
     title: "Conformité",
-    subtitle: "Configuration à terminer",
+    subtitle: "Non disponible sur le web",
     href: null,
   },
 ];

@@ -7,9 +7,10 @@
  * Icônes Lucide : Home (personnel), Briefcase (professionnel) — mêmes que le mobile.
  */
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Briefcase, Check, ChevronDown, Home } from "lucide-react";
 import { useNavSpace } from "@/components/NavSpaceProvider";
+import { useEscapeToClose } from "@/hooks/useEscapeToClose";
 import { NAV_SPACE_LABELS, type NavSpace } from "@/lib/navConfig";
 import {
   PAIPERS_COLORS,
@@ -26,6 +27,8 @@ type Props = {
 export default function SpaceSwitcher({ variant = "sidebar" }: Props) {
   const { space, spaceLabel, setSpace, loaded } = useNavSpace();
   const [open, setOpen] = useState(false);
+  const close = useCallback(() => setOpen(false), []);
+  useEscapeToClose(open, close);
 
   if (!loaded) return null;
 

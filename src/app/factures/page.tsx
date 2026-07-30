@@ -5,7 +5,7 @@
  * Segment Factures | Générer ; création non branchée (pas de tables/API web).
  */
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Protected from "@/components/Protected";
 import AppShell from "@/components/AppShell";
@@ -15,6 +15,7 @@ import FacturesGenererSegment, {
 } from "@/components/factures/FacturesGenererSegment";
 import ProFacturesHub from "@/components/factures/ProFacturesHub";
 import GenererHub from "@/components/generer/GenererHub";
+import { useEscapeToClose } from "@/hooks/useEscapeToClose";
 import { loadProAccessSnapshot, type ProAccessSnapshot } from "@/lib/proAccess";
 import { E_INVOICE_DISCLAIMER, PAIPERS_NOT_PDP } from "@/lib/eInvoicingCopy";
 import { PAIPERS_COLORS, PAIPERS_RADIUS, PAIPERS_SPACE } from "@/lib/paipersTheme";
@@ -26,6 +27,8 @@ function FacturesPageInner() {
   const [section, setSection] = useState<FacturesGenererSection>("factures");
   const [access, setAccess] = useState<ProAccessSnapshot | null>(null);
   const [sheet, setSheet] = useState<"facture" | "devis" | null>(null);
+  const closeSheet = useCallback(() => setSheet(null), []);
+  useEscapeToClose(sheet !== null, closeSheet);
 
   useEffect(() => {
     const s = searchParams.get("section");

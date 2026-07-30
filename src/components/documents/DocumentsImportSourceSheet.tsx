@@ -7,6 +7,7 @@
 
 import { useRef } from "react";
 import { X } from "lucide-react";
+import { useEscapeToClose } from "@/hooks/useEscapeToClose";
 import { PAIPERS_COLORS, PAIPERS_RADIUS } from "@/lib/paipersTheme";
 
 type Props = {
@@ -24,6 +25,8 @@ export default function DocumentsImportSourceSheet({
 }: Props) {
   const filesRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
+
+  useEscapeToClose(open && !busy, onClose);
 
   if (!open) return null;
 

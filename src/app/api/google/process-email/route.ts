@@ -6,8 +6,6 @@ export async function POST(req: NextRequest) {
   try {
     const { email, historyId } = await req.json();
 
-    console.log("PROCESS-EMAIL:", { email, historyId });
-
     // 1) Récupérer la connexion Gmail
     const { data: connection } = await supabase
       .from("gmail_connections")
@@ -110,8 +108,6 @@ export async function POST(req: NextRequest) {
       );
 
       const aiData = await aiResponse.json();
-
-      console.log("AI Response:", aiData);
 
       // === Insertion dans la table documents ===
       await supabase.from("documents").insert({

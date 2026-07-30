@@ -6,7 +6,6 @@
 
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
-import { PAIPERS_COLORS } from "@/lib/paipersTheme";
 
 type Props = {
   title: string;

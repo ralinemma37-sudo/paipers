@@ -74,6 +74,18 @@ export default function HomeTopSquareCards({ eventDays, onAgendaClick }: Props) 
         >
           Sites officiels pour vos démarches
         </p>
+        <p
+          style={{
+            marginTop: "auto",
+            paddingTop: 8,
+            fontSize: 11,
+            fontWeight: 700,
+            color: PAIPERS_COLORS.neutral,
+            marginBottom: 0,
+          }}
+        >
+          Non porté sur le web
+        </p>
       </div>
 
       <button

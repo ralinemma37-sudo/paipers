@@ -5,10 +5,10 @@
  * Réf. : paipers-mobile/src/features/proDocuments/ProDocumentsScreen.tsx
  */
 
-import { ChevronRight, FileText, FolderPlus, ScanLine, Star, Upload } from "lucide-react";
+import { FileText, FolderPlus, ScanLine, Star, Upload } from "lucide-react";
 import DocumentsQuickActionCard from "@/components/documents/DocumentsQuickActionCard";
 import { PRO_DOCUMENTS_HOME_SPACES } from "@/lib/proDocumentsSpaces";
-import { PAIPERS_COLORS, PAIPERS_PALETTES } from "@/lib/paipersTheme";
+import { PAIPERS_COLORS } from "@/lib/paipersTheme";
 
 type Props = {
   search: string;
@@ -177,9 +177,15 @@ export default function ProDocumentsHome({
             Dossiers
           </h2>
           <span className="paipers-text-muted" style={{ fontSize: 13, fontWeight: 700 }}>
-            Voir tous
+            Aperçu
           </span>
         </div>
+        <p
+          className="paipers-text-muted"
+          style={{ margin: "0 0 10px", fontSize: 12, lineHeight: "17px" }}
+        >
+          Dossiers professionnels affichés pour fidélité mobile — non synchronisés sur le web.
+        </p>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {PRO_DOCUMENTS_HOME_SPACES.map((space) => (
             <div
@@ -223,7 +229,6 @@ export default function ProDocumentsHome({
                   Aucun document
                 </span>
               </span>
-              <ChevronRight size={18} color={PAIPERS_PALETTES.light.textMuted} />
             </div>
           ))}
         </div>
