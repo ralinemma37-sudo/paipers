@@ -42,9 +42,11 @@ const BADGES = {
 type Props = {
   /** réservé toast hub (ex. actions futures) */
   onUnavailable?: (feature: string) => void;
+  /** Segment Factures Pro — réf. GenererHubContent embedded */
+  embedded?: boolean;
 };
 
-export default function GenererHub(_props: Props) {
+export default function GenererHub({ embedded = false }: Props) {
   const [recents, setRecents] = useState<GenererRecentDoc[]>([]);
 
   const load = useCallback(async () => {
@@ -62,15 +64,26 @@ export default function GenererHub(_props: Props) {
 
   return (
     <div>
-      <h1 className="paipers-screen-title" style={{ marginBottom: 0 }}>
-        Générer
-      </h1>
-      <p
-        className="paipers-text-muted"
-        style={{ marginTop: 10, fontSize: 15, lineHeight: "22px", marginBottom: 0 }}
-      >
-        Créez, modifiez et signez vos documents en quelques secondes.
-      </p>
+      {!embedded ? (
+        <>
+          <h1 className="paipers-screen-title" style={{ marginBottom: 0 }}>
+            Générer
+          </h1>
+          <p
+            className="paipers-text-muted"
+            style={{ marginTop: 10, fontSize: 15, lineHeight: "22px", marginBottom: 0 }}
+          >
+            Créez, modifiez et signez vos documents en quelques secondes.
+          </p>
+        </>
+      ) : (
+        <p
+          className="paipers-text-muted"
+          style={{ marginTop: 0, fontSize: 15, lineHeight: "22px", marginBottom: 0 }}
+        >
+          Créez, modifiez et signez vos documents en quelques secondes.
+        </p>
+      )}
 
       <div style={{ marginTop: 22, display: "flex", flexDirection: "column", gap: 14 }}>
         <GenererActionCard

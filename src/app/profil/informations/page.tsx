@@ -2,19 +2,20 @@
 
 /**
  * Informations — réf. paipers-mobile/app/(tabs)/profil/informations.tsx
- * Upsert profiles existant (inchangé côté schéma).
+ * Personnel : upsert profiles. Pro : hub Mon entreprise (sans stockage inventé).
  */
 
 import { useEffect, useState, type CSSProperties } from "react";
 import Protected from "@/components/Protected";
 import AppShell from "@/components/AppShell";
 import ProfilSubpageHeader from "@/components/profil/ProfilSubpageHeader";
+import ProCompanyHub from "@/components/profil/ProCompanyHub";
 import { useNavSpace } from "@/components/NavSpaceProvider";
 import { supabase } from "@/lib/supabase";
 import { PAIPERS_COLORS, PAIPERS_RADIUS, PAIPERS_SPACE } from "@/lib/paipersTheme";
 
 export default function InformationsPage() {
-  const { showProTabs } = useNavSpace();
+  const { showProTabs, loaded: spaceLoaded } = useNavSpace();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [email, setEmail] = useState("");
@@ -31,6 +32,11 @@ export default function InformationsPage() {
   const [birthdateSupported, setBirthdateSupported] = useState(true);
 
   useEffect(() => {
+    if (showProTabs) {
+      setLoading(false);
+      return;
+    }
+
     const loadProfile = async () => {
       setMessage("");
       setLoading(true);
@@ -89,7 +95,7 @@ export default function InformationsPage() {
     };
 
     void loadProfile();
-  }, []);
+  }, [showProTabs]);
 
   async function handleSave() {
     setMessage("");
@@ -150,172 +156,231 @@ export default function InformationsPage() {
           className="pb-24 md:pb-8"
           style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 720 }}
         >
-          <ProfilSubpageHeader
-            title={showProTabs ? "Mon entreprise" : "Informations"}
-            subtitle={
-              showProTabs
-                ? "Raison sociale, SIRET, TVA et adresse professionnelle."
-                : "Tes infos personnelles et préférences."
-            }
-          />
-
-          {showProTabs ? (
-            <div
-              className="paipers-elevated-card"
-              style={{ marginBottom: 16, fontSize: 13, lineHeight: "18px" }}
-            >
-              <p className="paipers-text-muted" style={{ margin: 0 }}>
-                Les champs SIRET / TVA / raison sociale Pro ne sont pas encore branchés sur le
-                web. Les informations personnelles ci-dessous restent éditables.
-              </p>
-            </div>
-          ) : null}
-
-          {loading ? (
+          {!spaceLoaded ? (
             <p className="paipers-text-muted">Chargement…</p>
+          ) : showProTabs ? (
+            <ProCompanyHub />
           ) : (
-            <div className="paipers-elevated-card" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <section>
-                <p style={{ fontWeight: 800, margin: "0 0 10px", fontSize: 15 }}>Compte</p>
-                <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
-                  Email
-                </label>
-                <input value={email} disabled style={{ ...fieldStyle, background: "#F5F5F5" }} />
-              </section>
+            <>
+              <ProfilSubpageHeader
+                title="Informations"
+                subtitle="Tes infos personnelles et préférences."
+              />
 
-              <section>
-                <p style={{ fontWeight: 800, margin: "0 0 10px", fontSize: 15 }}>Identité</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
-                      Prénom
+              {loading ? (
+                <p className="paipers-text-muted">Chargement…</p>
+              ) : (
+                <div
+                  className="paipers-elevated-card"
+                  style={{ display: "flex", flexDirection: "column", gap: 16 }}
+                >
+                  <section>
+                    <p style={{ fontWeight: 800, margin: "0 0 10px", fontSize: 15 }}>Compte</p>
+                    <label
+                      style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}
+                    >
+                      Email
                     </label>
                     <input
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      style={fieldStyle}
+                      value={email}
+                      disabled
+                      style={{ ...fieldStyle, background: "#F5F5F5" }}
                     />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
-                      Nom
+                  </section>
+
+                  <section>
+                    <p style={{ fontWeight: 800, margin: "0 0 10px", fontSize: 15 }}>Identité</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label
+                          style={{
+                            fontSize: 13,
+                            fontWeight: 700,
+                            display: "block",
+                            marginBottom: 6,
+                          }}
+                        >
+                          Prénom
+                        </label>
+                        <input
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          style={fieldStyle}
+                        />
+                      </div>
+                      <div>
+                        <label
+                          style={{
+                            fontSize: 13,
+                            fontWeight: 700,
+                            display: "block",
+                            marginBottom: 6,
+                          }}
+                        >
+                          Nom
+                        </label>
+                        <input
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          style={fieldStyle}
+                        />
+                      </div>
+                    </div>
+                    {birthdateSupported ? (
+                      <div style={{ marginTop: 12 }}>
+                        <label
+                          style={{
+                            fontSize: 13,
+                            fontWeight: 700,
+                            display: "block",
+                            marginBottom: 6,
+                          }}
+                        >
+                          Date de naissance
+                        </label>
+                        <input
+                          value={birthdate}
+                          onChange={(e) => setBirthdate(e.target.value)}
+                          placeholder="AAAA-MM-JJ"
+                          style={fieldStyle}
+                        />
+                      </div>
+                    ) : null}
+                  </section>
+
+                  <section>
+                    <p style={{ fontWeight: 800, margin: "0 0 10px", fontSize: 15 }}>Contact</p>
+                    <label
+                      style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}
+                    >
+                      Téléphone
                     </label>
                     <input
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
                       style={fieldStyle}
                     />
-                  </div>
+                  </section>
+
+                  <section>
+                    <p style={{ fontWeight: 800, margin: "0 0 10px", fontSize: 15 }}>Adresse</p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      <div>
+                        <label
+                          style={{
+                            fontSize: 13,
+                            fontWeight: 700,
+                            display: "block",
+                            marginBottom: 6,
+                          }}
+                        >
+                          Rue et numéro
+                        </label>
+                        <input
+                          value={address1}
+                          onChange={(e) => setAddress1(e.target.value)}
+                          style={fieldStyle}
+                        />
+                      </div>
+                      <div>
+                        <label
+                          style={{
+                            fontSize: 13,
+                            fontWeight: 700,
+                            display: "block",
+                            marginBottom: 6,
+                          }}
+                        >
+                          Complément
+                        </label>
+                        <input
+                          value={address2}
+                          onChange={(e) => setAddress2(e.target.value)}
+                          style={fieldStyle}
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                          <label
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 700,
+                              display: "block",
+                              marginBottom: 6,
+                            }}
+                          >
+                            Code postal
+                          </label>
+                          <input
+                            value={postalCode}
+                            onChange={(e) => setPostalCode(e.target.value)}
+                            style={fieldStyle}
+                          />
+                        </div>
+                        <div>
+                          <label
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 700,
+                              display: "block",
+                              marginBottom: 6,
+                            }}
+                          >
+                            Ville
+                          </label>
+                          <input
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                            style={fieldStyle}
+                          />
+                        </div>
+                        <div>
+                          <label
+                            style={{
+                              fontSize: 13,
+                              fontWeight: 700,
+                              display: "block",
+                              marginBottom: 6,
+                            }}
+                          >
+                            Pays
+                          </label>
+                          <input
+                            value={country}
+                            onChange={(e) => setCountry(e.target.value)}
+                            style={fieldStyle}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </section>
+
+                  {message ? (
+                    <p role="status" style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>
+                      {message}
+                    </p>
+                  ) : null}
+
+                  <button
+                    type="button"
+                    onClick={() => void handleSave()}
+                    disabled={saving}
+                    style={{
+                      padding: "14px 16px",
+                      borderRadius: PAIPERS_RADIUS.button,
+                      border: "none",
+                      background: PAIPERS_COLORS.navy,
+                      color: "#fff",
+                      fontWeight: 800,
+                      cursor: saving ? "wait" : "pointer",
+                      opacity: saving ? 0.6 : 1,
+                    }}
+                  >
+                    {saving ? "Enregistrement…" : "Enregistrer"}
+                  </button>
                 </div>
-                {birthdateSupported ? (
-                  <div style={{ marginTop: 12 }}>
-                    <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
-                      Date de naissance
-                    </label>
-                    <input
-                      value={birthdate}
-                      onChange={(e) => setBirthdate(e.target.value)}
-                      placeholder="AAAA-MM-JJ"
-                      style={fieldStyle}
-                    />
-                  </div>
-                ) : null}
-              </section>
-
-              <section>
-                <p style={{ fontWeight: 800, margin: "0 0 10px", fontSize: 15 }}>Contact</p>
-                <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
-                  Téléphone
-                </label>
-                <input
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  style={fieldStyle}
-                />
-              </section>
-
-              <section>
-                <p style={{ fontWeight: 800, margin: "0 0 10px", fontSize: 15 }}>Adresse</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  <div>
-                    <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
-                      Rue et numéro
-                    </label>
-                    <input
-                      value={address1}
-                      onChange={(e) => setAddress1(e.target.value)}
-                      style={fieldStyle}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
-                      Complément
-                    </label>
-                    <input
-                      value={address2}
-                      onChange={(e) => setAddress2(e.target.value)}
-                      style={fieldStyle}
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
-                        Code postal
-                      </label>
-                      <input
-                        value={postalCode}
-                        onChange={(e) => setPostalCode(e.target.value)}
-                        style={fieldStyle}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
-                        Ville
-                      </label>
-                      <input
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        style={fieldStyle}
-                      />
-                    </div>
-                    <div>
-                      <label style={{ fontSize: 13, fontWeight: 700, display: "block", marginBottom: 6 }}>
-                        Pays
-                      </label>
-                      <input
-                        value={country}
-                        onChange={(e) => setCountry(e.target.value)}
-                        style={fieldStyle}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {message ? (
-                <p role="status" style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>
-                  {message}
-                </p>
-              ) : null}
-
-              <button
-                type="button"
-                onClick={() => void handleSave()}
-                disabled={saving}
-                style={{
-                  padding: "14px 16px",
-                  borderRadius: PAIPERS_RADIUS.button,
-                  border: "none",
-                  background: PAIPERS_COLORS.navy,
-                  color: "#fff",
-                  fontWeight: 800,
-                  cursor: saving ? "wait" : "pointer",
-                  opacity: saving ? 0.6 : 1,
-                }}
-              >
-                {saving ? "Enregistrement…" : "Enregistrer"}
-              </button>
-            </div>
+              )}
+            </>
           )}
         </div>
       </AppShell>
