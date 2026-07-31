@@ -65,8 +65,8 @@ export default function HomeImportInboxSection({
 
   return (
     <div
-      className="paipers-elevated-card"
-      style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 4 }}
+      className="paipers-card-gradient md:!p-4"
+      style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 0, padding: 16 }}
     >
       <div>
         <p style={{ fontWeight: 800, color: PAIPERS_COLORS.textPrimary, fontSize: 15, margin: 0 }}>

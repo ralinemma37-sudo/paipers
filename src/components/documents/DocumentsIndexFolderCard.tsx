@@ -25,19 +25,19 @@ export default function DocumentsIndexFolderCard({ categorySlug, docCount }: Pro
   return (
     <Link
       href={`/documents/${encodeURIComponent(categorySlug)}`}
-      className="paipers-elevated-card block"
+      className="paipers-card-white block md:min-h-[108px] paipers-hover-lift"
       style={{
-        minHeight: 140,
-        borderRadius: 18,
-        padding: 16,
+        minHeight: 120,
+        borderRadius: 16,
+        padding: 14,
         textDecoration: "none",
         color: "inherit",
       }}
     >
       <div
         style={{
-          width: 44,
-          height: 44,
+          width: 40,
+          height: 40,
           borderRadius: 999,
           background: iconBg,
           display: "flex",
@@ -45,15 +45,15 @@ export default function DocumentsIndexFolderCard({ categorySlug, docCount }: Pro
           justifyContent: "center",
         }}
       >
-        <FileText size={22} color={icon} strokeWidth={2.2} />
+        <FileText size={20} color={icon} strokeWidth={2.2} />
       </div>
       <p
         style={{
-          marginTop: 14,
-          fontSize: 16,
+          marginTop: 12,
+          fontSize: 15,
           fontWeight: 800,
           color: PAIPERS_COLORS.textPrimary,
-          lineHeight: "21px",
+          lineHeight: "20px",
           marginBottom: 0,
         }}
       >
@@ -63,7 +63,7 @@ export default function DocumentsIndexFolderCard({ categorySlug, docCount }: Pro
         className="paipers-text-muted"
         style={{
           marginTop: 4,
-          fontSize: 13,
+          fontSize: 12,
           fontWeight: 600,
           marginBottom: 0,
         }}

@@ -139,7 +139,7 @@ export function getTabInactiveColor(): string {
 
 export function isTabActive(pathname: string, href: string): boolean {
   if (href === "/dashboard") {
-    return pathname === "/dashboard" || pathname === "/";
+    return pathname === "/dashboard";
   }
   if (href === "/profil") {
     return pathname === "/profil" || pathname.startsWith("/profil/");

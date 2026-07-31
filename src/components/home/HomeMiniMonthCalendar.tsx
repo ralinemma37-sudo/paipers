@@ -10,9 +10,15 @@ import { PAIPERS_COLORS, PAIPERS_PALETTES } from "@/lib/paipersTheme";
 type Props = {
   eventDays: Set<number>;
   width?: number;
+  /** Desktop : occupe la largeur de la carte Agenda. */
+  fill?: boolean;
 };
 
-export default function HomeMiniMonthCalendar({ eventDays, width = 140 }: Props) {
+export default function HomeMiniMonthCalendar({
+  eventDays,
+  width = 140,
+  fill = false,
+}: Props) {
   const now = new Date();
   const y = now.getFullYear();
   const m = now.getMonth();
@@ -27,10 +33,18 @@ export default function HomeMiniMonthCalendar({ eventDays, width = 140 }: Props)
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
 
   return (
-    <div style={{ width, display: "flex", flexDirection: "column", gap: 6 }}>
+    <div
+      style={{
+        width: fill ? "100%" : width,
+        maxWidth: fill ? 360 : undefined,
+        display: "flex",
+        flexDirection: "column",
+        gap: fill ? 8 : 6,
+      }}
+    >
       <p
         style={{
-          fontSize: 12,
+          fontSize: fill ? 14 : 12,
           fontWeight: 800,
           color: PAIPERS_COLORS.textPrimary,
           textTransform: "capitalize",
@@ -43,14 +57,14 @@ export default function HomeMiniMonthCalendar({ eventDays, width = 140 }: Props)
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(7, 1fr)",
-          gap: 2,
+          gap: fill ? 4 : 2,
         }}
       >
         {["L", "M", "M", "J", "V", "S", "D"].map((d, i) => (
           <span
             key={`${d}-${i}`}
             style={{
-              fontSize: 9,
+              fontSize: fill ? 11 : 9,
               fontWeight: 700,
               color: PAIPERS_PALETTES.light.textMuted,
               textAlign: "center",
@@ -63,7 +77,7 @@ export default function HomeMiniMonthCalendar({ eventDays, width = 140 }: Props)
           <span
             key={i}
             style={{
-              fontSize: 10,
+              fontSize: fill ? 13 : 10,
               fontWeight: d === today ? 800 : 600,
               color:
                 d === today
@@ -71,7 +85,7 @@ export default function HomeMiniMonthCalendar({ eventDays, width = 140 }: Props)
                   : PAIPERS_COLORS.textPrimary,
               textAlign: "center",
               position: "relative",
-              paddingBottom: 6,
+              paddingBottom: fill ? 8 : 6,
               opacity: d == null ? 0 : 1,
             }}
           >

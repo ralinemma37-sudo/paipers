@@ -1,11 +1,16 @@
 "use client";
 
 /**
- * Réf. : paipers-mobile/app/(tabs)/documents/index.tsx — DocumentsQuickActionCard
+ * Réf. : paipers-mobile — DocumentsQuickActionCard
+ * unavailable : désactivé clairement, sans onClick fantôme.
  */
 
 import type { LucideIcon } from "lucide-react";
-import { PAIPERS_COLORS, PAIPERS_FOLDER_CIRCLE_BACKGROUNDS, PAIPERS_FOLDER_ICON_COLORS } from "@/lib/paipersTheme";
+import {
+  PAIPERS_COLORS,
+  PAIPERS_FOLDER_CIRCLE_BACKGROUNDS,
+  PAIPERS_FOLDER_ICON_COLORS,
+} from "@/lib/paipersTheme";
 
 const PERSONAL_ICON_BG = PAIPERS_FOLDER_CIRCLE_BACKGROUNDS["#ACE4FF"];
 const PERSONAL_ICON = PAIPERS_FOLDER_ICON_COLORS["#ACE4FF"];
@@ -16,7 +21,6 @@ type Props = {
   onClick?: () => void;
   disabled?: boolean;
   unavailable?: boolean;
-  /** Variante Pro — accent navy */
   pro?: boolean;
 };
 
@@ -30,34 +34,39 @@ export default function DocumentsQuickActionCard({
 }: Props) {
   const iconBg = pro ? "hsl(214 62% 90%)" : PERSONAL_ICON_BG;
   const iconColor = pro ? PAIPERS_COLORS.navy : PERSONAL_ICON;
+  const inert = Boolean(disabled || unavailable);
 
   return (
     <button
       type="button"
-      onClick={onClick}
-      disabled={disabled || unavailable}
-      title={unavailable ? "Non disponible sur le web pour le moment" : undefined}
-      className="paipers-elevated-card"
+      onClick={inert ? undefined : onClick}
+      disabled={inert}
+      aria-disabled={inert}
+      title={
+        unavailable ? "Non disponible sur le web pour le moment" : undefined
+      }
+      className="paipers-elevated-card md:py-2.5 md:px-3"
       style={{
         flex: 1,
         minWidth: 0,
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
-        gap: 12,
-        padding: "14px 14px",
+        gap: 10,
+        padding: "12px 12px",
         border: "none",
-        cursor: disabled || unavailable ? "not-allowed" : "pointer",
-        opacity: disabled || unavailable ? 0.55 : 1,
+        cursor: inert ? "not-allowed" : "pointer",
+        opacity: inert ? 0.55 : 1,
         textAlign: "left",
         background: "var(--paipers-card, #fff)",
       }}
     >
       <span
+        className="md:!w-8 md:!h-8 md:!rounded-lg"
         style={{
-          width: 40,
-          height: 40,
-          borderRadius: 12,
+          width: 36,
+          height: 36,
+          borderRadius: 10,
           background: iconBg,
           display: "inline-flex",
           alignItems: "center",
@@ -65,17 +74,33 @@ export default function DocumentsQuickActionCard({
           flexShrink: 0,
         }}
       >
-        <Icon size={18} color={iconColor} strokeWidth={2.2} />
+        <Icon size={17} color={iconColor} strokeWidth={2.2} />
       </span>
-      <span
-        style={{
-          fontSize: 14,
-          fontWeight: 800,
-          color: PAIPERS_COLORS.textPrimary,
-          lineHeight: 1.25,
-        }}
-      >
-        {label}
+      <span style={{ flex: 1, minWidth: 0 }}>
+        <span
+          style={{
+            display: "block",
+            fontSize: 13,
+            fontWeight: 800,
+            color: PAIPERS_COLORS.textPrimary,
+            lineHeight: 1.25,
+          }}
+        >
+          {label}
+        </span>
+        {unavailable ? (
+          <span
+            className="paipers-text-muted"
+            style={{
+              display: "block",
+              fontSize: 11,
+              fontWeight: 600,
+              marginTop: 2,
+            }}
+          >
+            Indisponible sur le web
+          </span>
+        ) : null}
       </span>
     </button>
   );

@@ -273,7 +273,7 @@ export default function AssistantPage() {
       <AppShell>
         <AssistantPupoFloatStyles />
         <div
-          className="md:max-w-[1100px]"
+          className="md:max-w-none md:pb-6"
           style={{
             padding: PAIPERS_SPACE.screenPad,
             paddingBottom: 96,
@@ -282,9 +282,8 @@ export default function AssistantPage() {
             minHeight: "100%",
             display: "flex",
             flexDirection: "column",
-            background:
-              idleVisible ? PAIPERS_COLORS.personalGradientSoftStart : undefined,
-            borderRadius: 24,
+            background: idleVisible ? "transparent" : undefined,
+            borderRadius: 20,
           }}
         >
           {toast ? (
@@ -342,9 +341,6 @@ export default function AssistantPage() {
               attachment={attachment}
               onRemoveAttachment={() => setAttachment(null)}
               onAttachClick={() => setPickerOpen(true)}
-              onOpenPriorities={() =>
-                showToast("Voir mes priorités : non disponible sur le web pour le moment.")
-              }
             />
           ) : (
             <>

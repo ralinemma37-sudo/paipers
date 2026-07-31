@@ -20,6 +20,7 @@ import DocumentsImportSourceSheet from "@/components/documents/DocumentsImportSo
 import ProDocumentsHome from "@/components/documents/ProDocumentsHome";
 import { normCat } from "@/lib/documentCategories";
 import { importDocumentFile } from "@/lib/importDocument";
+import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 import { supabase } from "@/lib/supabase";
 import { PAIPERS_COLORS, PAIPERS_RADIUS, PAIPERS_SPACE } from "@/lib/paipersTheme";
 
@@ -46,6 +47,15 @@ export default function DocumentsPage() {
   const [toast, setToast] = useState("");
   const [toastTone, setToastTone] = useState<"info" | "success">("info");
   const [dragOver, setDragOver] = useState(false);
+
+  useEffect(() => {
+    try {
+      const q = new URLSearchParams(window.location.search).get("q");
+      if (q) setSearch(q);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const loadDocs = useCallback(async () => {
     const { data: auth } = await supabase.auth.getUser();
@@ -100,12 +110,6 @@ export default function DocumentsPage() {
   }, [docs, searchTrim]);
 
   const recentDocs = useMemo(() => docs.slice(0, 4), [docs]);
-
-  const showUnavailable = (feature: string) => {
-    setToastTone("info");
-    setToast(`${feature} : non disponible sur le web pour le moment.`);
-    window.setTimeout(() => setToast(""), 3200);
-  };
 
   const runImport = async (fileList: FileList | File[]) => {
     const files = Array.from(fileList);
@@ -214,11 +218,37 @@ export default function DocumentsPage() {
               onSearchChange={setSearch}
               importBusy={importBusy}
               onImport={() => setImportOpen(true)}
-              onUnavailable={showUnavailable}
             />
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-              <h1 className="paipers-screen-title" style={{ marginBottom: 0 }}>
+              <div
+                className="hidden md:block paipers-card-marine p-4 mb-4"
+                style={{
+                  background: `linear-gradient(135deg, ${DESKTOP_SURFACES.marine} 0%, ${DESKTOP_SURFACES.nightSoft} 100%)`,
+                }}
+              >
+                <h1
+                  style={{
+                    margin: 0,
+                    fontSize: 22,
+                    fontWeight: 800,
+                    color: DESKTOP_SURFACES.onDark,
+                    letterSpacing: -0.3,
+                  }}
+                >
+                  Documents
+                </h1>
+                <p
+                  style={{
+                    margin: "6px 0 0",
+                    fontSize: 13,
+                    color: DESKTOP_SURFACES.onDarkMuted,
+                  }}
+                >
+                  Classe, retrouve et sécurise ton administratif.
+                </p>
+              </div>
+              <h1 className="paipers-screen-title md:hidden" style={{ marginBottom: 0 }}>
                 Documents
               </h1>
 
@@ -253,19 +283,16 @@ export default function DocumentsPage() {
                 <DocumentsQuickActionCard
                   label="Scanner"
                   Icon={ScanLine}
-                  onClick={() => showUnavailable("Scanner")}
                   unavailable
                 />
                 <DocumentsQuickActionCard
                   label="Favoris"
                   Icon={Star}
-                  onClick={() => showUnavailable("Favoris")}
                   unavailable
                 />
                 <DocumentsQuickActionCard
                   label="Fusionner des PDF"
                   Icon={Layers}
-                  onClick={() => showUnavailable("Fusionner des PDF")}
                   unavailable
                 />
               </div>
@@ -358,7 +385,9 @@ export default function DocumentsPage() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => showUnavailable("Créer un dossier vide")}
+                          disabled
+                          aria-disabled
+                          title="Non disponible sur le web pour le moment"
                           style={{
                             padding: "12px 16px",
                             borderRadius: PAIPERS_RADIUS.button,
@@ -366,10 +395,17 @@ export default function DocumentsPage() {
                             background: "#fff",
                             color: PAIPERS_COLORS.textPrimary,
                             fontWeight: 800,
-                            cursor: "pointer",
+                            cursor: "not-allowed",
+                            opacity: 0.55,
                           }}
                         >
                           Créer un dossier vide
+                          <span
+                            className="paipers-text-muted"
+                            style={{ display: "block", fontSize: 12, fontWeight: 600, marginTop: 4 }}
+                          >
+                            Indisponible sur le web
+                          </span>
                         </button>
                       </div>
                     ) : null}

@@ -1,9 +1,9 @@
 "use client";
 
 /**
- * Landing publique Paipers — site marketing web.
- * Pas de fausses stats / témoignages / certifications.
- * Checkout non simulé : CTA → /signup | /login.
+ * Landing publique Paipers — site marketing web premium.
+ * Contenu inchangé ; bandes contrastées desktop.
+ * Pas de fausses stats / témoignages. Checkout non simulé.
  */
 
 import Link from "next/link";
@@ -18,27 +18,42 @@ import {
   Check,
 } from "lucide-react";
 import PublicSiteHeader from "@/components/landing/PublicSiteHeader";
+import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 import {
   PAIPERS_ASSETS,
   PAIPERS_COLORS,
-  PAIPERS_GRADIENTS,
   PAIPERS_RADIUS,
-  gradientCss,
 } from "@/lib/paipersTheme";
+
+type Tone = "light" | "canvas" | "alt" | "night" | "marine" | "violet" | "white";
 
 function Section({
   id,
   children,
   className = "",
+  tone = "light",
 }: {
   id?: string;
   children: React.ReactNode;
   className?: string;
+  tone?: Tone;
 }) {
+  const bg: Record<Tone, string> = {
+    light: "#FFFFFF",
+    canvas: DESKTOP_SURFACES.canvas,
+    alt: DESKTOP_SURFACES.canvasAlt,
+    night: DESKTOP_SURFACES.night,
+    marine: DESKTOP_SURFACES.marine,
+    violet: DESKTOP_SURFACES.violetDeep,
+    white: "#FFFFFF",
+  };
+  const isDark = tone === "night" || tone === "marine" || tone === "violet";
+
   return (
     <section
       id={id}
       className={`px-5 md:px-8 py-16 md:py-24 ${className}`}
+      style={{ background: bg[tone], color: isDark ? DESKTOP_SURFACES.onDark : undefined }}
     >
       <div className="mx-auto w-full" style={{ maxWidth: 1120 }}>
         {children}
@@ -49,108 +64,129 @@ function Section({
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen w-full bg-white overflow-x-hidden">
+    <div className="min-h-screen w-full overflow-x-hidden" style={{ background: DESKTOP_SURFACES.night }}>
       <PublicSiteHeader />
 
-      {/* 1. Hero */}
+      {/* Hero nuit */}
       <section
-        className="px-5 md:px-8 pt-10 pb-16 md:pt-16 md:pb-24"
+        className="relative px-5 md:px-8 pt-14 pb-20 md:pt-24 md:pb-28 overflow-hidden"
         style={{
-          backgroundImage: gradientCss(PAIPERS_GRADIENTS.personalSoft, 180),
-          backgroundColor: "#fff",
+          background: `radial-gradient(ellipse 80% 60% at 70% 20%, rgba(172,228,255,0.18), transparent 55%),
+            radial-gradient(ellipse 50% 40% at 10% 80%, rgba(247,196,232,0.12), transparent 50%),
+            linear-gradient(165deg, ${DESKTOP_SURFACES.night} 0%, #121a2b 45%, ${DESKTOP_SURFACES.marine} 100%)`,
         }}
       >
         <div
-          className="mx-auto grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center"
+          className="mx-auto grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center"
           style={{ maxWidth: 1120 }}
         >
-          <div>
+          <div className="paipers-fade-in">
             <p
-              className="text-sm font-extrabold tracking-wide uppercase mb-4"
-              style={{ color: PAIPERS_COLORS.navy }}
+              className="text-[13px] font-bold tracking-[0.08em] uppercase mb-4"
+              style={{ color: DESKTOP_SURFACES.accentLine }}
             >
-              Paipers
+              Coffre-fort administratif intelligent
             </p>
             <h1
-              className="text-4xl md:text-5xl lg:text-[3.4rem] font-extrabold leading-[1.08] tracking-tight"
-              style={{ color: PAIPERS_COLORS.textPrimary }}
+              className="text-[2.5rem] md:text-5xl lg:text-[3.4rem] font-extrabold leading-[1.06] tracking-tight"
+              style={{ color: DESKTOP_SURFACES.onDark }}
             >
               Ton administratif, enfin sous contrôle.
             </h1>
             <p
               className="mt-5 text-base md:text-lg leading-relaxed max-w-xl"
-              style={{ color: "rgba(0,0,0,0.62)" }}
+              style={{ color: DESKTOP_SURFACES.onDarkMuted }}
             >
               Paipers centralise tes documents, surveille tes échéances, analyse
               tes emails et t’aide à agir au bon moment.
             </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+            <ul className="mt-6 space-y-2.5">
+              {[
+                "Documents classés et retrouvables",
+                "Emails Gmail & Outlook connectables",
+                "Assistant Pupo pour avancer sans friction",
+              ].map((b) => (
+                <li
+                  key={b}
+                  className="flex items-start gap-2.5 text-[14px] font-semibold"
+                  style={{ color: DESKTOP_SURFACES.onDark }}
+                >
+                  <Check size={17} color={DESKTOP_SURFACES.accentLine} className="mt-0.5 shrink-0" />
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-9 flex flex-col sm:flex-row gap-3">
               <Link
                 href="/signup"
                 className="paipers-button text-center"
                 style={{ minWidth: 200 }}
               >
-                Essayer gratuitement
+                Essayer Paipers
               </Link>
               <a
                 href="#fonctionnalites"
-                className="inline-flex items-center justify-center font-extrabold px-6 py-3.5"
+                className="inline-flex items-center justify-center font-bold px-6 py-3.5 paipers-hover-lift"
                 style={{
                   borderRadius: PAIPERS_RADIUS.button,
-                  border: `1px solid ${PAIPERS_COLORS.border}`,
-                  background: "#fff",
-                  color: PAIPERS_COLORS.textPrimary,
+                  border: "1px solid rgba(255,255,255,0.22)",
+                  background: "rgba(255,255,255,0.06)",
+                  color: DESKTOP_SURFACES.onDark,
                   textDecoration: "none",
                   minWidth: 200,
                 }}
               >
-                Découvrir Paipers
+                Découvrir les fonctionnalités
               </a>
             </div>
-            <p className="mt-4 text-xs font-semibold" style={{ color: PAIPERS_COLORS.neutral }}>
-              Essai sans engagement · Pas de faux checkout sur le web
-            </p>
           </div>
-          <div className="flex justify-center lg:justify-end">
+
+          <div className="relative flex justify-center lg:justify-end">
             <div
-              className="paipers-elevated-card relative overflow-hidden w-full max-w-md"
+              className="absolute -inset-6 rounded-[32px] opacity-40 blur-2xl"
               style={{
-                padding: 28,
-                backgroundImage: gradientCss(PAIPERS_GRADIENTS.personal, 135),
+                background:
+                  "linear-gradient(135deg, rgba(172,228,255,0.5), rgba(247,196,232,0.35), rgba(255,236,201,0.3))",
               }}
-            >
-              <img
-                src={PAIPERS_ASSETS.mascot}
-                alt="Pupo, l’assistant Paipers"
-                className="mx-auto w-44 h-auto drop-shadow-md"
-              />
-              <p
-                className="mt-5 text-center text-lg font-extrabold"
-                style={{ color: PAIPERS_COLORS.navy }}
-              >
-                Pupo t’accompagne au quotidien
-              </p>
-              <p
-                className="mt-2 text-center text-sm leading-relaxed"
-                style={{ color: "rgba(26,43,74,0.78)" }}
-              >
-                Pose une question, joins un document, et avance sur ton admin
-                sans te perdre dans les dossiers.
-              </p>
+              aria-hidden
+            />
+            <div className="relative w-full max-w-md space-y-3">
+              <div className="paipers-card-night p-7 paipers-hover-lift">
+                <img
+                  src={PAIPERS_ASSETS.mascot}
+                  alt="Pupo, l’assistant Paipers"
+                  className="mx-auto w-36 h-auto"
+                />
+                <p className="mt-4 text-center text-lg font-extrabold" style={{ color: DESKTOP_SURFACES.onDark }}>
+                  Pupo t’accompagne
+                </p>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { t: "Documents", d: "Classement" },
+                  { t: "Mails", d: "Import" },
+                  { t: "Générer", d: "PDF" },
+                ].map((c) => (
+                  <div key={c.t} className="paipers-card-marine px-3 py-3 paipers-hover-lift">
+                    <p className="text-[12px] font-bold" style={{ color: DESKTOP_SURFACES.onDark, margin: 0 }}>
+                      {c.t}
+                    </p>
+                    <p className="text-[11px] mt-1" style={{ color: DESKTOP_SURFACES.onDarkMuted, margin: 0 }}>
+                      {c.d}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. Problème */}
-      <Section>
+      <Section tone="canvas">
         <h2 className="paipers-screen-title text-center" style={{ fontSize: 32 }}>
           L’administratif s’accumule. Personne n’a le temps.
         </h2>
-        <p
-          className="mt-4 text-center mx-auto max-w-2xl leading-relaxed"
-          style={{ color: "rgba(0,0,0,0.62)" }}
-        >
+        <p className="mt-4 text-center mx-auto max-w-2xl leading-relaxed paipers-text-muted">
           Factures, contrats, mails, échéances : tout est dispersé. Paipers
           regroupe l’essentiel pour que tu saches quoi faire, et quand.
         </p>
@@ -159,17 +195,20 @@ export default function LandingPage() {
             {
               t: "Documents éparpillés",
               d: "PDF, photos, pièces jointes… difficiles à retrouver au bon moment.",
+              card: "paipers-card-muted",
             },
             {
               t: "Échéances oubliées",
               d: "Renouvellements et dates importantes passent souvent inaperçus.",
+              card: "paipers-card-white",
             },
             {
               t: "Trop de friction",
               d: "Rédiger, classer, relancer : autant de tâches chronophages.",
+              card: "paipers-card-gradient",
             },
           ].map((c) => (
-            <div key={c.t} className="paipers-elevated-card">
+            <div key={c.t} className={`${c.card} p-[18px] paipers-hover-lift`}>
               <p className="font-extrabold text-base" style={{ color: PAIPERS_COLORS.textPrimary }}>
                 {c.t}
               </p>
@@ -179,8 +218,7 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      {/* 3. Fonctionnalités */}
-      <Section id="fonctionnalites" className="bg-[color:var(--paipers-muted)]">
+      <Section id="fonctionnalites" tone="white">
         <h2 className="paipers-screen-title text-center" style={{ fontSize: 32 }}>
           Ce que Paipers fait aujourd’hui
         </h2>
@@ -189,61 +227,50 @@ export default function LandingPage() {
         </p>
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            {
-              Icon: FolderOpen,
-              t: "Coffre-fort documents",
-              d: "Importe, classe et consulte tes documents administratifs.",
-            },
-            {
-              Icon: Mail,
-              t: "Emails connectés",
-              d: "Branche Gmail ou Outlook pour importer des pièces jointes.",
-            },
-            {
-              Icon: Bot,
-              t: "Assistant Pupo",
-              d: "Pose des questions sur ton admin et avance étape par étape.",
-            },
-            {
-              Icon: Sparkles,
-              t: "Générer des documents",
-              d: "Rédige des courriers et prépare des PDF à partir de tes besoins.",
-            },
-            {
-              Icon: Calendar,
-              t: "Échéances",
-              d: "Garde un œil sur les dates importantes liées à ton espace.",
-            },
-            {
-              Icon: FileText,
-              t: "Espace Professionnel",
-              d: "Navigation Factures et coque Pro : la facturation complète reste sur mobile pour l’instant.",
-            },
-          ].map(({ Icon, t, d }) => (
-            <div key={t} className="paipers-elevated-card flex gap-4 items-start">
+            { Icon: FolderOpen, t: "Coffre-fort documents", d: "Importe, classe et consulte tes documents administratifs.", dark: false },
+            { Icon: Mail, t: "Emails connectés", d: "Branche Gmail ou Outlook pour importer des pièces jointes.", dark: true },
+            { Icon: Bot, t: "Assistant Pupo", d: "Pose des questions sur ton admin et avance étape par étape.", dark: false },
+            { Icon: Sparkles, t: "Générer des documents", d: "Rédige des courriers et prépare des PDF à partir de tes besoins.", dark: false },
+            { Icon: Calendar, t: "Échéances", d: "Garde un œil sur les dates importantes liées à ton espace.", dark: true },
+            { Icon: FileText, t: "Espace Professionnel", d: "Navigation Factures et coque Pro : la facturation complète reste sur mobile pour l’instant.", dark: false },
+          ].map(({ Icon, t, d, dark }, i) => (
+            <div
+              key={t}
+              className={`flex gap-4 items-start p-[18px] paipers-hover-lift ${
+                dark ? "paipers-card-marine" : i % 3 === 2 ? "paipers-card-gradient" : "paipers-card-white"
+              }`}
+            >
               <span
-                className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
-                style={{ background: "hsl(202 100% 94%)" }}
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                style={{
+                  background: dark ? "rgba(255,255,255,0.1)" : "hsl(202 100% 94%)",
+                }}
               >
-                <Icon size={22} color={PAIPERS_COLORS.navy} />
+                <Icon size={20} color={dark ? DESKTOP_SURFACES.onDark : PAIPERS_COLORS.navy} />
               </span>
               <div>
-                <p className="font-extrabold">{t}</p>
-                <p className="mt-1.5 text-sm leading-relaxed paipers-text-muted">{d}</p>
+                <p className="font-extrabold" style={{ color: dark ? DESKTOP_SURFACES.onDark : undefined }}>
+                  {t}
+                </p>
+                <p
+                  className="mt-1.5 text-sm leading-relaxed"
+                  style={{ color: dark ? DESKTOP_SURFACES.onDarkMuted : undefined }}
+                >
+                  {!dark ? <span className="paipers-text-muted">{d}</span> : d}
+                </p>
               </div>
             </div>
           ))}
         </div>
       </Section>
 
-      {/* 4. Pupo */}
-      <Section id="pupo">
+      <Section id="pupo" tone="marine">
         <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
           <div className="order-2 lg:order-1">
-            <h2 className="paipers-screen-title" style={{ fontSize: 32 }}>
+            <h2 className="text-[32px] font-extrabold tracking-tight" style={{ color: DESKTOP_SURFACES.onDark }}>
               Pupo, ton assistant administratif
             </h2>
-            <p className="mt-4 leading-relaxed paipers-text-muted">
+            <p className="mt-4 leading-relaxed" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
               Pupo t’aide à comprendre un document, à préparer une démarche et à
               rester dans le périmètre administratif. Ce n’est pas un chatbot
               généraliste : il reste centré sur ton admin Paipers.
@@ -254,25 +281,22 @@ export default function LandingPage() {
                 "Actions vers Documents, Générer ou Profil",
                 "Pas de fausses suggestions inventées",
               ].map((line) => (
-                <li key={line} className="flex items-start gap-2.5 text-sm font-semibold">
-                  <Check size={18} color={PAIPERS_COLORS.success} className="mt-0.5 shrink-0" />
+                <li key={line} className="flex items-start gap-2.5 text-sm font-semibold" style={{ color: DESKTOP_SURFACES.onDark }}>
+                  <Check size={18} color={DESKTOP_SURFACES.accentLine} className="mt-0.5 shrink-0" />
                   <span>{line}</span>
                 </li>
               ))}
             </ul>
           </div>
           <div className="order-1 lg:order-2 flex justify-center">
-            <img
-              src={PAIPERS_ASSETS.mascot}
-              alt="Pupo"
-              className="w-56 md:w-64 h-auto"
-            />
+            <div className="paipers-card-night p-10 paipers-hover-lift">
+              <img src={PAIPERS_ASSETS.mascot} alt="Pupo" className="w-52 md:w-60 h-auto mx-auto" />
+            </div>
           </div>
         </div>
       </Section>
 
-      {/* 5. Personnel */}
-      <Section id="particuliers" className="bg-[color:var(--paipers-muted)]">
+      <Section id="particuliers" tone="canvas">
         <h2 className="paipers-screen-title" style={{ fontSize: 32 }}>
           Pour les particuliers
         </h2>
@@ -284,12 +308,8 @@ export default function LandingPage() {
           {["Documents", "Mails", "Assistant", "Générer", "Profil"].map((t) => (
             <span
               key={t}
-              className="px-4 py-2 text-sm font-extrabold"
-              style={{
-                borderRadius: 999,
-                background: "#fff",
-                border: `1px solid ${PAIPERS_COLORS.border}`,
-              }}
+              className="px-4 py-2 text-sm font-extrabold paipers-card-white"
+              style={{ borderRadius: 999, display: "inline-block" }}
             >
               {t}
             </span>
@@ -297,27 +317,21 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      {/* 6. Pro */}
-      <Section id="professionnels">
-        <h2 className="paipers-screen-title" style={{ fontSize: 32 }}>
+      <Section id="professionnels" tone="violet">
+        <h2 className="text-[32px] font-extrabold tracking-tight" style={{ color: DESKTOP_SURFACES.onDark }}>
           Pour les professionnels
         </h2>
-        <p className="mt-3 max-w-2xl leading-relaxed paipers-text-muted">
+        <p className="mt-3 max-w-2xl leading-relaxed" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
           L’espace Professionnel reprend la navigation mobile (Factures, Documents
           Pro, Profil entreprise). Sur le web, certaines fonctions de facturation
           sont encore en préparation : pas de faux clients, pas de chiffre
           d’affaires inventé, pas de checkout trompeur.
         </p>
-        <div
-          className="mt-8 paipers-elevated-card"
-          style={{
-            backgroundImage: gradientCss(PAIPERS_GRADIENTS.professionalSoft),
-          }}
-        >
-          <p className="font-extrabold" style={{ color: PAIPERS_COLORS.navy }}>
+        <div className="mt-8 paipers-card-night p-[18px]">
+          <p className="font-extrabold" style={{ color: DESKTOP_SURFACES.accentLine }}>
             Transparent sur le périmètre
           </p>
-          <p className="mt-2 text-sm leading-relaxed" style={{ color: "rgba(26,43,74,0.8)" }}>
+          <p className="mt-2 text-sm leading-relaxed" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
             La création complète de factures / devis, la synchro entreprise et la
             facturation électronique opérationnelle restent portées prioritairement
             sur l’app mobile. Le web affiche l’espace et les états réels disponibles.
@@ -325,42 +339,58 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      {/* 7. 3 étapes */}
-      <Section className="bg-[color:var(--paipers-muted)]">
+      <Section tone="alt">
         <h2 className="paipers-screen-title text-center" style={{ fontSize: 32 }}>
           En 3 étapes
         </h2>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           {[
-            { n: "1", t: "Crée ton compte", d: "Inscription rapide, puis un onboarding guidé." },
-            { n: "2", t: "Importe tes documents", d: "Fichiers, emails connectés, classement assisté." },
-            { n: "3", t: "Agis avec Pupo", d: "Questions, génération, suivi de ton admin." },
+            { n: "1", t: "Crée ton compte", d: "Inscription rapide, puis un onboarding guidé.", card: "paipers-card-white" },
+            { n: "2", t: "Importe tes documents", d: "Fichiers, emails connectés, classement assisté.", card: "paipers-card-marine" },
+            { n: "3", t: "Agis avec Pupo", d: "Questions, génération, suivi de ton admin.", card: "paipers-card-gradient" },
           ].map((s) => (
-            <div key={s.n} className="paipers-elevated-card">
+            <div key={s.n} className={`${s.card} p-[18px] paipers-hover-lift`}>
               <span
-                className="inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-extrabold text-white"
-                style={{ background: PAIPERS_COLORS.navy }}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-extrabold"
+                style={{
+                  background: s.card === "paipers-card-marine" ? "rgba(255,255,255,0.15)" : PAIPERS_COLORS.navy,
+                  color: "#fff",
+                }}
               >
                 {s.n}
               </span>
-              <p className="mt-4 font-extrabold text-lg">{s.t}</p>
-              <p className="mt-2 text-sm paipers-text-muted leading-relaxed">{s.d}</p>
+              <p
+                className="mt-4 font-extrabold text-lg"
+                style={{ color: s.card === "paipers-card-marine" ? DESKTOP_SURFACES.onDark : undefined }}
+              >
+                {s.t}
+              </p>
+              <p
+                className="mt-2 text-sm leading-relaxed"
+                style={{
+                  color: s.card === "paipers-card-marine" ? DESKTOP_SURFACES.onDarkMuted : undefined,
+                }}
+              >
+                {s.card !== "paipers-card-marine" ? (
+                  <span className="paipers-text-muted">{s.d}</span>
+                ) : (
+                  s.d
+                )}
+              </p>
             </div>
           ))}
         </div>
       </Section>
 
-      {/* 8. Sécurité */}
-      <Section>
+      <Section tone="white">
         <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-          <div
-            className="paipers-elevated-card flex items-center gap-4"
-            style={{ backgroundImage: gradientCss(PAIPERS_GRADIENTS.personalSoft) }}
-          >
-            <Shield size={40} color={PAIPERS_COLORS.navy} />
+          <div className="paipers-card-night p-[18px] flex items-center gap-4">
+            <Shield size={40} color={DESKTOP_SURFACES.accentLine} />
             <div>
-              <p className="font-extrabold text-lg">Sécurité & validation humaine</p>
-              <p className="mt-1 text-sm paipers-text-muted">
+              <p className="font-extrabold text-lg" style={{ color: DESKTOP_SURFACES.onDark }}>
+                Sécurité & validation humaine
+              </p>
+              <p className="mt-1 text-sm" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
                 Tu restes maître des actions importantes.
               </p>
             </div>
@@ -378,8 +408,7 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      {/* 9. Tarifs */}
-      <Section id="tarifs" className="bg-[color:var(--paipers-muted)]">
+      <Section id="tarifs" tone="canvas">
         <h2 className="paipers-screen-title text-center" style={{ fontSize: 32 }}>
           Tarifs simples
         </h2>
@@ -388,29 +417,32 @@ export default function LandingPage() {
           encore branché : l’inscription reste gratuite côté web.
         </p>
         <div className="mt-10 grid gap-5 md:grid-cols-2 max-w-3xl mx-auto">
-          <div className="paipers-elevated-card">
+          <div className="paipers-card-white p-[22px] paipers-hover-lift">
             <p className="text-sm font-extrabold" style={{ color: PAIPERS_COLORS.navy }}>
               Personnel
             </p>
-            <p className="mt-2 text-3xl font-extrabold">6,99 € <span className="text-base font-bold paipers-text-muted">/ mois</span></p>
+            <p className="mt-2 text-3xl font-extrabold">
+              6,99 € <span className="text-base font-bold paipers-text-muted">/ mois</span>
+            </p>
             <p className="mt-2 text-sm font-semibold">7 jours d’essai</p>
             <Link href="/signup" className="paipers-button mt-6 w-full text-center" style={{ display: "block" }}>
               Essayer gratuitement
             </Link>
           </div>
-          <div
-            className="paipers-elevated-card"
-            style={{ borderColor: PAIPERS_COLORS.navy, borderWidth: 2 }}
-          >
-            <p className="text-sm font-extrabold" style={{ color: PAIPERS_COLORS.navy }}>
+          <div className="paipers-card-night p-[22px] paipers-hover-lift">
+            <p className="text-sm font-extrabold" style={{ color: DESKTOP_SURFACES.accentLine }}>
               Offre Professionnelle
             </p>
-            <p className="mt-2 text-2xl font-extrabold">Tarif bientôt disponible</p>
-            <p className="mt-2 text-sm font-semibold">14 jours d’essai au lancement</p>
+            <p className="mt-2 text-2xl font-extrabold" style={{ color: DESKTOP_SURFACES.onDark }}>
+              Tarif bientôt disponible
+            </p>
+            <p className="mt-2 text-sm font-semibold" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
+              14 jours d’essai au lancement
+            </p>
             <Link href="/signup" className="paipers-button mt-6 w-full text-center" style={{ display: "block" }}>
               Essayer Paipers
             </Link>
-            <p className="mt-3 text-xs paipers-text-muted leading-relaxed">
+            <p className="mt-3 text-xs leading-relaxed" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
               Aucun abonnement Pro n’est activé automatiquement sur le web. Le checkout n’est
               pas encore disponible.
             </p>
@@ -418,8 +450,7 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      {/* 10. FAQ */}
-      <Section id="faq">
+      <Section id="faq" tone="alt">
         <h2 className="paipers-screen-title text-center" style={{ fontSize: 32 }}>
           Questions fréquentes
         </h2>
@@ -442,7 +473,7 @@ export default function LandingPage() {
               a: "Pupo est l’assistant Paipers. Il t’aide sur ton administratif, sans promettre des actions hors périmètre.",
             },
           ].map((item) => (
-            <details key={item.q} className="paipers-elevated-card group">
+            <details key={item.q} className="paipers-card-white p-[18px] group">
               <summary className="font-extrabold cursor-pointer list-none flex justify-between gap-3">
                 {item.q}
                 <span className="paipers-text-muted font-bold">+</span>
@@ -453,19 +484,12 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      {/* 11. CTA final */}
-      <Section
-        className="text-center"
-        id="essayer"
-      >
-        <div
-          className="paipers-elevated-card py-12 px-6"
-          style={{ backgroundImage: gradientCss(PAIPERS_GRADIENTS.personalSoft) }}
-        >
-          <h2 className="paipers-screen-title" style={{ fontSize: 32 }}>
+      <Section className="text-center" id="essayer" tone="night">
+        <div className="paipers-card-marine py-12 px-6">
+          <h2 className="text-[32px] font-extrabold tracking-tight" style={{ color: DESKTOP_SURFACES.onDark }}>
             Prêt à reprendre le contrôle ?
           </h2>
-          <p className="mt-3 mx-auto max-w-xl paipers-text-muted">
+          <p className="mt-3 mx-auto max-w-xl" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
             Crée ton compte et commence avec tes documents, tes mails et Pupo.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
@@ -477,9 +501,9 @@ export default function LandingPage() {
               className="inline-flex items-center justify-center font-extrabold px-6 py-3.5"
               style={{
                 borderRadius: PAIPERS_RADIUS.button,
-                background: "#fff",
-                border: `1px solid ${PAIPERS_COLORS.border}`,
-                color: PAIPERS_COLORS.textPrimary,
+                background: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.2)",
+                color: DESKTOP_SURFACES.onDark,
                 textDecoration: "none",
                 minWidth: 200,
               }}
@@ -490,54 +514,61 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      {/* 12. Footer */}
       <footer
         className="border-t px-5 md:px-8 py-10"
-        style={{ borderColor: PAIPERS_COLORS.border, background: "#fff" }}
+        style={{
+          borderColor: "rgba(255,255,255,0.08)",
+          background: DESKTOP_SURFACES.nightElevated,
+          color: DESKTOP_SURFACES.onDark,
+        }}
       >
         <div
           className="mx-auto flex flex-col md:flex-row md:items-start md:justify-between gap-8"
           style={{ maxWidth: 1120 }}
         >
           <div>
-            <img src={PAIPERS_ASSETS.logoSplashLight} alt="Paipers" className="h-8 w-auto" />
-            <p className="mt-3 text-sm paipers-text-muted max-w-xs">
+            <img
+              src={PAIPERS_ASSETS.logoSplashLight}
+              alt="Paipers"
+              className="h-8 w-auto brightness-0 invert"
+            />
+            <p className="mt-3 text-sm max-w-xs" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
               Ton administratif, enfin sous contrôle.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-8 text-sm">
             <div className="flex flex-col gap-2">
               <p className="font-extrabold">Produit</p>
-              <a href="#fonctionnalites" style={{ color: PAIPERS_COLORS.neutral, textDecoration: "none" }}>
+              <a href="#fonctionnalites" style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
                 Fonctionnalités
               </a>
-              <a href="#tarifs" style={{ color: PAIPERS_COLORS.neutral, textDecoration: "none" }}>
+              <a href="#tarifs" style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
                 Tarifs
               </a>
-              <Link href="/signup" style={{ color: PAIPERS_COLORS.neutral, textDecoration: "none" }}>
+              <Link href="/signup" style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
                 Essayer
               </Link>
             </div>
             <div className="flex flex-col gap-2">
               <p className="font-extrabold">Légal</p>
-              <Link href="/legal/cgu" style={{ color: PAIPERS_COLORS.neutral, textDecoration: "none" }}>
+              <Link href="/legal/cgu" style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
                 CGU
               </Link>
               <Link
                 href="/legal/politique-confidentialite"
-                style={{ color: PAIPERS_COLORS.neutral, textDecoration: "none" }}
+                style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}
               >
                 Confidentialité
               </Link>
-              <Link href="/login" style={{ color: PAIPERS_COLORS.neutral, textDecoration: "none" }}>
+              <Link href="/login" style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
                 Connexion
               </Link>
             </div>
           </div>
         </div>
         <p
-          className="mx-auto mt-10 text-xs paipers-text-muted"
-          style={{ maxWidth: 1120 }}
+          className="mx-auto mt-10 text-xs"
+          style={{ maxWidth: 1120, color: DESKTOP_SURFACES.onDarkSoft }}
         >
           © {new Date().getFullYear()} Paipers. Mentions éditeur en cours de
           finalisation — voir les pages légales.

@@ -91,6 +91,7 @@ export default function GenererHub({ embedded = false }: Props) {
           Icon={Sparkles}
           badgePastel={BADGES.Rédigé.pastel}
           vivid={BADGES.Rédigé.vivid}
+          tone="marine"
         />
         <GenererActionCard
           href="/generer/remplir-document"
@@ -99,6 +100,7 @@ export default function GenererHub({ embedded = false }: Props) {
           Icon={FileEdit}
           badgePastel={BADGES.Complété.pastel}
           vivid={BADGES.Complété.vivid}
+          tone="gradient"
         />
         <GenererActionCard
           href="/generer/select-document"
@@ -107,6 +109,7 @@ export default function GenererHub({ embedded = false }: Props) {
           Icon={PenLine}
           badgePastel={BADGES.Signé.pastel}
           vivid={BADGES.Signé.vivid}
+          tone="violet"
         />
       </div>
 

@@ -15,7 +15,6 @@ type Props = {
   onSearchChange: (v: string) => void;
   importBusy: boolean;
   onImport: () => void;
-  onUnavailable: (feature: string) => void;
 };
 
 export default function ProDocumentsHome({
@@ -23,10 +22,9 @@ export default function ProDocumentsHome({
   onSearchChange,
   importBusy,
   onImport,
-  onUnavailable,
 }: Props) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <div>
         <h1 className="paipers-screen-title" style={{ marginBottom: 6 }}>
           Documents
@@ -59,16 +57,19 @@ export default function ProDocumentsHome({
         </div>
         <button
           type="button"
-          onClick={() => onUnavailable("Filtres Pro")}
+          disabled
+          aria-disabled
+          title="Filtres Pro — non disponibles sur le web"
           className="paipers-elevated-card"
           style={{
             padding: "0 16px",
             border: "none",
             fontWeight: 800,
             fontSize: 13,
-            cursor: "pointer",
+            cursor: "not-allowed",
             color: PAIPERS_COLORS.navy,
             borderRadius: 14,
+            opacity: 0.55,
           }}
         >
           Filtrer
@@ -86,7 +87,7 @@ export default function ProDocumentsHome({
         >
           Actions rapides
         </h2>
-        <div className="grid grid-cols-2 gap-[10px]">
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-2.5">
           <DocumentsQuickActionCard
             label={importBusy ? "Import…" : "Importer"}
             Icon={Upload}
@@ -97,65 +98,64 @@ export default function ProDocumentsHome({
           <DocumentsQuickActionCard
             label="Nouveau dossier"
             Icon={FolderPlus}
-            onClick={() => onUnavailable("Nouveau dossier Pro")}
             unavailable
             pro
           />
           <DocumentsQuickActionCard
             label="Scanner"
             Icon={ScanLine}
-            onClick={() => onUnavailable("Scanner")}
             unavailable
             pro
           />
           <DocumentsQuickActionCard
             label="Favoris"
             Icon={Star}
-            onClick={() => onUnavailable("Favoris")}
             unavailable
             pro
           />
         </div>
       </section>
 
-      <section className="paipers-elevated-card" style={{ padding: 16 }}>
-        <h2
-          style={{
-            fontSize: 17,
-            fontWeight: 900,
-            color: PAIPERS_COLORS.textPrimary,
-            margin: "0 0 8px",
-          }}
-        >
-          À traiter
-        </h2>
-        <p className="paipers-text-muted" style={{ margin: 0, fontSize: 14, lineHeight: "20px" }}>
-          Rien en attente. Paipers classera ici les documents qui nécessitent une action.
-        </p>
-      </section>
+      <div className="grid gap-3 md:grid-cols-2">
+        <section className="paipers-elevated-card" style={{ padding: 14 }}>
+          <h2
+            style={{
+              fontSize: 16,
+              fontWeight: 900,
+              color: PAIPERS_COLORS.textPrimary,
+              margin: "0 0 6px",
+            }}
+          >
+            À traiter
+          </h2>
+          <p className="paipers-text-muted" style={{ margin: 0, fontSize: 13, lineHeight: "19px" }}>
+            Rien en attente. Paipers classera ici les documents qui nécessitent une action.
+          </p>
+        </section>
 
-      <section className="paipers-elevated-card" style={{ padding: 16 }}>
-        <h2
-          style={{
-            fontSize: 17,
-            fontWeight: 900,
-            color: PAIPERS_COLORS.textPrimary,
-            margin: "0 0 8px",
-          }}
-        >
-          Récents
-        </h2>
-        <p
-          style={{
-            fontWeight: 800,
-            color: PAIPERS_COLORS.textPrimary,
-            margin: 0,
-            fontSize: 15,
-          }}
-        >
-          Aucun document pour le moment.
-        </p>
-      </section>
+        <section className="paipers-elevated-card" style={{ padding: 14 }}>
+          <h2
+            style={{
+              fontSize: 16,
+              fontWeight: 900,
+              color: PAIPERS_COLORS.textPrimary,
+              margin: "0 0 6px",
+            }}
+          >
+            Récents
+          </h2>
+          <p
+            style={{
+              fontWeight: 800,
+              color: PAIPERS_COLORS.textPrimary,
+              margin: 0,
+              fontSize: 14,
+            }}
+          >
+            Aucun document pour le moment.
+          </p>
+        </section>
+      </div>
 
       <section>
         <div
@@ -186,7 +186,7 @@ export default function ProDocumentsHome({
         >
           Dossiers professionnels affichés pour fidélité mobile — non synchronisés sur le web.
         </p>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <div className="flex flex-col gap-2 md:grid md:grid-cols-2 xl:grid-cols-3 md:gap-3">
           {PRO_DOCUMENTS_HOME_SPACES.map((space) => (
             <div
               key={space.id}
@@ -194,29 +194,29 @@ export default function ProDocumentsHome({
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 14,
-                padding: "14px 16px",
+                gap: 12,
+                padding: "12px 14px",
               }}
             >
               <span
                 style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 12,
+                  width: 36,
+                  height: 36,
+                  borderRadius: 10,
                   background: "hsl(214 62% 90%)",
                   display: "inline-flex",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <FileText size={18} color={PAIPERS_COLORS.navy} />
+                <FileText size={17} color={PAIPERS_COLORS.navy} />
               </span>
               <span style={{ flex: 1, minWidth: 0 }}>
                 <span
                   style={{
                     display: "block",
                     fontWeight: 800,
-                    fontSize: 15,
+                    fontSize: 14,
                     color: PAIPERS_COLORS.textPrimary,
                   }}
                 >
@@ -224,7 +224,7 @@ export default function ProDocumentsHome({
                 </span>
                 <span
                   className="paipers-text-muted"
-                  style={{ display: "block", fontSize: 13, marginTop: 2 }}
+                  style={{ display: "block", fontSize: 12, marginTop: 2 }}
                 >
                   Aucun document
                 </span>

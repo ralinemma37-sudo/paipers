@@ -88,7 +88,7 @@ export default function ProfilHomePage() {
             </p>
           ) : null}
 
-          <div className="max-w-2xl">
+          <div className="md:max-w-none">
             <ProfilIdentityCard
               name={displayName}
               email={email}
@@ -118,6 +118,7 @@ export default function ProfilHomePage() {
                   : "Tes infos personnelles et préférences."
               }
               Icon={isPro ? Building2 : User}
+              tone="marine"
             />
             <ProfilMenuRow
               href="/profil/emails"
@@ -128,30 +129,35 @@ export default function ProfilHomePage() {
                   : "Connecte ta boîte mail personnelle."
               }
               Icon={Mail}
+              tone="gradient"
             />
             <ProfilMenuRow
               href="/profil/cloud"
               title="Cloud"
               desc="Stockage et synchronisation."
               Icon={Cloud}
+              tone="muted"
             />
             <ProfilMenuRow
               href="/profil/abonnement"
               title="Abonnements"
               desc="Consulter la formule actuelle."
               Icon={CreditCard}
+              tone="white"
             />
             <ProfilMenuRow
               href="/profil/parametres"
               title="Paramètres"
               desc="Réglages de l’application."
               Icon={Settings}
+              tone="muted"
             />
             <ProfilMenuRow
               href="/profil/legal"
               title="Confidentialité & légal"
               desc="Politique, CGU, assistant IA, espaces, Gmail."
               Icon={Shield}
+              tone="white"
             />
             <ProfilMenuRow
               href="/profil/support"
@@ -162,6 +168,7 @@ export default function ProfilHomePage() {
                   : "Questions fréquentes et contact Paipers."
               }
               Icon={LifeBuoy}
+              tone="gradient"
             />
           </div>
 

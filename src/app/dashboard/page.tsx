@@ -24,7 +24,8 @@ import HomeDetectedSubscriptionsCard, {
 import HomeImportInboxSection from "@/components/home/HomeImportInboxSection";
 import ProHomeActivitySection from "@/components/home/ProHomeActivitySection";
 import { supabase } from "@/lib/supabase";
-import { PAIPERS_SPACE } from "@/lib/paipersTheme";
+import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
+import { PAIPERS_ASSETS, PAIPERS_SPACE } from "@/lib/paipersTheme";
 
 type PendingDoc = {
   id: string;
@@ -213,30 +214,88 @@ export default function DashboardPage() {
     <Protected>
       <AppShell>
         <div
-          className="pb-24 md:pb-8"
+          className="pb-24 md:pb-4"
           style={{
             padding: PAIPERS_SPACE.screenPad,
           }}
         >
-          {spaceLoaded ? (
-            <p
-              className="paipers-text-muted"
+          <div className="mb-5 md:mb-6">
+            <div
+              className="hidden md:block paipers-card-night p-5 mb-5 paipers-hover-lift"
               style={{
-                fontSize: 12,
-                fontWeight: 700,
-                letterSpacing: 0.2,
-                marginBottom: 16,
+                background: `radial-gradient(ellipse 70% 80% at 90% 20%, rgba(172,228,255,0.16), transparent 50%),
+                  linear-gradient(135deg, ${DESKTOP_SURFACES.night} 0%, ${DESKTOP_SURFACES.marine} 100%)`,
               }}
             >
-              Espace {spaceLabel}
-            </p>
-          ) : null}
+              <div className="flex items-center gap-4">
+                <img
+                  src={PAIPERS_ASSETS.mascot}
+                  alt=""
+                  className="w-14 h-14 object-contain"
+                />
+                <div>
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: 12,
+                      fontWeight: 700,
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
+                      color: DESKTOP_SURFACES.accentLine,
+                    }}
+                  >
+                    Accueil
+                  </p>
+                  <h1
+                    style={{
+                      margin: "4px 0 0",
+                      fontSize: 24,
+                      fontWeight: 800,
+                      color: DESKTOP_SURFACES.onDark,
+                      letterSpacing: -0.4,
+                    }}
+                  >
+                    Ton espace Paipers
+                  </h1>
+                  {spaceLoaded ? (
+                    <p
+                      style={{
+                        margin: "4px 0 0",
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: DESKTOP_SURFACES.onDarkMuted,
+                      }}
+                    >
+                      Espace {spaceLabel}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+            <div className="md:hidden">
+              <h1 className="paipers-screen-title" style={{ marginBottom: 4 }}>
+                Accueil
+              </h1>
+              {spaceLoaded ? (
+                <p
+                  className="paipers-text-muted"
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    margin: 0,
+                  }}
+                >
+                  Espace {spaceLabel}
+                </p>
+              ) : null}
+            </div>
+          </div>
 
           {/* Desktop : 2 colonnes pour blocs successifs ; mobile : pile = ordre mobile */}
           <div
-            className="flex flex-col gap-[22px] lg:grid lg:grid-cols-2 lg:gap-x-6 lg:gap-y-[22px] lg:items-start"
+            className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:gap-x-5 lg:gap-y-4 lg:items-start"
           >
-            <div className="flex flex-col gap-[22px] lg:col-span-2">
+            <div className="flex flex-col gap-4 lg:col-span-2">
               <HomeTopSquareCards eventDays={eventDays} />
             </div>
 
@@ -245,7 +304,7 @@ export default function DashboardPage() {
                 <div className="lg:col-span-1">
                   <ProHomeActivitySection />
                 </div>
-                <div className="lg:col-span-1 flex flex-col gap-[22px]">
+                <div className="lg:col-span-1 flex flex-col gap-4">
                   {subscriptions.length > 0 ? (
                     <HomeDetectedSubscriptionsCard
                       items={subscriptions}

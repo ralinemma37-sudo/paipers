@@ -95,7 +95,7 @@ export default function EmailProviderConnectPage({
       <AppShell>
         <div
           className="pb-24 md:pb-8"
-          style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 640 }}
+          style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 880 }}
         >
           <ProfilSubpageHeader
             title={title}

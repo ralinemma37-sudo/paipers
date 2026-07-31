@@ -49,7 +49,7 @@ export default function CloudPage() {
       <AppShell>
         <div
           className="pb-24 md:pb-8"
-          style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 720 }}
+          style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 960 }}
         >
           <ProfilSubpageHeader
             title="Cloud"

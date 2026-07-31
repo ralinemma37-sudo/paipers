@@ -3,7 +3,7 @@ import "./globals.css";
 import type { ReactNode } from "react";
 import AppProviders from "./Providers";
 import BottomNavGate from "@/components/BottomNavGate";
-import DesktopTopNavGate from "@/components/DesktopTopNavGate";
+import DesktopChromeGate from "@/components/DesktopChromeGate";
 import SpaceSwitcherGate from "@/components/SpaceSwitcherGate";
 
 export const metadata = {
@@ -17,10 +17,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="overflow-x-hidden">
         <AppProviders>
           <div className="min-h-screen flex flex-col">
-            <DesktopTopNavGate />
             <SpaceSwitcherGate />
             <main className="flex-1 pb-20 md:pb-0 min-w-0 overflow-x-hidden">
-              {children}
+              <DesktopChromeGate>{children}</DesktopChromeGate>
             </main>
             <BottomNavGate />
           </div>

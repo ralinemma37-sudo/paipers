@@ -4,6 +4,7 @@
  * Réf. : paipers-mobile/src/components/home/HomeDetectedSubscriptionsCard.tsx
  */
 
+import Link from "next/link";
 import { PAIPERS_COLORS, PAIPERS_PALETTES } from "@/lib/paipersTheme";
 
 export type DetectedSubscriptionRow = {
@@ -33,42 +34,54 @@ export default function HomeDetectedSubscriptionsCard({
   if (items.length === 0 && !showWhenEmpty) return null;
 
   return (
-    <div className="paipers-elevated-card" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      <div>
-        <p
-          style={{
-            fontSize: 17,
-            fontWeight: 900,
-            color: PAIPERS_COLORS.textPrimary,
-            margin: 0,
-          }}
+    <div
+      className="paipers-card-muted md:!p-4"
+      style={{ display: "flex", flexDirection: "column", gap: 10, padding: 16 }}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p
+            style={{
+              fontSize: 17,
+              fontWeight: 900,
+              color: PAIPERS_COLORS.textPrimary,
+              margin: 0,
+            }}
+          >
+            Abonnements détectés
+          </p>
+          {items.length > 0 ? (
+            <p
+              className="paipers-text-muted"
+              style={{ fontSize: 14, lineHeight: "20px", margin: "4px 0 0" }}
+            >
+              {items.length} détecté{items.length > 1 ? "s" : ""} ·{" "}
+              <span style={{ fontWeight: 800, color: PAIPERS_COLORS.textPrimary }}>
+                {formatEuro(totalMonthly)}
+              </span>{" "}
+              / mois ·{" "}
+              <span style={{ fontWeight: 800, color: PAIPERS_COLORS.textPrimary }}>
+                {formatEuro(totalYearly)}
+              </span>{" "}
+              / an
+            </p>
+          ) : (
+            <p
+              className="paipers-text-muted"
+              style={{ fontSize: 14, lineHeight: "20px", margin: "4px 0 0" }}
+            >
+              Importez vos factures et contrats pour repérer automatiquement vos
+              abonnements récurrents.
+            </p>
+          )}
+        </div>
+        <Link
+          href="/documents"
+          className="text-[12px] font-bold shrink-0"
+          style={{ color: PAIPERS_COLORS.navy, textDecoration: "none" }}
         >
-          Abonnements détectés
-        </p>
-        {items.length > 0 ? (
-          <p
-            className="paipers-text-muted"
-            style={{ fontSize: 14, lineHeight: "20px", margin: "4px 0 0" }}
-          >
-            {items.length} détecté{items.length > 1 ? "s" : ""} ·{" "}
-            <span style={{ fontWeight: 800, color: PAIPERS_COLORS.textPrimary }}>
-              {formatEuro(totalMonthly)}
-            </span>{" "}
-            / mois ·{" "}
-            <span style={{ fontWeight: 800, color: PAIPERS_COLORS.textPrimary }}>
-              {formatEuro(totalYearly)}
-            </span>{" "}
-            / an
-          </p>
-        ) : (
-          <p
-            className="paipers-text-muted"
-            style={{ fontSize: 14, lineHeight: "20px", margin: "4px 0 0" }}
-          >
-            Importez vos factures et contrats pour repérer automatiquement vos
-            abonnements récurrents.
-          </p>
-        )}
+          Documents →
+        </Link>
       </div>
 
       {items.length > 0 ? (

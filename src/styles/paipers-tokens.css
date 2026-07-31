@@ -248,3 +248,137 @@
 .paipers-gradient-soft-fill {
   background-image: var(--paipers-gradient-soft-fill);
 }
+
+/* —— Desktop SaaS surfaces (contraste multi-niveaux) —— */
+:root {
+  --paipers-desktop-canvas: #f8f9fc;
+  --paipers-desktop-canvas-alt: #f1f3f7;
+  --paipers-desktop-night: #0b1220;
+  --paipers-desktop-night-elevated: #121a2b;
+  --paipers-desktop-marine: #1a2b4a;
+  --paipers-desktop-violet: #2a1b3d;
+  --paipers-desktop-on-dark: #f5f7fb;
+  --paipers-desktop-on-dark-muted: rgba(245, 247, 251, 0.68);
+  --paipers-desktop-sidebar-w: 232px;
+  --paipers-desktop-header-h: 56px;
+  --paipers-desktop-shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 24px rgba(15, 23, 42, 0.04);
+  --paipers-desktop-shadow-lift: 0 4px 16px rgba(15, 23, 42, 0.08);
+}
+
+@media (min-width: 768px) {
+  .paipers-elevated-card {
+    border-radius: 16px;
+    box-shadow: var(--paipers-desktop-shadow-soft);
+    border-color: rgba(26, 43, 74, 0.08);
+  }
+}
+
+.paipers-card-white {
+  background: #fff;
+  color: var(--paipers-foreground);
+  border: 1px solid rgba(26, 43, 74, 0.08);
+  border-radius: 16px;
+  box-shadow: var(--paipers-desktop-shadow-soft);
+}
+
+.paipers-card-muted {
+  background: #f4f6fa;
+  color: var(--paipers-foreground);
+  border: 1px solid rgba(26, 43, 74, 0.06);
+  border-radius: 16px;
+}
+
+.paipers-card-marine {
+  background: linear-gradient(160deg, #1a2b4a 0%, #243556 100%);
+  color: var(--paipers-desktop-on-dark);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: var(--paipers-desktop-shadow-lift);
+}
+
+.paipers-card-night {
+  background: linear-gradient(165deg, #0b1220 0%, #162033 100%);
+  color: var(--paipers-desktop-on-dark);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(11, 18, 32, 0.28);
+}
+
+.paipers-card-violet {
+  background: linear-gradient(160deg, #2a1b3d 0%, #1f1428 100%);
+  color: var(--paipers-desktop-on-dark);
+  border: 1px solid rgba(247, 196, 232, 0.12);
+  border-radius: 16px;
+}
+
+.paipers-card-gradient {
+  background-image: var(--paipers-gradient-personal-soft);
+  color: var(--paipers-foreground);
+  border: 1px solid rgba(26, 43, 74, 0.06);
+  border-radius: 16px;
+  box-shadow: var(--paipers-desktop-shadow-soft);
+}
+
+.paipers-card-marine .paipers-text-muted,
+.paipers-card-night .paipers-text-muted,
+.paipers-card-violet .paipers-text-muted {
+  color: var(--paipers-desktop-on-dark-muted) !important;
+}
+
+.paipers-surface-canvas {
+  background: var(--paipers-desktop-canvas);
+}
+
+.paipers-surface-canvas-alt {
+  background: var(--paipers-desktop-canvas-alt);
+}
+
+.paipers-surface-night {
+  background: var(--paipers-desktop-night);
+  color: var(--paipers-desktop-on-dark);
+}
+
+.paipers-surface-marine {
+  background: var(--paipers-desktop-marine);
+  color: var(--paipers-desktop-on-dark);
+}
+
+.paipers-surface-violet {
+  background: var(--paipers-desktop-violet);
+  color: var(--paipers-desktop-on-dark);
+}
+
+.paipers-hover-lift {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.paipers-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--paipers-desktop-shadow-lift);
+}
+
+.paipers-fade-in {
+  animation: paipersFadeIn 320ms ease both;
+}
+
+@keyframes paipersFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paipers-hover-lift,
+  .paipers-hover-lift:hover,
+  .paipers-fade-in {
+    transition: none;
+    animation: none;
+    transform: none;
+  }
+}

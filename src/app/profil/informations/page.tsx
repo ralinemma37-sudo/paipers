@@ -154,7 +154,7 @@ export default function InformationsPage() {
       <AppShell>
         <div
           className="pb-24 md:pb-8"
-          style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 720 }}
+          style={{ padding: PAIPERS_SPACE.screenPad, maxWidth: 960 }}
         >
           {!spaceLoaded ? (
             <p className="paipers-text-muted">Chargement…</p>

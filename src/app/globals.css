@@ -8,7 +8,7 @@
 -------------------------------------------------- */
 
 body {
-  background-color: var(--paipers-background);
+  background-color: #f8f9fc;
   color: var(--paipers-foreground);
   /* Mobile = police système (pas de font custom UI chargée) */
   font-family:

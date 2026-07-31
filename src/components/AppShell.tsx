@@ -9,17 +9,12 @@ type AppShellProps = {
 };
 
 /**
- * Conteneur de contenu connecté.
- * Desktop : largeur utile (jusqu’à ~1280px), sans carte géante vide.
- * Mobile : plein écran, BottomNav gérée par le layout.
+ * Conteneur de contenu connecté — canvas desktop SaaS.
  */
-export default function AppShell({ children, maxWidth = 1280 }: AppShellProps) {
+export default function AppShell({ children, maxWidth = 1200 }: AppShellProps) {
   return (
-    <div className="w-full md:px-8 md:py-6 md:min-h-[calc(100vh-4rem)]">
-      <div
-        className="mx-auto w-full min-w-0"
-        style={{ maxWidth }}
-      >
+    <div className="w-full md:px-6 md:py-5 md:min-h-[calc(100vh-3.5rem)]">
+      <div className="mx-auto w-full min-w-0 paipers-fade-in" style={{ maxWidth }}>
         {children}
       </div>
     </div>

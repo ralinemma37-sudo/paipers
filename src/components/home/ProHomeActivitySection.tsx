@@ -71,7 +71,7 @@ export default function ProHomeActivitySection() {
       >
         Mon activité
       </p>
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <div className="flex flex-col gap-2.5 md:grid md:grid-cols-2 md:gap-2.5">
         {EMPTY_ACTIVITY_CARDS.map((card) => {
           const Icon = CARD_ICONS[card.id];
           const inner = (
@@ -81,38 +81,59 @@ export default function ProHomeActivitySection() {
                   width: 44,
                   height: 44,
                   borderRadius: 12,
-                  background: "hsl(214 62% 90%)",
+                  background:
+                    card.id === "invoices"
+                      ? "rgba(255,255,255,0.12)"
+                      : "hsl(214 62% 90%)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   flexShrink: 0,
                 }}
               >
-                <Icon size={20} color={PAIPERS_COLORS.navy} strokeWidth={2.2} />
+                <Icon
+                  size={20}
+                  color={card.id === "invoices" ? "#F5F7FB" : PAIPERS_COLORS.navy}
+                  strokeWidth={2.2}
+                />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p
                   style={{
                     fontSize: 15,
                     fontWeight: 800,
-                    color: PAIPERS_COLORS.textPrimary,
+                    color:
+                      card.id === "invoices"
+                        ? "#F5F7FB"
+                        : PAIPERS_COLORS.textPrimary,
                     margin: 0,
                   }}
                 >
                   {card.title}
                 </p>
                 <p
-                  className="paipers-text-muted"
+                  className={card.id === "invoices" ? undefined : "paipers-text-muted"}
                   style={{
                     fontSize: 13,
                     lineHeight: "18px",
                     margin: "2px 0 0",
+                    color:
+                      card.id === "invoices"
+                        ? "rgba(245,247,251,0.68)"
+                        : undefined,
                   }}
                 >
                   {card.subtitle}
                 </p>
               </div>
-              <ChevronRight size={18} color={PAIPERS_PALETTES.light.textMuted} />
+              <ChevronRight
+                size={18}
+                color={
+                  card.id === "invoices"
+                    ? "rgba(245,247,251,0.45)"
+                    : PAIPERS_PALETTES.light.textMuted
+                }
+              />
             </>
           );
 
@@ -138,7 +159,9 @@ export default function ProHomeActivitySection() {
               <Link
                 key={card.id}
                 href={card.href}
-                className="paipers-elevated-card"
+                className={`paipers-hover-lift ${
+                  card.id === "invoices" ? "paipers-card-marine" : "paipers-card-white"
+                }`}
                 style={rowStyle}
               >
                 {inner}
@@ -147,7 +170,13 @@ export default function ProHomeActivitySection() {
           }
 
           return (
-            <div key={card.id} className="paipers-elevated-card" style={rowStyle}>
+            <div
+              key={card.id}
+              className={`paipers-hover-lift ${
+                card.id === "compliance" ? "paipers-card-muted" : "paipers-card-white"
+              }`}
+              style={rowStyle}
+            >
               {inner}
             </div>
           );

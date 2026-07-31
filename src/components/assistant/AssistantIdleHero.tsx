@@ -5,15 +5,15 @@
  * Animation float : Animated.loop 2200ms translateY 0→−6 (prouvé mobile).
  */
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Check, ChevronRight } from "lucide-react";
 import AssistantMascot from "@/components/assistant/AssistantMascot";
 import AssistantComposer, {
   type AssistantComposerAttachment,
 } from "@/components/assistant/AssistantComposer";
+import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 import { PAIPERS_COLORS } from "@/lib/paipersTheme";
 
-const PAGE_BG = PAIPERS_COLORS.personalGradientSoftStart;
 const ACCENT = PAIPERS_COLORS.navy;
 const SUCCESS = PAIPERS_COLORS.success;
 
@@ -29,6 +29,7 @@ type Props = {
   attachment?: AssistantComposerAttachment | null;
   onRemoveAttachment?: () => void;
   onAttachClick?: () => void;
+  /** Si fourni, affiche « Voir mes priorités ». Sinon le CTA est masqué. */
   onOpenPriorities?: () => void;
 };
 
@@ -51,7 +52,6 @@ export default function AssistantIdleHero({
   onAttachClick,
   onOpenPriorities,
 }: Props) {
-  const [bounce, setBounce] = useState(false);
   const headline = isProMode
     ? "Ton espace Pro est prêt."
     : "Tout est en ordre aujourd’hui.";
@@ -61,141 +61,143 @@ export default function AssistantIdleHero({
 
   return (
     <div
+      className="md:grid md:grid-cols-[minmax(220px,0.85fr)_minmax(320px,1.15fr)] md:items-start md:gap-8 md:text-left"
       style={{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         gap: 12,
         width: "100%",
-        background: PAGE_BG,
-        borderRadius: 24,
-        padding: "16px 16px 20px",
+        background: `radial-gradient(ellipse 60% 50% at 20% 10%, rgba(172,228,255,0.22), transparent 55%),
+          linear-gradient(165deg, #EAF3FF 0%, #F8F9FC 40%, #FADDEA 100%)`,
+        borderRadius: 20,
+        padding: "20px 18px 22px",
+        border: "1px solid rgba(26,43,74,0.08)",
       }}
     >
-      <div style={{ textAlign: "center" }}>
-        <p
-          style={{
-            color: ACCENT,
-            fontSize: 20,
-            fontWeight: 800,
-            letterSpacing: -0.3,
-            margin: 0,
-          }}
-        >
-          Pupo
-        </p>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 5,
-            marginTop: 4,
-          }}
-        >
-          <span
-            style={{
-              width: 7,
-              height: 7,
-              borderRadius: 4,
-              background: SUCCESS,
-            }}
-          />
-          <span
-            className="paipers-text-muted"
-            style={{ fontSize: 12, fontWeight: 600 }}
-          >
-            En ligne
-          </span>
-        </div>
-      </div>
-
-      <button
-        type="button"
-        aria-label="Pupo"
-        onClick={() => {
-          setBounce(true);
-          window.setTimeout(() => setBounce(false), 320);
-        }}
-        className="assistant-pupo-float"
-        style={{
-          border: "none",
-          background: "transparent",
-          cursor: "pointer",
-          padding: 0,
-          transform: bounce ? "scale(0.94)" : undefined,
-          transition: bounce ? "transform 120ms ease" : undefined,
-        }}
-      >
-        <AssistantMascot size={200} />
-      </button>
-
-      <div style={{ width: "100%", maxWidth: 420, marginTop: -8 }}>
-        <div
-          style={{
-            width: 0,
-            height: 0,
-            margin: "0 auto -1px",
-            borderLeft: "9px solid transparent",
-            borderRight: "9px solid transparent",
-            borderBottom: "11px solid #fff",
-          }}
-        />
-        <div
-          className="paipers-elevated-card"
-          style={{
-            borderRadius: 22,
-            borderTopLeftRadius: 18,
-            borderTopRightRadius: 18,
-            padding: "14px 16px 12px",
-          }}
-        >
-          <p style={{ fontSize: 16, fontWeight: 600, margin: "0 0 3px", color: PAIPERS_COLORS.textPrimary }}>
-            Salut {firstName} ! 👋
-          </p>
+      <div className="flex flex-col items-center md:items-stretch w-full">
+        <div style={{ textAlign: "center" }} className="md:text-left">
           <p
             style={{
-              fontSize: 16,
-              fontWeight: 800,
               color: ACCENT,
-              letterSpacing: -0.2,
-              lineHeight: "22px",
+              fontSize: 20,
+              fontWeight: 800,
+              letterSpacing: -0.3,
               margin: 0,
             }}
           >
-            {headline}
+            Pupo
           </p>
-          <p className="paipers-text-muted" style={{ fontSize: 13, marginTop: 5, lineHeight: "18px", marginBottom: 0 }}>
-            {sub}
-          </p>
-          <p className="paipers-text-muted" style={{ fontSize: 11, marginTop: 10, marginBottom: 0 }}>
-            {formatClock()}
-          </p>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 5,
+              marginTop: 4,
+            }}
+            className="md:justify-start"
+          >
+            <span
+              style={{
+                width: 7,
+                height: 7,
+                borderRadius: 4,
+                background: SUCCESS,
+              }}
+            />
+            <span
+              className="paipers-text-muted"
+              style={{ fontSize: 12, fontWeight: 600 }}
+            >
+              En ligne
+            </span>
+          </div>
+        </div>
+
+      <div
+        className="assistant-pupo-float"
+        style={{
+          padding: 0,
+        }}
+        aria-hidden
+      >
+        <span className="md:hidden">
+          <AssistantMascot size={200} />
+        </span>
+        <span className="hidden md:inline-block">
+          <AssistantMascot size={160} />
+        </span>
+      </div>
+
+        <div className="w-full max-w-[420px] md:max-w-none mt-[-8px] md:mt-3">
+          <div
+            className="md:hidden"
+            style={{
+              width: 0,
+              height: 0,
+              margin: "0 auto -1px",
+              borderLeft: "9px solid transparent",
+              borderRight: "9px solid transparent",
+              borderBottom: "11px solid #fff",
+            }}
+          />
+          <div
+            className="paipers-card-night"
+            style={{
+              borderRadius: 18,
+              padding: "14px 16px 12px",
+            }}
+          >
+            <p style={{ fontSize: 16, fontWeight: 600, margin: "0 0 3px", color: DESKTOP_SURFACES.onDark }}>
+              Salut {firstName} ! 👋
+            </p>
+            <p
+              style={{
+                fontSize: 16,
+                fontWeight: 800,
+                color: DESKTOP_SURFACES.accentLine,
+                letterSpacing: -0.2,
+                lineHeight: "22px",
+                margin: 0,
+              }}
+            >
+              {headline}
+            </p>
+            <p style={{ fontSize: 13, marginTop: 5, lineHeight: "18px", marginBottom: 0, color: DESKTOP_SURFACES.onDarkMuted }}>
+              {sub}
+            </p>
+            <p style={{ fontSize: 11, marginTop: 10, marginBottom: 0, color: DESKTOP_SURFACES.onDarkSoft }}>
+              {formatClock()}
+            </p>
+          </div>
         </div>
       </div>
 
-      <div style={{ width: "100%", maxWidth: 420 }}>
-        {adminScore != null && !isProMode ? (
-          <AdminScoreCard score={adminScore} onPress={onOpenPriorities} />
-        ) : (
-          <StatusCard />
-        )}
-      </div>
+      <div className="flex flex-col items-center md:items-stretch gap-3 w-full">
+        <div className="w-full max-w-[420px] md:max-w-none">
+          {adminScore != null && !isProMode ? (
+            <AdminScoreCard score={adminScore} onPress={onOpenPriorities} />
+          ) : (
+            <StatusCard />
+          )}
+        </div>
 
-      <div style={{ width: "100%", maxWidth: 480, marginTop: 4 }}>
-        <AssistantComposer
-          value={input}
-          onChange={onChangeInput}
-          onSubmit={onSubmit}
-          loading={loading}
-          placeholder={
-            attachment ? "Que veux-tu faire avec ce document ?" : placeholder
-          }
-          variant="pill"
-          attachment={attachment}
-          onRemoveAttachment={onRemoveAttachment}
-          onAttachClick={onAttachClick}
-        />
+        <div className="w-full max-w-[480px] md:max-w-none mt-1">
+          <AssistantComposer
+            value={input}
+            onChange={onChangeInput}
+            onSubmit={onSubmit}
+            loading={loading}
+            placeholder={
+              attachment ? "Que veux-tu faire avec ce document ?" : placeholder
+            }
+            variant="pill"
+            attachment={attachment}
+            onRemoveAttachment={onRemoveAttachment}
+            onAttachClick={onAttachClick}
+          />
+        </div>
       </div>
     </div>
   );
