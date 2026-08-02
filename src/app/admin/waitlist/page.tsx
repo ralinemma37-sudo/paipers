@@ -22,6 +22,9 @@ type Stats = {
     les_deux: number;
   };
   marketing: number;
+  confirmationRate?: number;
+  last7Days?: number;
+  last30Days?: number;
 };
 
 type Recent = {
@@ -193,6 +196,42 @@ export default function AdminWaitlistPage() {
                       style={{
                         margin: "8px 0 0",
                         fontSize: 28,
+                        fontWeight: 800,
+                        color: PAIPERS_COLORS.navy,
+                      }}
+                    >
+                      {c.value}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3 mt-3">
+                {[
+                  {
+                    label: "Taux de confirmation",
+                    value: `${stats.confirmationRate ?? 0} %`,
+                  },
+                  {
+                    label: "Inscriptions 7 j",
+                    value: stats.last7Days ?? 0,
+                  },
+                  {
+                    label: "Inscriptions 30 j",
+                    value: stats.last30Days ?? 0,
+                  },
+                ].map((c) => (
+                  <div key={c.label} className="paipers-elevated-card" style={{ padding: 16 }}>
+                    <p
+                      className="paipers-text-muted"
+                      style={{ margin: 0, fontSize: 12, fontWeight: 800, textTransform: "uppercase" }}
+                    >
+                      {c.label}
+                    </p>
+                    <p
+                      style={{
+                        margin: "8px 0 0",
+                        fontSize: 22,
                         fontWeight: 800,
                         color: PAIPERS_COLORS.navy,
                       }}

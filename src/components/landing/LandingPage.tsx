@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import PublicSiteHeader from "@/components/landing/PublicSiteHeader";
 import WaitlistForm from "@/components/landing/WaitlistForm";
+import WaitlistSocialProof from "@/components/landing/WaitlistSocialProof";
 import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 import {
   PAIPERS_ASSETS,
@@ -127,11 +128,15 @@ export default function LandingPage() {
           </div>
 
           <div className="relative flex justify-center lg:justify-end">
+            {/* Halo soft sans filter:blur — évite le flash « carré semi-transparent » au 1er paint */}
             <div
-              className="absolute -inset-6 rounded-[32px] opacity-40 blur-2xl"
+              className="absolute -inset-10 pointer-events-none"
               style={{
-                background:
-                  "linear-gradient(135deg, rgba(172,228,255,0.5), rgba(247,196,232,0.35), rgba(255,236,201,0.3))",
+                background: `
+                  radial-gradient(ellipse 72% 62% at 50% 42%, rgba(172,228,255,0.38), transparent 68%),
+                  radial-gradient(ellipse 58% 52% at 62% 72%, rgba(247,196,232,0.3), transparent 66%),
+                  radial-gradient(ellipse 48% 44% at 32% 58%, rgba(255,236,201,0.22), transparent 62%)
+                `,
               }}
               aria-hidden
             />
@@ -141,6 +146,10 @@ export default function LandingPage() {
                   src={PAIPERS_ASSETS.mascot}
                   alt="Pupo, l’assistant Paipers"
                   className="mx-auto w-36 h-auto"
+                  width={144}
+                  height={144}
+                  decoding="async"
+                  fetchPriority="high"
                 />
                 <p className="mt-4 text-center text-lg font-extrabold" style={{ color: DESKTOP_SURFACES.onDark }}>
                   Pupo t’accompagne
@@ -467,12 +476,13 @@ export default function LandingPage() {
             </h2>
             <p
               className="text-center paipers-text-muted"
-              style={{ marginTop: 12, marginBottom: 22, lineHeight: 1.55 }}
+              style={{ marginTop: 12, marginBottom: 14, lineHeight: 1.55 }}
             >
               Inscris-toi gratuitement. Tu seras averti(e) dès l’ouverture
               officielle et recevras les actualités importantes concernant
               Paipers si tu le souhaites.
             </p>
+            <WaitlistSocialProof />
             <WaitlistForm embedded />
           </div>
         </div>

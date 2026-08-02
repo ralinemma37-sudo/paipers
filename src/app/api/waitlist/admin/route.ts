@@ -73,6 +73,19 @@ export async function GET(req: Request) {
       les_deux: rows.filter((r) => r.profile === "les_deux").length,
     };
     const marketing = rows.filter((r) => r.marketing_consent).length;
+    const confirmationRate =
+      total > 0 ? Math.round((confirmed / total) * 1000) / 10 : 0;
+
+    const now = Date.now();
+    const dayMs = 24 * 60 * 60 * 1000;
+    const last7 = rows.filter((r) => {
+      const t = new Date(r.created_at).getTime();
+      return Number.isFinite(t) && now - t <= 7 * dayMs;
+    }).length;
+    const last30 = rows.filter((r) => {
+      const t = new Date(r.created_at).getTime();
+      return Number.isFinite(t) && now - t <= 30 * dayMs;
+    }).length;
 
     const dayCounts: Record<string, number> = {};
     for (const r of rows) {
@@ -144,6 +157,9 @@ export async function GET(req: Request) {
         unconfirmed,
         byProfile,
         marketing,
+        confirmationRate,
+        last7Days: last7,
+        last30Days: last30,
       },
       evolution,
       recent: rows.slice(0, 50),

@@ -32,5 +32,9 @@ export function getAppBaseUrl(req?: Request): string {
       /* ignore */
     }
   }
+  // Prod waitlist / liens publics — domaine officiel (pas de fallback Vercel).
+  if (process.env.VERCEL_ENV === "production" || process.env.NODE_ENV === "production") {
+    return "https://paipers.fr";
+  }
   return "http://localhost:3000";
 }
