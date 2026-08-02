@@ -1,6 +1,7 @@
 /**
  * Capture page 1 d’un PDF en data-URL (vignettes Documents).
  * Cache mémoire + file d’attente limitée pour éviter de saturer le navigateur.
+ * Exécution navigateur uniquement (pas de document/window au build SSR).
  */
 
 const thumbCache = new Map<string, string>();
@@ -25,20 +26,9 @@ async function withSlot<T>(fn: () => Promise<T>): Promise<T> {
 }
 
 async function renderPdfFirstPage(signedUrl: string): Promise<string | null> {
-  const pdfjsLib = (await import("pdfjs-dist/legacy/build/pdf.mjs")) as {
-    GlobalWorkerOptions: { workerSrc: string };
-    getDocument: (opts: { data: ArrayBuffer }) => {
-      promise: Promise<{
-        getPage: (n: number) => Promise<{
-          getViewport: (opts: { scale: number }) => { width: number; height: number };
-          render: (opts: {
-            canvasContext: CanvasRenderingContext2D;
-            viewport: { width: number; height: number };
-          }) => { promise: Promise<void> };
-        }>;
-      }>;
-    };
-  };
+  if (typeof window === "undefined") return null;
+
+  const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
 
   pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
     "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
@@ -50,7 +40,10 @@ async function renderPdfFirstPage(signedUrl: string): Promise<string | null> {
     return r.arrayBuffer();
   });
 
-  const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+  const loadingTask = pdfjsLib.getDocument({
+    data: new Uint8Array(ab),
+  });
+  const pdf = await loadingTask.promise;
   const page = await pdf.getPage(1);
   const viewport0 = page.getViewport({ scale: 1 });
   const targetW = 280;
@@ -58,12 +51,17 @@ async function renderPdfFirstPage(signedUrl: string): Promise<string | null> {
   const viewport = page.getViewport({ scale });
 
   const canvas = document.createElement("canvas");
-  canvas.width = Math.floor(viewport.width);
-  canvas.height = Math.floor(viewport.height);
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return null;
+  canvas.width = Math.ceil(viewport.width);
+  canvas.height = Math.ceil(viewport.height);
+  const context = canvas.getContext("2d");
+  if (!context) return null;
 
-  await page.render({ canvasContext: ctx, viewport }).promise;
+  await page.render({
+    canvas,
+    canvasContext: context,
+    viewport,
+  }).promise;
+
   return canvas.toDataURL("image/jpeg", 0.82);
 }
 
@@ -75,6 +73,8 @@ export async function renderPdfThumbnail(
   cacheKey: string,
   signedUrl: string,
 ): Promise<string | null> {
+  if (typeof window === "undefined") return null;
+
   const hit = thumbCache.get(cacheKey);
   if (hit) return hit;
 
