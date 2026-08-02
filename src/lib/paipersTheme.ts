@@ -19,6 +19,11 @@
 export const PAIPERS_ASSETS = {
   mascot: "/brand/assistant-mascot.png",
   logoSplashLight: "/brand/splash-logo-light.png",
+  /** Logo sur fond marine (sidebar) — pas de carré blanc / pas de trous. */
+  logoMarine: "/brand/splash-logo-marine.png",
+  /** Logo sur fond nuit (header public). */
+  logoNight: "/brand/splash-logo-night.png",
+  logo: "/brand/splash-logo-marine.png",
 } as const;
 
 /** Palette officielle — paipersColors.ts */

@@ -9,7 +9,8 @@
  * Réf. switch :
  *   paipers-mobile/app/(tabs)/index.tsx (HomeScreenPersonal → Pro vs Personal)
  *
- * Données conservées : pending needs_review + accept/ignore Gmail, reminders (points agenda).
+ * Données conservées : pending needs_review + accept/ignore Gmail,
+ * échéances agenda dérivées de documents.metadata (expiration_date / important_date).
  * Retiré (absent de l’accueil mobile actuel) : StatCards KPI, « Rappels à venir », score hero.
  */
 
@@ -23,8 +24,9 @@ import HomeDetectedSubscriptionsCard, {
 } from "@/components/home/HomeDetectedSubscriptionsCard";
 import HomeImportInboxSection from "@/components/home/HomeImportInboxSection";
 import ProHomeActivitySection from "@/components/home/ProHomeActivitySection";
-import { supabase } from "@/lib/supabase";
+import { fetchAgendaEventsFromDocuments } from "@/lib/agendaEvents";
 import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
+import { supabase } from "@/lib/supabase";
 import { PAIPERS_ASSETS, PAIPERS_SPACE } from "@/lib/paipersTheme";
 
 type PendingDoc = {
@@ -32,12 +34,6 @@ type PendingDoc = {
   title: string | null;
   original_filename: string | null;
   created_at: string;
-};
-
-type Reminder = {
-  id: string;
-  title: string;
-  due_date: string;
 };
 
 export default function DashboardPage() {
@@ -48,7 +44,9 @@ export default function DashboardPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [uiError, setUiError] = useState("");
 
-  const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [agendaEvents, setAgendaEvents] = useState<
+    { due_date: string }[]
+  >([]);
   const [subscriptions, setSubscriptions] = useState<DetectedSubscriptionRow[]>([]);
   const [subscriptionTotal, setSubscriptionTotal] = useState(0);
   const [subscriptionYearly, setSubscriptionYearly] = useState(0);
@@ -67,17 +65,8 @@ export default function DashboardPage() {
     setPendingDocs(pending || []);
     setLoadingPending(false);
 
-    const { data: rems, error: remErr } = await supabase
-      .from("reminders")
-      .select("id,title,due_date")
-      .eq("user_id", auth.user.id)
-      .order("due_date", { ascending: true });
-
-    if (remErr) {
-      setReminders([]);
-    } else {
-      setReminders((rems as Reminder[]) || []);
-    }
+    const { events } = await fetchAgendaEventsFromDocuments();
+    setAgendaEvents(events);
 
     // Abonnements : colonne metadata.subscription (logique mobile).
     // Si absente / non peuplée sur le web → état vide officiel, sans inventer.
@@ -152,7 +141,7 @@ export default function DashboardPage() {
     const y = now.getFullYear();
     const m = now.getMonth();
     const days = new Set<number>();
-    for (const r of reminders) {
+    for (const r of agendaEvents) {
       const d = new Date(r.due_date);
       if (Number.isNaN(d.getTime())) continue;
       if (d.getFullYear() === y && d.getMonth() === m) {
@@ -160,7 +149,7 @@ export default function DashboardPage() {
       }
     }
     return days;
-  }, [reminders]);
+  }, [agendaEvents]);
 
   async function handleAccept(docId: string) {
     setUiError("");
@@ -221,10 +210,11 @@ export default function DashboardPage() {
         >
           <div className="mb-5 md:mb-6">
             <div
-              className="hidden md:block paipers-card-night p-5 mb-5 paipers-hover-lift"
+              className="hidden md:block p-5 mb-5 paipers-hover-lift"
               style={{
-                background: `radial-gradient(ellipse 70% 80% at 90% 20%, rgba(172,228,255,0.16), transparent 50%),
-                  linear-gradient(135deg, ${DESKTOP_SURFACES.night} 0%, ${DESKTOP_SURFACES.marine} 100%)`,
+                background: DESKTOP_SURFACES.marine,
+                borderRadius: 16,
+                border: "1px solid rgba(255,255,255,0.08)",
               }}
             >
               <div className="flex items-center gap-4">
@@ -291,20 +281,32 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Desktop : 2 colonnes pour blocs successifs ; mobile : pile = ordre mobile */}
+          {/* Accueil : pile verticale claire, pas de chevauchement */}
           <div
-            className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:gap-x-5 lg:gap-y-4 lg:items-start"
+            className="w-full max-w-5xl"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 16,
+              position: "relative",
+            }}
           >
-            <div className="flex flex-col gap-4 lg:col-span-2">
+            <div className="w-full min-w-0">
               <HomeTopSquareCards eventDays={eventDays} />
             </div>
 
             {isProHome ? (
-              <>
-                <div className="lg:col-span-1">
+              <div
+                className="w-full grid grid-cols-1 lg:grid-cols-2 gap-4"
+                style={{ alignItems: "start" }}
+              >
+                <div className="min-w-0 w-full">
                   <ProHomeActivitySection />
                 </div>
-                <div className="lg:col-span-1 flex flex-col gap-4">
+                <div
+                  className="min-w-0 w-full"
+                  style={{ display: "flex", flexDirection: "column", gap: 16 }}
+                >
                   {subscriptions.length > 0 ? (
                     <HomeDetectedSubscriptionsCard
                       items={subscriptions}
@@ -322,10 +324,13 @@ export default function DashboardPage() {
                     onIgnore={handleIgnore}
                   />
                 </div>
-              </>
+              </div>
             ) : (
-              <>
-                <div className="lg:col-span-1">
+              <div
+                className="w-full grid grid-cols-1 lg:grid-cols-2 gap-4"
+                style={{ alignItems: "start" }}
+              >
+                <div className="min-w-0 w-full">
                   <HomeDetectedSubscriptionsCard
                     items={subscriptions}
                     totalMonthly={subscriptionTotal}
@@ -333,7 +338,7 @@ export default function DashboardPage() {
                     showWhenEmpty
                   />
                 </div>
-                <div className="lg:col-span-1">
+                <div className="min-w-0 w-full">
                   <HomeImportInboxSection
                     items={pendingDocs}
                     alwaysShow
@@ -344,7 +349,7 @@ export default function DashboardPage() {
                     onIgnore={handleIgnore}
                   />
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>

@@ -129,6 +129,7 @@ function LoginForm() {
           alt="Logo Paipers"
           width={88}
           height={88}
+          className="paipers-brand-logo"
           style={{ width: 88, height: 88, objectFit: "contain" }}
         />
       }
@@ -235,16 +236,16 @@ function LoginForm() {
           margin: "8px 0 0",
         }}
       >
-        Pas de compte ?{" "}
+        Pas encore ouvert au public.{" "}
         <Link
-          href="/signup"
+          href="/#waitlist"
           style={{
             fontWeight: 800,
             color: PAIPERS_COLORS.textPrimary,
             textDecoration: "none",
           }}
         >
-          S’inscrire
+          Rejoindre la liste d’attente
         </Link>
       </p>
     </AuthFormCard>

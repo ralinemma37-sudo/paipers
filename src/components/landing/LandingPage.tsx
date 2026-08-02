@@ -18,6 +18,7 @@ import {
   Check,
 } from "lucide-react";
 import PublicSiteHeader from "@/components/landing/PublicSiteHeader";
+import WaitlistForm from "@/components/landing/WaitlistForm";
 import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 import {
   PAIPERS_ASSETS,
@@ -85,45 +86,29 @@ export default function LandingPage() {
               className="text-[13px] font-bold tracking-[0.08em] uppercase mb-4"
               style={{ color: DESKTOP_SURFACES.accentLine }}
             >
-              Coffre-fort administratif intelligent
+              Paipers
             </p>
             <h1
               className="text-[2.5rem] md:text-5xl lg:text-[3.4rem] font-extrabold leading-[1.06] tracking-tight"
               style={{ color: DESKTOP_SURFACES.onDark }}
             >
-              Ton administratif, enfin sous contrôle.
+              Le copilote administratif intelligent arrive bientôt.
             </h1>
             <p
               className="mt-5 text-base md:text-lg leading-relaxed max-w-xl"
               style={{ color: DESKTOP_SURFACES.onDarkMuted }}
             >
-              Paipers centralise tes documents, surveille tes échéances, analyse
-              tes emails et t’aide à agir au bon moment.
+              Rejoins la liste d’attente et sois informé(e) en priorité de
+              l’ouverture de Paipers.
             </p>
-            <ul className="mt-6 space-y-2.5">
-              {[
-                "Documents classés et retrouvables",
-                "Emails Gmail & Outlook connectables",
-                "Assistant Pupo pour avancer sans friction",
-              ].map((b) => (
-                <li
-                  key={b}
-                  className="flex items-start gap-2.5 text-[14px] font-semibold"
-                  style={{ color: DESKTOP_SURFACES.onDark }}
-                >
-                  <Check size={17} color={DESKTOP_SURFACES.accentLine} className="mt-0.5 shrink-0" />
-                  <span>{b}</span>
-                </li>
-              ))}
-            </ul>
             <div className="mt-9 flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/signup"
+              <a
+                href="#waitlist"
                 className="paipers-button text-center"
-                style={{ minWidth: 200 }}
+                style={{ minWidth: 200, textDecoration: "none" }}
               >
-                Essayer Paipers
-              </Link>
+                Rejoindre la liste d’attente
+              </a>
               <a
                 href="#fonctionnalites"
                 className="inline-flex items-center justify-center font-bold px-6 py-3.5 paipers-hover-lift"
@@ -136,7 +121,7 @@ export default function LandingPage() {
                   minWidth: 200,
                 }}
               >
-                Découvrir les fonctionnalités
+                Découvrir Paipers
               </a>
             </div>
           </div>
@@ -317,7 +302,7 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      <Section id="professionnels" tone="violet">
+      <Section id="professionnels" tone="marine">
         <h2 className="text-[32px] font-extrabold tracking-tight" style={{ color: DESKTOP_SURFACES.onDark }}>
           Pour les professionnels
         </h2>
@@ -413,8 +398,8 @@ export default function LandingPage() {
           Tarifs simples
         </h2>
         <p className="mt-3 text-center paipers-text-muted">
-          Les essais et formules suivent l’offre Paipers. Le paiement web n’est pas
-          encore branché : l’inscription reste gratuite côté web.
+          Les formules suivront l’offre Paipers à l’ouverture. Rejoins la liste
+          d’attente pour être informé(e) en priorité.
         </p>
         <div className="mt-10 grid gap-5 md:grid-cols-2 max-w-3xl mx-auto">
           <div className="paipers-card-white p-[22px] paipers-hover-lift">
@@ -424,28 +409,71 @@ export default function LandingPage() {
             <p className="mt-2 text-3xl font-extrabold">
               6,99 € <span className="text-base font-bold paipers-text-muted">/ mois</span>
             </p>
-            <p className="mt-2 text-sm font-semibold">7 jours d’essai</p>
-            <Link href="/signup" className="paipers-button mt-6 w-full text-center" style={{ display: "block" }}>
-              Essayer gratuitement
-            </Link>
+            <p className="mt-2 text-sm font-semibold">7 jours d’essai au lancement</p>
+            <a href="#waitlist" className="paipers-button mt-6 w-full text-center" style={{ display: "block", textDecoration: "none" }}>
+              Rejoindre la liste d’attente
+            </a>
           </div>
           <div className="paipers-card-night p-[22px] paipers-hover-lift">
             <p className="text-sm font-extrabold" style={{ color: DESKTOP_SURFACES.accentLine }}>
               Offre Professionnelle
             </p>
-            <p className="mt-2 text-2xl font-extrabold" style={{ color: DESKTOP_SURFACES.onDark }}>
-              Tarif bientôt disponible
+            <p className="mt-2 text-3xl font-extrabold" style={{ color: DESKTOP_SURFACES.onDark }}>
+              29,99 € <span className="text-base font-bold" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>/ mois</span>
             </p>
             <p className="mt-2 text-sm font-semibold" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
               14 jours d’essai au lancement
             </p>
-            <Link href="/signup" className="paipers-button mt-6 w-full text-center" style={{ display: "block" }}>
-              Essayer Paipers
-            </Link>
+            <a href="#waitlist" className="paipers-button mt-6 w-full text-center" style={{ display: "block", textDecoration: "none" }}>
+              Rejoindre la liste d’attente
+            </a>
             <p className="mt-3 text-xs leading-relaxed" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
               Aucun abonnement Pro n’est activé automatiquement sur le web. Le checkout n’est
               pas encore disponible.
             </p>
+          </div>
+        </div>
+      </Section>
+
+      <Section id="waitlist" tone="white">
+        <div className="max-w-xl mx-auto">
+          <div
+            className="paipers-elevated-card paipers-hover-lift"
+            style={{
+              padding: "28px 24px",
+              borderRadius: 22,
+              border: `1px solid ${PAIPERS_COLORS.border}`,
+              background:
+                "linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)",
+            }}
+          >
+            <p
+              className="text-[13px] font-bold tracking-[0.06em] uppercase text-center"
+              style={{ color: PAIPERS_COLORS.navy, margin: 0 }}
+            >
+              Liste d’attente
+            </p>
+            <h2
+              className="text-center"
+              style={{
+                margin: "10px 0 0",
+                fontSize: 28,
+                fontWeight: 800,
+                letterSpacing: -0.4,
+                color: PAIPERS_COLORS.navy,
+              }}
+            >
+              Rejoins les premiers utilisateurs de Paipers.
+            </h2>
+            <p
+              className="text-center paipers-text-muted"
+              style={{ marginTop: 12, marginBottom: 22, lineHeight: 1.55 }}
+            >
+              Inscris-toi gratuitement. Tu seras averti(e) dès l’ouverture
+              officielle et recevras les actualités importantes concernant
+              Paipers si tu le souhaites.
+            </p>
+            <WaitlistForm embedded />
           </div>
         </div>
       </Section>
@@ -462,11 +490,11 @@ export default function LandingPage() {
             },
             {
               q: "Mes emails sont-ils en sécurité ?",
-              a: "Les connexions Gmail et Outlook passent par OAuth. Tu peux déconnecter un compte à tout moment depuis le Profil.",
+              a: "Les connexions Gmail et Outlook passent par OAuth. Tu pourras déconnecter un compte à tout moment depuis le Profil.",
             },
             {
-              q: "Puis-je utiliser Paipers gratuitement ?",
-              a: "Tu peux créer un compte et explorer l’espace. Les essais et formules payantes suivent l’offre Paipers ; le checkout web n’est pas encore disponible.",
+              q: "Puis-je utiliser Paipers gratuitement aujourd’hui ?",
+              a: "Paipers n’est pas encore ouvert au public. Rejoins la liste d’attente pour être informé(e) en priorité à l’ouverture. Un accès privé reste réservé à l’équipe.",
             },
             {
               q: "Qu’est-ce que Pupo ?",
@@ -487,17 +515,18 @@ export default function LandingPage() {
       <Section className="text-center" id="essayer" tone="night">
         <div className="paipers-card-marine py-12 px-6">
           <h2 className="text-[32px] font-extrabold tracking-tight" style={{ color: DESKTOP_SURFACES.onDark }}>
-            Prêt à reprendre le contrôle ?
+            Sois parmi les premiers.
           </h2>
           <p className="mt-3 mx-auto max-w-xl" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
-            Crée ton compte et commence avec tes documents, tes mails et Pupo.
+            Rejoins la liste d’attente et sois informé(e) en priorité de
+            l’ouverture de Paipers.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/signup" className="paipers-button" style={{ minWidth: 200, textAlign: "center" }}>
-              Essayer gratuitement
-            </Link>
-            <Link
-              href="/login"
+            <a href="#waitlist" className="paipers-button" style={{ minWidth: 200, textAlign: "center", textDecoration: "none" }}>
+              Rejoindre la liste d’attente
+            </a>
+            <a
+              href="#fonctionnalites"
               className="inline-flex items-center justify-center font-extrabold px-6 py-3.5"
               style={{
                 borderRadius: PAIPERS_RADIUS.button,
@@ -508,8 +537,8 @@ export default function LandingPage() {
                 minWidth: 200,
               }}
             >
-              Se connecter
-            </Link>
+              Découvrir Paipers
+            </a>
           </div>
         </div>
       </Section>
@@ -528,12 +557,12 @@ export default function LandingPage() {
         >
           <div>
             <img
-              src={PAIPERS_ASSETS.logoSplashLight}
+              src={PAIPERS_ASSETS.logoNight}
               alt="Paipers"
-              className="h-8 w-auto brightness-0 invert"
+              className="paipers-brand-logo h-11 w-auto"
             />
             <p className="mt-3 text-sm max-w-xs" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
-              Ton administratif, enfin sous contrôle.
+              Le copilote administratif intelligent arrive bientôt.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-8 text-sm">
@@ -545,9 +574,9 @@ export default function LandingPage() {
               <a href="#tarifs" style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
                 Tarifs
               </a>
-              <Link href="/signup" style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
-                Essayer
-              </Link>
+              <a href="#waitlist" style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
+                Liste d’attente
+              </a>
             </div>
             <div className="flex flex-col gap-2">
               <p className="font-extrabold">Légal</p>
@@ -560,8 +589,16 @@ export default function LandingPage() {
               >
                 Confidentialité
               </Link>
-              <Link href="/login" style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
-                Connexion
+              <Link
+                href="/login"
+                style={{
+                  color: DESKTOP_SURFACES.onDarkSoft,
+                  textDecoration: "none",
+                  opacity: 0.7,
+                  fontSize: 12,
+                }}
+              >
+                Accès privé
               </Link>
             </div>
           </div>

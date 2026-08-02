@@ -63,7 +63,7 @@ export default function DesktopTopNav() {
         style={{ maxWidth: 1280, height: 64 }}
       >
         <Link href="/" className="shrink-0 inline-flex items-center" title="Site Paipers">
-          <img src={NAV_ASSETS.logo} alt="Paipers" className="h-9 w-auto" />
+          <img src={NAV_ASSETS.logo} alt="Paipers" className="paipers-brand-logo h-9 w-auto" />
         </Link>
 
         <nav className="flex flex-1 items-center gap-0.5 min-w-0 overflow-x-auto">

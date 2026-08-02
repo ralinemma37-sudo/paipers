@@ -19,7 +19,7 @@ export default function ProfilIdentityCard({ name, email, badge, href }: Props) 
   return (
     <Link
       href={href}
-      className="paipers-card-night paipers-hover-lift block"
+      className="paipers-card-marine paipers-hover-lift block"
       style={{
         display: "flex",
         alignItems: "center",
@@ -28,8 +28,6 @@ export default function ProfilIdentityCard({ name, email, badge, href }: Props) 
         textDecoration: "none",
         color: "inherit",
         marginBottom: 20,
-        background: `radial-gradient(ellipse 60% 80% at 100% 0%, rgba(172,228,255,0.18), transparent 50%),
-          linear-gradient(135deg, ${DESKTOP_SURFACES.night} 0%, ${DESKTOP_SURFACES.marine} 100%)`,
       }}
     >
       <span

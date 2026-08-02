@@ -65,7 +65,7 @@ const SLUG_TO_LABEL: Record<string, string> = {
   vehicule: "Véhicule",
   véhicule: "Véhicule",
   autres: "Autres",
-  administratif: "Autres",
+  administratif: "Identité",
   "non classé": "Autres",
   "non classe": "Autres",
   non_classe: "Autres",
@@ -81,7 +81,7 @@ export function normCat(cat: string | null | undefined): string {
   if (raw === "contrat") return "contrats";
   if (raw === "assurance") return "assurances";
   if (raw === "abonnement") return "abonnements";
-  if (raw === "administratif") return "autres";
+  if (raw === "administratif") return "identite";
   // accents → ascii-ish keys already in SLUG_TO_LABEL
   const label = SLUG_TO_LABEL[raw];
   if (label) return slugFromLabel(label);

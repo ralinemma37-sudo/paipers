@@ -4,6 +4,7 @@
  * Réf. : paipers-mobile/src/components/documents/DocumentsIndexFolderCard.tsx
  */
 
+import type { CSSProperties } from "react";
 import { FileText } from "lucide-react";
 import Link from "next/link";
 import {
@@ -16,24 +17,20 @@ import { PAIPERS_COLORS } from "@/lib/paipersTheme";
 type Props = {
   categorySlug: string;
   docCount: number;
+  /** Si fourni : bouton (ex. Fusionner) au lieu d’un lien Documents. */
+  onSelect?: () => void;
 };
 
-export default function DocumentsIndexFolderCard({ categorySlug, docCount }: Props) {
+export default function DocumentsIndexFolderCard({
+  categorySlug,
+  docCount,
+  onSelect,
+}: Props) {
   const name = labelCat(categorySlug);
   const { iconBg, icon } = folderIconColorsForCategory(name);
 
-  return (
-    <Link
-      href={`/documents/${encodeURIComponent(categorySlug)}`}
-      className="paipers-card-white block md:min-h-[108px] paipers-hover-lift"
-      style={{
-        minHeight: 120,
-        borderRadius: 16,
-        padding: 14,
-        textDecoration: "none",
-        color: "inherit",
-      }}
-    >
+  const body = (
+    <>
       <div
         style={{
           width: 40,
@@ -70,6 +67,49 @@ export default function DocumentsIndexFolderCard({ categorySlug, docCount }: Pro
       >
         {docCountLabel(docCount)}
       </p>
+    </>
+  );
+
+  const shellStyle: CSSProperties = {
+    minHeight: 120,
+    borderRadius: 16,
+    padding: 14,
+    textDecoration: "none",
+    color: "inherit",
+    display: "block",
+    width: "100%",
+    textAlign: "left",
+    border: "none",
+    cursor: "pointer",
+    background: "#fff",
+  };
+
+  if (onSelect) {
+    return (
+      <button
+        type="button"
+        onClick={onSelect}
+        className="paipers-card-white md:min-h-[108px] paipers-hover-lift"
+        style={shellStyle}
+      >
+        {body}
+      </button>
+    );
+  }
+
+  return (
+    <Link
+      href={`/documents/${encodeURIComponent(categorySlug)}`}
+      className="paipers-card-white block md:min-h-[108px] paipers-hover-lift"
+      style={{
+        minHeight: 120,
+        borderRadius: 16,
+        padding: 14,
+        textDecoration: "none",
+        color: "inherit",
+      }}
+    >
+      {body}
     </Link>
   );
 }

@@ -1,24 +1,21 @@
 "use client";
 
 /**
- * /agenda — calendrier + rappels Supabase existants (id, title, due_date).
- * Pas de nouvelle table ; pas d’actions inventées (création / marquage) sans backend.
+ * /agenda — calendrier + échéances dérivées des documents (metadata).
+ * Pas de table reminders ; lien vers le document si disponible.
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import Protected from "@/components/Protected";
 import AppShell from "@/components/AppShell";
+import {
+  fetchAgendaEventsFromDocuments,
+  type AgendaEvent,
+} from "@/lib/agendaEvents";
 import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
-import { supabase } from "@/lib/supabase";
 import { PAIPERS_COLORS, PAIPERS_SPACE } from "@/lib/paipersTheme";
-
-type Reminder = {
-  id: string;
-  title: string;
-  due_date: string;
-};
 
 function startOfDay(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -46,45 +43,33 @@ function formatDayLabel(d: Date): string {
   });
 }
 
-function formatTimeOrDate(due: string): string {
+function formatDateOnly(due: string): string {
   const d = parseDue(due);
   if (!d) return due;
-  const hasTime =
-    d.getHours() !== 0 || d.getMinutes() !== 0 || d.getSeconds() !== 0;
-  if (hasTime) {
-    return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-  }
-  return "Toute la journée";
+  return d.toLocaleDateString("fr-FR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 }
 
 export default function AgendaPage() {
   const today = useMemo(() => startOfDay(new Date()), []);
   const [cursor, setCursor] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const [selected, setSelected] = useState(() => today);
-  const [reminders, setReminders] = useState<Reminder[]>([]);
+  const [events, setEvents] = useState<AgendaEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
-    const { data: auth } = await supabase.auth.getUser();
-    if (!auth.user) {
-      setReminders([]);
-      setLoading(false);
-      return;
-    }
-    const { data, error: err } = await supabase
-      .from("reminders")
-      .select("id,title,due_date")
-      .eq("user_id", auth.user.id)
-      .order("due_date", { ascending: true });
-
+    const { events: next, error: err } = await fetchAgendaEventsFromDocuments();
     if (err) {
-      setError(err.message || "Impossible de charger l’agenda.");
-      setReminders([]);
+      setError(err);
+      setEvents([]);
     } else {
-      setReminders((data as Reminder[]) || []);
+      setEvents(next);
     }
     setLoading(false);
   }, []);
@@ -97,20 +82,20 @@ export default function AgendaPage() {
     const set = new Set<number>();
     const y = cursor.getFullYear();
     const m = cursor.getMonth();
-    for (const r of reminders) {
+    for (const r of events) {
       const d = parseDue(r.due_date);
       if (!d) continue;
       if (d.getFullYear() === y && d.getMonth() === m) set.add(d.getDate());
     }
     return set;
-  }, [reminders, cursor]);
+  }, [events, cursor]);
 
-  const dayReminders = useMemo(() => {
-    return reminders.filter((r) => {
+  const dayEvents = useMemo(() => {
+    return events.filter((r) => {
       const d = parseDue(r.due_date);
       return d ? sameDay(d, selected) : false;
     });
-  }, [reminders, selected]);
+  }, [events, selected]);
 
   const monthLabel = cursor.toLocaleDateString("fr-FR", {
     month: "long",
@@ -128,13 +113,6 @@ export default function AgendaPage() {
     for (let d = 1; d <= daysInMonth; d++) list.push(d);
     return list;
   }, [cursor]);
-
-  const prevMonth = () => {
-    setCursor((c) => new Date(c.getFullYear(), c.getMonth() - 1, 1));
-  };
-  const nextMonth = () => {
-    setCursor((c) => new Date(c.getFullYear(), c.getMonth() + 1, 1));
-  };
 
   return (
     <Protected>
@@ -154,7 +132,8 @@ export default function AgendaPage() {
               Agenda
             </h1>
             <p className="paipers-text-muted" style={{ margin: 0, fontSize: 14 }}>
-              Tes rappels et échéances enregistrés dans Paipers.
+              Échéances détectées sur tes documents (dates d’expiration et dates
+              importantes).
             </p>
           </div>
 
@@ -186,7 +165,9 @@ export default function AgendaPage() {
               <div className="flex items-center justify-between gap-2 mb-3">
                 <button
                   type="button"
-                  onClick={prevMonth}
+                  onClick={() =>
+                    setCursor((c) => new Date(c.getFullYear(), c.getMonth() - 1, 1))
+                  }
                   aria-label="Mois précédent"
                   className="inline-flex h-9 w-9 items-center justify-center rounded-lg border-0 cursor-pointer"
                   style={{ background: DESKTOP_SURFACES.canvasAlt }}
@@ -206,7 +187,9 @@ export default function AgendaPage() {
                 </p>
                 <button
                   type="button"
-                  onClick={nextMonth}
+                  onClick={() =>
+                    setCursor((c) => new Date(c.getFullYear(), c.getMonth() + 1, 1))
+                  }
                   aria-label="Mois suivant"
                   className="inline-flex h-9 w-9 items-center justify-center rounded-lg border-0 cursor-pointer"
                   style={{ background: DESKTOP_SURFACES.canvasAlt }}
@@ -231,9 +214,7 @@ export default function AgendaPage() {
                   </span>
                 ))}
                 {cells.map((day, i) => {
-                  if (day == null) {
-                    return <span key={`e-${i}`} />;
-                  }
+                  if (day == null) return <span key={`e-${i}`} />;
                   const cellDate = new Date(cursor.getFullYear(), cursor.getMonth(), day);
                   const isSelected = sameDay(cellDate, selected);
                   const isToday = sameDay(cellDate, today);
@@ -252,9 +233,7 @@ export default function AgendaPage() {
                           : isToday
                             ? PAIPERS_COLORS.navyMuted
                             : "transparent",
-                        color: isSelected
-                          ? "#fff"
-                          : PAIPERS_COLORS.textPrimary,
+                        color: isSelected ? "#fff" : PAIPERS_COLORS.textPrimary,
                       }}
                     >
                       {day}
@@ -298,14 +277,17 @@ export default function AgendaPage() {
                 <p className="paipers-text-muted mt-4 text-[13px]" aria-busy>
                   Chargement…
                 </p>
-              ) : dayReminders.length === 0 ? (
+              ) : dayEvents.length === 0 ? (
                 <p className="paipers-text-muted mt-4 text-[13px] leading-relaxed">
-                  Aucun rappel pour ce jour. Les échéances enregistrées dans Paipers
-                  apparaîtront ici.
+                  Aucune échéance pour ce jour. Les dates d’expiration et dates
+                  importantes détectées sur tes documents apparaîtront ici.
                 </p>
               ) : (
-                <ul className="mt-3 flex flex-col gap-2" style={{ listStyle: "none", padding: 0, margin: "12px 0 0" }}>
-                  {dayReminders.map((r) => (
+                <ul
+                  className="mt-3 flex flex-col gap-2"
+                  style={{ listStyle: "none", padding: 0, margin: "12px 0 0" }}
+                >
+                  {dayEvents.map((r) => (
                     <li
                       key={r.id}
                       className="paipers-card-white"
@@ -319,19 +301,37 @@ export default function AgendaPage() {
                           color: PAIPERS_COLORS.textPrimary,
                         }}
                       >
-                        {r.title || "Rappel"}
+                        {r.title}
                       </p>
-                      <p className="paipers-text-muted" style={{ margin: "4px 0 0", fontSize: 12 }}>
-                        {formatTimeOrDate(r.due_date)}
+                      <p
+                        className="paipers-text-muted"
+                        style={{ margin: "4px 0 0", fontSize: 12 }}
+                      >
+                        {formatDateOnly(r.due_date)}
+                        {" · "}
+                        {r.kind === "expiration" ? "Expiration" : "Date importante"}
                       </p>
+                      {r.documentId ? (
+                        <Link
+                          href={`/documents/view?id=${r.documentId}`}
+                          className="inline-flex items-center gap-1 mt-2 text-[12px] font-bold"
+                          style={{ color: PAIPERS_COLORS.navy, textDecoration: "none" }}
+                        >
+                          Ouvrir le document
+                          <ExternalLink size={12} />
+                        </Link>
+                      ) : null}
                     </li>
                   ))}
                 </ul>
               )}
 
-              {!loading && reminders.length > 0 ? (
-                <p className="paipers-text-muted mt-4 text-[12px]" style={{ marginBottom: 0 }}>
-                  {reminders.length} rappel{reminders.length > 1 ? "s" : ""} au total
+              {!loading && events.length > 0 ? (
+                <p
+                  className="paipers-text-muted mt-4 text-[12px]"
+                  style={{ marginBottom: 0 }}
+                >
+                  {events.length} échéance{events.length > 1 ? "s" : ""} au total
                 </p>
               ) : null}
             </div>

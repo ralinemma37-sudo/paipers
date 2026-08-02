@@ -1,8 +1,7 @@
 "use client";
 
 /**
- * Sidebar desktop SaaS — bleu nuit, fine, sobre.
- * Visuel uniquement : mêmes tabs / routes que la nav existante.
+ * Sidebar desktop — fixe, pleine hauteur viewport (jusqu’en bas).
  */
 
 import Link from "next/link";
@@ -23,25 +22,29 @@ export default function DesktopSidebar() {
 
   return (
     <aside
-      className="hidden md:flex flex-col shrink-0 sticky top-0 h-screen border-r"
+      className="hidden md:flex flex-col border-r"
       style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        bottom: 0,
         width: DESKTOP_SURFACES.sidebarWidth,
-        background: DESKTOP_SURFACES.night,
+        background: DESKTOP_SURFACES.marine,
         borderColor: "rgba(255,255,255,0.06)",
         zIndex: 40,
       }}
     >
-      <div className="px-5 pt-5 pb-4">
+      <div className="px-4 pt-5 pb-4 shrink-0">
         <Link href="/" className="inline-flex items-center" title="Site Paipers">
           <img
             src={NAV_ASSETS.logo}
             alt="Paipers"
-            className="h-8 w-auto brightness-0 invert opacity-95"
+            className="paipers-brand-logo h-12 w-auto"
           />
         </Link>
       </div>
 
-      <nav className="flex-1 px-3 py-2 flex flex-col gap-0.5 overflow-y-auto">
+      <nav className="flex-1 px-3 py-2 flex flex-col gap-0.5 overflow-y-auto min-h-0">
         {tabs.map((tab) => {
           const active = isTabActive(pathname, tab.href);
           const Icon = getTabIcon(tab, space);
@@ -95,7 +98,7 @@ export default function DesktopSidebar() {
                     className="absolute -right-0.5 -bottom-0.5 w-2 h-2 rounded-full border"
                     style={{
                       background: DESKTOP_SURFACES.online,
-                      borderColor: DESKTOP_SURFACES.night,
+                      borderColor: DESKTOP_SURFACES.marine,
                     }}
                     title="En ligne"
                   />
@@ -110,7 +113,7 @@ export default function DesktopSidebar() {
       </nav>
 
       <div
-        className="px-4 py-4 border-t text-[11px] font-semibold"
+        className="px-4 py-4 border-t text-[11px] font-semibold shrink-0"
         style={{
           borderColor: "rgba(255,255,255,0.06)",
           color: DESKTOP_SURFACES.onDarkSoft,

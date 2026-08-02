@@ -349,6 +349,13 @@
   color: var(--paipers-desktop-on-dark);
 }
 
+/* Logo marque : le PNG a un fond blanc carré — coins arrondis pour adoucir. */
+.paipers-brand-logo {
+  display: block;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
 .paipers-hover-lift {
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }

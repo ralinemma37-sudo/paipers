@@ -27,6 +27,14 @@ export function titleForGenerateType(type: WebGenerateType): string {
   return TITLE_BY_TYPE[type];
 }
 
+/** Type edge generate-document (mobile toEdgeType). */
+export function edgeTypeForWebGenerate(
+  type: WebGenerateType,
+): "contrat" | "lettre" | "facture" | "resiliation" {
+  if (type.startsWith("resiliation")) return "resiliation";
+  return "lettre";
+}
+
 export function inferWebGenerateType(situation: string): WebGenerateType {
   const t = situation
     .toLowerCase()

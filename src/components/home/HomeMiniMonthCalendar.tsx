@@ -1,36 +1,43 @@
 "use client";
 
 /**
- * Réf. : paipers-mobile/src/components/home/HomeMiniMonthCalendar.tsx (usage via HomeTopSquareCards)
- * Affiche le mois courant + jours avec rappel (points).
+ * Mini calendrier mois — Accueil.
  */
 
+import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 import { PAIPERS_COLORS, PAIPERS_PALETTES } from "@/lib/paipersTheme";
 
 type Props = {
   eventDays: Set<number>;
   width?: number;
-  /** Desktop : occupe la largeur de la carte Agenda. */
   fill?: boolean;
+  /** Texte clair sur carte marine. */
+  dark?: boolean;
 };
 
 export default function HomeMiniMonthCalendar({
   eventDays,
   width = 140,
   fill = false,
+  dark = false,
 }: Props) {
   const now = new Date();
   const y = now.getFullYear();
   const m = now.getMonth();
   const today = now.getDate();
-  const firstDow = new Date(y, m, 1).getDay(); // 0=dim
-  const startOffset = (firstDow + 6) % 7; // lundi = 0
+  const firstDow = new Date(y, m, 1).getDay();
+  const startOffset = (firstDow + 6) % 7;
   const daysInMonth = new Date(y, m + 1, 0).getDate();
   const monthLabel = now.toLocaleDateString("fr-FR", { month: "long", year: "numeric" });
 
   const cells: (number | null)[] = [];
   for (let i = 0; i < startOffset; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+
+  const titleColor = dark ? DESKTOP_SURFACES.onDark : PAIPERS_COLORS.textPrimary;
+  const mutedColor = dark ? DESKTOP_SURFACES.onDarkMuted : PAIPERS_PALETTES.light.textMuted;
+  const dayColor = dark ? DESKTOP_SURFACES.onDark : PAIPERS_COLORS.textPrimary;
+  const todayColor = dark ? DESKTOP_SURFACES.accentLine : PAIPERS_COLORS.navy;
 
   return (
     <div
@@ -46,7 +53,7 @@ export default function HomeMiniMonthCalendar({
         style={{
           fontSize: fill ? 14 : 12,
           fontWeight: 800,
-          color: PAIPERS_COLORS.textPrimary,
+          color: titleColor,
           textTransform: "capitalize",
           margin: 0,
         }}
@@ -66,7 +73,7 @@ export default function HomeMiniMonthCalendar({
             style={{
               fontSize: fill ? 11 : 9,
               fontWeight: 700,
-              color: PAIPERS_PALETTES.light.textMuted,
+              color: mutedColor,
               textAlign: "center",
             }}
           >
@@ -79,10 +86,7 @@ export default function HomeMiniMonthCalendar({
             style={{
               fontSize: fill ? 13 : 10,
               fontWeight: d === today ? 800 : 600,
-              color:
-                d === today
-                  ? PAIPERS_COLORS.navy
-                  : PAIPERS_COLORS.textPrimary,
+              color: d === today ? todayColor : dayColor,
               textAlign: "center",
               position: "relative",
               paddingBottom: fill ? 8 : 6,
@@ -101,7 +105,7 @@ export default function HomeMiniMonthCalendar({
                   width: 4,
                   height: 4,
                   borderRadius: 999,
-                  background: PAIPERS_COLORS.personalGradientStart,
+                  background: DESKTOP_SURFACES.accentLine,
                 }}
               />
             ) : null}

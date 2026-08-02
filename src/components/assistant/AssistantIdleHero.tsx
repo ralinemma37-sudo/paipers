@@ -1,8 +1,8 @@
 "use client";
 
 /**
- * Hero idle Pupo — réf. AssistantHeroBlock.tsx (IdleHeader, PupoHero, SpeechBubble, AdminScoreCard, StatusCard)
- * Animation float : Animated.loop 2200ms translateY 0→−6 (prouvé mobile).
+ * Hero idle Pupo — pièce centrale, centrée (mobile + desktop).
+ * Réf. AssistantHeroBlock.tsx
  */
 
 import { useEffect } from "react";
@@ -29,7 +29,6 @@ type Props = {
   attachment?: AssistantComposerAttachment | null;
   onRemoveAttachment?: () => void;
   onAttachClick?: () => void;
-  /** Si fourni, affiche « Voir mes priorités ». Sinon le CTA est masqué. */
   onOpenPriorities?: () => void;
 };
 
@@ -61,143 +60,150 @@ export default function AssistantIdleHero({
 
   return (
     <div
-      className="md:grid md:grid-cols-[minmax(220px,0.85fr)_minmax(320px,1.15fr)] md:items-start md:gap-8 md:text-left"
       style={{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 12,
+        gap: 14,
         width: "100%",
-        background: `radial-gradient(ellipse 60% 50% at 20% 10%, rgba(172,228,255,0.22), transparent 55%),
-          linear-gradient(165deg, #EAF3FF 0%, #F8F9FC 40%, #FADDEA 100%)`,
-        borderRadius: 20,
-        padding: "20px 18px 22px",
+        maxWidth: 560,
+        margin: "0 auto",
+        background: `radial-gradient(ellipse 70% 55% at 50% 18%, rgba(172,228,255,0.28), transparent 58%),
+          linear-gradient(165deg, #EAF3FF 0%, #F8F9FC 42%, #FADDEA 100%)`,
+        borderRadius: 24,
+        padding: "28px 22px 26px",
         border: "1px solid rgba(26,43,74,0.08)",
       }}
     >
-      <div className="flex flex-col items-center md:items-stretch w-full">
-        <div style={{ textAlign: "center" }} className="md:text-left">
+      <div style={{ textAlign: "center", width: "100%" }}>
+        <p
+          style={{
+            color: ACCENT,
+            fontSize: 22,
+            fontWeight: 800,
+            letterSpacing: -0.3,
+            margin: 0,
+          }}
+        >
+          Pupo
+        </p>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 5,
+            marginTop: 4,
+          }}
+        >
+          <span
+            style={{
+              width: 7,
+              height: 7,
+              borderRadius: 4,
+              background: SUCCESS,
+            }}
+          />
+          <span
+            className="paipers-text-muted"
+            style={{ fontSize: 12, fontWeight: 600 }}
+          >
+            En ligne
+          </span>
+        </div>
+      </div>
+
+      <div className="assistant-pupo-float" style={{ padding: 0 }} aria-hidden>
+        <AssistantMascot size={240} />
+      </div>
+
+      <div className="w-full" style={{ maxWidth: 440, marginTop: -4 }}>
+        <div
+          style={{
+            width: 0,
+            height: 0,
+            margin: "0 auto -1px",
+            borderLeft: "9px solid transparent",
+            borderRight: "9px solid transparent",
+            borderBottom: "11px solid #1A2B4A",
+          }}
+        />
+        <div
+          className="paipers-card-marine"
+          style={{
+            borderRadius: 18,
+            padding: "14px 16px 12px",
+            textAlign: "center",
+          }}
+        >
           <p
             style={{
-              color: ACCENT,
-              fontSize: 20,
+              fontSize: 16,
+              fontWeight: 600,
+              margin: "0 0 3px",
+              color: DESKTOP_SURFACES.onDark,
+            }}
+          >
+            Salut {firstName} ! 👋
+          </p>
+          <p
+            style={{
+              fontSize: 16,
               fontWeight: 800,
-              letterSpacing: -0.3,
+              color: DESKTOP_SURFACES.accentLine,
+              letterSpacing: -0.2,
+              lineHeight: "22px",
               margin: 0,
             }}
           >
-            Pupo
+            {headline}
           </p>
-          <div
+          <p
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 5,
-              marginTop: 4,
-            }}
-            className="md:justify-start"
-          >
-            <span
-              style={{
-                width: 7,
-                height: 7,
-                borderRadius: 4,
-                background: SUCCESS,
-              }}
-            />
-            <span
-              className="paipers-text-muted"
-              style={{ fontSize: 12, fontWeight: 600 }}
-            >
-              En ligne
-            </span>
-          </div>
-        </div>
-
-      <div
-        className="assistant-pupo-float"
-        style={{
-          padding: 0,
-        }}
-        aria-hidden
-      >
-        <span className="md:hidden">
-          <AssistantMascot size={200} />
-        </span>
-        <span className="hidden md:inline-block">
-          <AssistantMascot size={160} />
-        </span>
-      </div>
-
-        <div className="w-full max-w-[420px] md:max-w-none mt-[-8px] md:mt-3">
-          <div
-            className="md:hidden"
-            style={{
-              width: 0,
-              height: 0,
-              margin: "0 auto -1px",
-              borderLeft: "9px solid transparent",
-              borderRight: "9px solid transparent",
-              borderBottom: "11px solid #fff",
-            }}
-          />
-          <div
-            className="paipers-card-night"
-            style={{
-              borderRadius: 18,
-              padding: "14px 16px 12px",
+              fontSize: 13,
+              marginTop: 5,
+              lineHeight: "18px",
+              marginBottom: 0,
+              color: DESKTOP_SURFACES.onDarkMuted,
             }}
           >
-            <p style={{ fontSize: 16, fontWeight: 600, margin: "0 0 3px", color: DESKTOP_SURFACES.onDark }}>
-              Salut {firstName} ! 👋
-            </p>
-            <p
-              style={{
-                fontSize: 16,
-                fontWeight: 800,
-                color: DESKTOP_SURFACES.accentLine,
-                letterSpacing: -0.2,
-                lineHeight: "22px",
-                margin: 0,
-              }}
-            >
-              {headline}
-            </p>
-            <p style={{ fontSize: 13, marginTop: 5, lineHeight: "18px", marginBottom: 0, color: DESKTOP_SURFACES.onDarkMuted }}>
-              {sub}
-            </p>
-            <p style={{ fontSize: 11, marginTop: 10, marginBottom: 0, color: DESKTOP_SURFACES.onDarkSoft }}>
-              {formatClock()}
-            </p>
-          </div>
+            {sub}
+          </p>
+          <p
+            style={{
+              fontSize: 11,
+              marginTop: 10,
+              marginBottom: 0,
+              color: DESKTOP_SURFACES.onDarkSoft,
+            }}
+          >
+            {formatClock()}
+          </p>
         </div>
       </div>
 
-      <div className="flex flex-col items-center md:items-stretch gap-3 w-full">
-        <div className="w-full max-w-[420px] md:max-w-none">
-          {adminScore != null && !isProMode ? (
-            <AdminScoreCard score={adminScore} onPress={onOpenPriorities} />
-          ) : (
-            <StatusCard />
-          )}
-        </div>
+      <div className="w-full" style={{ maxWidth: 440 }}>
+        {adminScore != null && !isProMode ? (
+          <AdminScoreCard score={adminScore} onPress={onOpenPriorities} />
+        ) : (
+          <StatusCard />
+        )}
+      </div>
 
-        <div className="w-full max-w-[480px] md:max-w-none mt-1">
-          <AssistantComposer
-            value={input}
-            onChange={onChangeInput}
-            onSubmit={onSubmit}
-            loading={loading}
-            placeholder={
-              attachment ? "Que veux-tu faire avec ce document ?" : placeholder
-            }
-            variant="pill"
-            attachment={attachment}
-            onRemoveAttachment={onRemoveAttachment}
-            onAttachClick={onAttachClick}
-          />
-        </div>
+      <div className="w-full" style={{ maxWidth: 480, marginTop: 4 }}>
+        <AssistantComposer
+          value={input}
+          onChange={onChangeInput}
+          onSubmit={onSubmit}
+          loading={loading}
+          placeholder={
+            attachment ? "Que veux-tu faire avec ce document ?" : placeholder
+          }
+          variant="pill"
+          attachment={attachment}
+          onRemoveAttachment={onRemoveAttachment}
+          onAttachClick={onAttachClick}
+        />
       </div>
     </div>
   );
@@ -401,7 +407,6 @@ function StatusCard() {
   );
 }
 
-/** CSS float keyframes injected once */
 export function AssistantPupoFloatStyles() {
   useEffect(() => {
     const id = "assistant-pupo-float-style";

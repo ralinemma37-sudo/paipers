@@ -58,7 +58,35 @@ export async function GET(req: NextRequest) {
 
   const tokenJson = await tokenRes.json();
   if (!tokenRes.ok) {
-    return NextResponse.json({ error: "token_exchange_failed", detail: tokenJson }, { status: 502 });
+    const googleError = String(tokenJson?.error || "");
+    if (googleError === "invalid_grant") {
+      const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gmail — reconnexion</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 520px; margin: 48px auto; padding: 0 20px; color: #1a2b4a; line-height: 1.5; }
+    a { color: #1a2b4a; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <h1>Connexion Gmail à recommencer</h1>
+  <p>Le code Google a expiré ou a déjà été utilisé (souvent après un rafraîchissement de page).</p>
+  <p>Ne recharge pas cette URL. Repars depuis Profil → Gmail → Connecter.</p>
+  <p><a href="/profil/gmail">← Retour à Gmail</a></p>
+</body>
+</html>`;
+      return new NextResponse(html, {
+        status: 400,
+        headers: { "Content-Type": "text/html; charset=utf-8" },
+      });
+    }
+    return NextResponse.json(
+      { error: "token_exchange_failed", detail: tokenJson },
+      { status: 502 },
+    );
   }
 
   const refreshToken = tokenJson.refresh_token as string | undefined;

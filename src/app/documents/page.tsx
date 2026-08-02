@@ -6,8 +6,9 @@
  * Pro : ProDocumentsScreen.tsx (présentation ; données Pro non branchées)
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Layers, ScanLine, Star, Upload } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Layers, Star, Upload } from "lucide-react";
 import Protected from "@/components/Protected";
 import AppShell from "@/components/AppShell";
 import { useNavSpace } from "@/components/NavSpaceProvider";
@@ -16,10 +17,12 @@ import DocumentsIndexFolderGrid, {
   type CategoriesViewMode,
 } from "@/components/documents/DocumentsIndexFolderGrid";
 import DocumentGridTile from "@/components/documents/DocumentGridTile";
-import DocumentsImportSourceSheet from "@/components/documents/DocumentsImportSourceSheet";
 import ProDocumentsHome from "@/components/documents/ProDocumentsHome";
+import { useDocumentFavorites } from "@/hooks/useDocumentFavorites";
+import { classifyDocumentsByIds } from "@/lib/classifyDocumentsClient";
 import { normCat } from "@/lib/documentCategories";
 import { importDocumentFile } from "@/lib/importDocument";
+import { effectiveDocumentCategory } from "@/lib/runDocumentAnalysis";
 import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 import { supabase } from "@/lib/supabase";
 import { PAIPERS_COLORS, PAIPERS_RADIUS, PAIPERS_SPACE } from "@/lib/paipersTheme";
@@ -28,12 +31,16 @@ type Doc = {
   id: string;
   title: string | null;
   category: string | null;
+  ai_category?: string | null;
   created_at: string;
   file_path: string | null;
+  mime_type?: string | null;
 };
 
 export default function DocumentsPage() {
+  const router = useRouter();
   const { showProTabs, loaded: spaceLoaded } = useNavSpace();
+  const { favorites } = useDocumentFavorites();
 
   const [docs, setDocs] = useState<Doc[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,12 +48,19 @@ export default function DocumentsPage() {
   const [search, setSearch] = useState("");
   const [viewMode, setViewMode] = useState<CategoriesViewMode>("grid");
 
-  const [importOpen, setImportOpen] = useState(false);
   const [importBusy, setImportBusy] = useState(false);
   const [importMsg, setImportMsg] = useState("");
   const [toast, setToast] = useState("");
-  const [toastTone, setToastTone] = useState<"info" | "success">("info");
+  const [toastTone, setToastTone] = useState<"info" | "success" | "error">("info");
   const [dragOver, setDragOver] = useState(false);
+  const [classifyBusy, setClassifyBusy] = useState(false);
+  const autoClassifyTried = useRef(false);
+  const importInputRef = useRef<HTMLInputElement>(null);
+
+  const openImportPicker = () => {
+    if (importBusy) return;
+    importInputRef.current?.click();
+  };
 
   useEffect(() => {
     try {
@@ -63,7 +77,7 @@ export default function DocumentsPage() {
 
     const { data, error } = await supabase
       .from("documents")
-      .select("id,title,category,created_at,file_path")
+      .select("id,title,category,ai_category,created_at,file_path,mime_type")
       .eq("user_id", auth.user.id)
       .eq("is_ready", true)
       .order("created_at", { ascending: false });
@@ -85,7 +99,7 @@ export default function DocumentsPage() {
   const groups = useMemo(() => {
     const g: Record<string, Doc[]> = {};
     docs.forEach((d) => {
-      const cat = normCat(d.category);
+      const cat = normCat(effectiveDocumentCategory(d.category, d.ai_category));
       if (!g[cat]) g[cat] = [];
       g[cat].push(d);
     });
@@ -111,6 +125,81 @@ export default function DocumentsPage() {
 
   const recentDocs = useMemo(() => docs.slice(0, 4), [docs]);
 
+  const uncategorizedIds = useMemo(
+    () =>
+      docs
+        .filter(
+          (d) =>
+            normCat(effectiveDocumentCategory(d.category, d.ai_category)) ===
+            "autres",
+        )
+        .map((d) => d.id),
+    [docs],
+  );
+
+  const runClassifyUncategorized = useCallback(
+    async (ids: string[], opts?: { silent?: boolean }) => {
+      if (ids.length === 0 || classifyBusy) return;
+      setClassifyBusy(true);
+      if (!opts?.silent) {
+        setToastTone("info");
+        setToast(
+          ids.length > 1
+            ? `Classification IA de ${ids.length} documents…`
+            : "Classification IA en cours…",
+        );
+      }
+      try {
+        // Un document à la fois (edge analyze-document)
+        let okCount = 0;
+        const errors: string[] = [];
+        for (let i = 0; i < ids.length; i++) {
+          setToast(
+            `Classification IA… ${i + 1}/${ids.length}`,
+          );
+          const results = await classifyDocumentsByIds([ids[i]]);
+          const r = results[0];
+          if (r?.ok) okCount += 1;
+          else if (r?.error) errors.push(r.error);
+        }
+        await loadDocs();
+        if (okCount > 0) {
+          setToastTone("success");
+          setToast(
+            okCount > 1
+              ? `${okCount} documents classés`
+              : "Document classé",
+          );
+        } else {
+          setToastTone("error");
+          const firstErr = errors[0] || "Classification impossible";
+          setToast(
+            firstErr.includes("openai") || firstErr.includes("OPENAI")
+              ? "IA non configurée côté serveur Supabase."
+              : firstErr,
+          );
+        }
+        window.setTimeout(() => setToast(""), 6000);
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : "Classification impossible.";
+        setToastTone("error");
+        setToast(msg);
+        window.setTimeout(() => setToast(""), 6000);
+      } finally {
+        setClassifyBusy(false);
+      }
+    },
+    [classifyBusy, loadDocs],
+  );
+
+  useEffect(() => {
+    if (loading || autoClassifyTried.current || classifyBusy) return;
+    if (uncategorizedIds.length === 0) return;
+    autoClassifyTried.current = true;
+    // Classification automatique (pas de bouton manuel).
+    void runClassifyUncategorized(uncategorizedIds, { silent: true });
+  }, [loading, uncategorizedIds, classifyBusy, runClassifyUncategorized]);
+
   const runImport = async (fileList: FileList | File[]) => {
     const files = Array.from(fileList);
     if (files.length === 0) return;
@@ -121,14 +210,20 @@ export default function DocumentsPage() {
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) throw new Error("Non connecté.");
 
+      setToastTone("info");
+      setToast(
+        files.length > 1
+          ? `Import + classification de ${files.length} fichiers…`
+          : "Import + classification…",
+      );
+
       for (const file of files) {
         await importDocumentFile(file, auth.user.id);
       }
 
-      setImportOpen(false);
       setToastTone("success");
       setToast(
-        files.length > 1 ? "Documents importés" : "Document importé",
+        files.length > 1 ? "Documents importés et classés" : "Document importé et classé",
       );
       window.setTimeout(() => setToast(""), 2800);
       setLoading(true);
@@ -200,12 +295,16 @@ export default function DocumentsPage() {
                 color:
                   toastTone === "success"
                     ? PAIPERS_COLORS.textPrimary
-                    : PAIPERS_COLORS.neutral,
+                    : toastTone === "error"
+                      ? "#991B1B"
+                      : PAIPERS_COLORS.neutral,
                 maxWidth: "90vw",
                 borderLeft:
-                  toastTone === "info"
-                    ? `4px solid ${PAIPERS_COLORS.neutral}`
-                    : `4px solid ${PAIPERS_COLORS.success}`,
+                  toastTone === "error"
+                    ? "4px solid #B91C1C"
+                    : toastTone === "info"
+                      ? `4px solid ${PAIPERS_COLORS.neutral}`
+                      : `4px solid ${PAIPERS_COLORS.success}`,
               }}
             >
               {toast}
@@ -217,7 +316,7 @@ export default function DocumentsPage() {
               search={search}
               onSearchChange={setSearch}
               importBusy={importBusy}
-              onImport={() => setImportOpen(true)}
+              onImport={openImportPicker}
             />
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
@@ -273,27 +372,26 @@ export default function DocumentsPage() {
                 />
               </div>
 
-              <div className="mt-3.5 grid grid-cols-2 gap-2.5 md:grid-cols-4">
+              <div className="mt-3.5 grid grid-cols-2 gap-2.5 md:grid-cols-3 md:max-w-2xl">
                 <DocumentsQuickActionCard
                   label={importBusy ? "Import…" : "Importer"}
                   Icon={Upload}
-                  onClick={() => setImportOpen(true)}
-                  disabled={importBusy}
+                  onClick={openImportPicker}
+                  disabled={importBusy || classifyBusy}
                 />
                 <DocumentsQuickActionCard
-                  label="Scanner"
-                  Icon={ScanLine}
-                  unavailable
-                />
-                <DocumentsQuickActionCard
-                  label="Favoris"
+                  label={
+                    favorites.length > 0
+                      ? `Favoris (${favorites.length})`
+                      : "Favoris"
+                  }
                   Icon={Star}
-                  unavailable
+                  onClick={() => router.push("/documents/favorites")}
                 />
                 <DocumentsQuickActionCard
                   label="Fusionner des PDF"
                   Icon={Layers}
-                  unavailable
+                  onClick={() => router.push("/documents/fusionner")}
                 />
               </div>
 
@@ -363,13 +461,13 @@ export default function DocumentsPage() {
                           className="paipers-text-muted"
                           style={{ fontSize: 14, lineHeight: "20px", margin: 0 }}
                         >
-                          Importe un PDF ou scanne une page : après analyse, un dossier adapté
-                          peut être créé. Tu peux aussi créer un dossier vide.
+                          Importe un PDF ou une image : après analyse, un dossier adapté
+                          peut être créé.
                         </p>
                         <button
                           type="button"
                           disabled={importBusy}
-                          onClick={() => setImportOpen(true)}
+                          onClick={openImportPicker}
                           style={{
                             padding: "14px 16px",
                             borderRadius: PAIPERS_RADIUS.button,
@@ -382,30 +480,6 @@ export default function DocumentsPage() {
                           }}
                         >
                           {importBusy ? "Import en cours…" : "Importer un document"}
-                        </button>
-                        <button
-                          type="button"
-                          disabled
-                          aria-disabled
-                          title="Non disponible sur le web pour le moment"
-                          style={{
-                            padding: "12px 16px",
-                            borderRadius: PAIPERS_RADIUS.button,
-                            border: `1px solid ${PAIPERS_COLORS.border}`,
-                            background: "#fff",
-                            color: PAIPERS_COLORS.textPrimary,
-                            fontWeight: 800,
-                            cursor: "not-allowed",
-                            opacity: 0.55,
-                          }}
-                        >
-                          Créer un dossier vide
-                          <span
-                            className="paipers-text-muted"
-                            style={{ display: "block", fontSize: 12, fontWeight: 600, marginTop: 4 }}
-                          >
-                            Indisponible sur le web
-                          </span>
                         </button>
                       </div>
                     ) : null}
@@ -445,11 +519,16 @@ export default function DocumentsPage() {
             </div>
           )}
 
-          <DocumentsImportSourceSheet
-            open={importOpen}
-            busy={importBusy}
-            onClose={() => !importBusy && setImportOpen(false)}
-            onPickFiles={(files) => void runImport(files)}
+          <input
+            ref={importInputRef}
+            type="file"
+            accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,application/pdf,image/*"
+            multiple
+            hidden
+            onChange={(e) => {
+              if (e.target.files?.length) void runImport(e.target.files);
+              e.target.value = "";
+            }}
           />
 
           {importMsg ? (

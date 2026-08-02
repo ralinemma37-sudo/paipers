@@ -1,20 +1,35 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { resolveEmailRefreshToken } from "@/lib/resolveEmailConnection";
 
 async function getAccessToken(refreshToken: string) {
+  const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim();
+  if (!clientId || !clientSecret) {
+    throw new Error(
+      "Configuration Google incomplète (GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET).",
+    );
+  }
+
   const res = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
-      client_id: process.env.GOOGLE_CLIENT_ID!,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+      client_id: clientId,
+      client_secret: clientSecret,
       refresh_token: refreshToken,
       grant_type: "refresh_token",
     }),
   });
 
   const json = await res.json();
-  if (!res.ok) throw new Error(`Google token error`);
+  if (!res.ok) {
+    throw new Error(
+      json?.error_description ||
+        json?.error ||
+        "Impossible de renouveler le jeton Gmail. Reconnecte Gmail dans Profil.",
+    );
+  }
   return json.access_token as string;
 }
 
@@ -31,15 +46,23 @@ export async function POST(req: Request) {
   try {
     const { documentId } = await req.json();
     if (!documentId) {
-      return NextResponse.json({ error: "Missing documentId" }, { status: 400 });
+      return NextResponse.json({ error: "Document manquant." }, { status: 400 });
     }
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+    if (!supabaseUrl || !serviceKey) {
+      return NextResponse.json(
+        {
+          error:
+            "Configuration serveur incomplète : ajoute SUPABASE_SERVICE_ROLE_KEY dans .env.local, puis redémarre le serveur.",
+        },
+        { status: 503 },
+      );
+    }
 
-    // 1️⃣ Récupérer le document exact
+    const supabase = createClient(supabaseUrl, serviceKey);
+
     const { data: doc, error: docErr } = await supabase
       .from("documents")
       .select("id,user_id,gmail_email,gmail_message_id,gmail_attachment_id")
@@ -47,54 +70,57 @@ export async function POST(req: Request) {
       .single();
 
     if (docErr || !doc) {
-      return NextResponse.json({ error: "Document not found" }, { status: 404 });
+      return NextResponse.json({ error: "Document introuvable." }, { status: 404 });
     }
 
     if (!doc.gmail_message_id || !doc.gmail_attachment_id) {
       return NextResponse.json(
-        { error: "Missing Gmail identifiers on document" },
-        { status: 400 }
+        { error: "Identifiants Gmail manquants sur ce document." },
+        { status: 400 },
       );
     }
 
-    // 2️⃣ Récupérer refresh token
-    const { data: conn } = await supabase
-      .from("gmail_connections")
-      .select("refresh_token")
-      .eq("email", doc.gmail_email)
-      .maybeSingle();
+    // Connexion OAuth actuelle = external_connections (pas l’ancienne gmail_connections seule).
+    const refreshToken = await resolveEmailRefreshToken(supabase, doc.user_id, "gmail", {
+      accountEmail: doc.gmail_email,
+    });
 
-    if (!conn?.refresh_token) {
-      return NextResponse.json({ error: "No Gmail connection" }, { status: 400 });
+    if (!refreshToken) {
+      return NextResponse.json(
+        {
+          error:
+            "Aucune connexion Gmail trouvée. Va dans Profil → Gmail et reconnecte ton compte, puis réessaie.",
+        },
+        { status: 400 },
+      );
     }
 
-    const accessToken = await getAccessToken(conn.refresh_token);
+    const accessToken = await getAccessToken(refreshToken);
 
-    // 3️⃣ Télécharger EXACTEMENT la bonne pièce jointe
     const attRes = await fetch(
       `https://gmail.googleapis.com/gmail/v1/users/me/messages/${doc.gmail_message_id}/attachments/${doc.gmail_attachment_id}`,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
+      { headers: { Authorization: `Bearer ${accessToken}` } },
     );
 
     const attJson = await attRes.json();
     if (!attRes.ok || !attJson?.data) {
-      return NextResponse.json({ error: "Attachment download failed" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Échec du téléchargement de la pièce jointe Gmail." },
+        { status: 500 },
+      );
     }
 
     const bytes = base64UrlToUint8Array(attJson.data);
-
     const filePath = `${doc.user_id}/${documentId}.pdf`;
 
-    // 4️⃣ Upload storage (pas d'upsert)
     const { error: uploadError } = await supabase.storage
       .from("documents")
-      .upload(filePath, bytes, { contentType: "application/pdf" });
+      .upload(filePath, bytes, { contentType: "application/pdf", upsert: true });
 
     if (uploadError) {
       return NextResponse.json({ error: uploadError.message }, { status: 500 });
     }
 
-    // 5️⃣ Update document
     await supabase
       .from("documents")
       .update({
@@ -105,10 +131,8 @@ export async function POST(req: Request) {
       .eq("id", documentId);
 
     return NextResponse.json({ success: true });
-  } catch (e: any) {
-    return NextResponse.json(
-      { error: e?.message ?? "Unknown error" },
-      { status: 500 }
-    );
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Erreur inconnue";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

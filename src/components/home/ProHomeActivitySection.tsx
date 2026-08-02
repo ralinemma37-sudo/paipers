@@ -71,7 +71,7 @@ export default function ProHomeActivitySection() {
       >
         Mon activité
       </p>
-      <div className="flex flex-col gap-2.5 md:grid md:grid-cols-2 md:gap-2.5">
+      <div className="flex flex-col gap-2.5 w-full">
         {EMPTY_ACTIVITY_CARDS.map((card) => {
           const Icon = CARD_ICONS[card.id];
           const inner = (
@@ -160,9 +160,18 @@ export default function ProHomeActivitySection() {
                 key={card.id}
                 href={card.href}
                 className={`paipers-hover-lift ${
-                  card.id === "invoices" ? "paipers-card-marine" : "paipers-card-white"
+                  card.id === "invoices" ? "" : "paipers-card-white"
                 }`}
-                style={rowStyle}
+                style={{
+                  ...rowStyle,
+                  ...(card.id === "invoices"
+                    ? {
+                        background: "#1A2B4A",
+                        borderRadius: 16,
+                        border: "1px solid rgba(255,255,255,0.08)",
+                      }
+                    : {}),
+                }}
               >
                 {inner}
               </Link>

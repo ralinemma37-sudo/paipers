@@ -6,7 +6,7 @@
  * Pas de faux checkout / pas d’activation Pro sans abonnement web.
  */
 
-import { FormEvent, useMemo, useState, type CSSProperties } from "react";
+import { FormEvent, useEffect, useMemo, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AuthFormCard from "@/components/auth/AuthFormCard";
@@ -46,6 +46,21 @@ const inputStyle: CSSProperties = {
 
 export default function SignupPage() {
   const router = useRouter();
+  const [teamAllowed, setTeamAllowed] = useState(false);
+
+  useEffect(() => {
+    try {
+      const q = new URLSearchParams(window.location.search);
+      if (q.get("team") === "1") {
+        setTeamAllowed(true);
+        return;
+      }
+    } catch {
+      /* ignore */
+    }
+    router.replace("/#waitlist");
+  }, [router]);
+
   const [phase, setPhase] = useState<SignupPhase>("plan");
   const [spaceChoice, setSpaceChoice] =
     useState<OnboardingSpaceChoice>("personal");
@@ -205,6 +220,26 @@ export default function SignupPage() {
       );
     }
   };
+
+  if (!teamAllowed) {
+    return (
+      <AuthFormCard title="Inscriptions fermées">
+        <p className="paipers-text-muted" style={{ textAlign: "center", margin: 0 }}>
+          Redirection vers la liste d’attente…
+        </p>
+        <p style={{ textAlign: "center", marginTop: 16 }}>
+          <Link href="/#waitlist" style={{ fontWeight: 800, color: PAIPERS_COLORS.textPrimary }}>
+            Rejoindre la liste d’attente
+          </Link>
+        </p>
+        <p style={{ textAlign: "center", marginTop: 12, fontSize: 13 }}>
+          <Link href="/login" style={{ color: PAIPERS_PALETTES.light.textMuted }}>
+            Accès privé
+          </Link>
+        </p>
+      </AuthFormCard>
+    );
+  }
 
   return (
     <AuthFormCard title={title} subtitle={subtitle}>

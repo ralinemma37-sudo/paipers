@@ -169,7 +169,7 @@ export function routeAfterSpaceSwitch(
 }
 
 export const NAV_ASSETS = {
-  logo: PAIPERS_ASSETS.logoSplashLight,
+  logo: PAIPERS_ASSETS.logoMarine,
   mascot: PAIPERS_ASSETS.mascot,
 } as const;
 

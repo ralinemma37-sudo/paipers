@@ -83,7 +83,7 @@ export default function GenererHub({ embedded = false }: Props) {
         </p>
       )}
 
-      <div className="mt-[22px] flex flex-col gap-3.5 md:grid md:grid-cols-3 md:gap-4">
+      <div className="mt-[22px] flex flex-col gap-3.5">
         <GenererActionCard
           href="/generer/rediger-document"
           title="Rédiger un document"
@@ -91,7 +91,6 @@ export default function GenererHub({ embedded = false }: Props) {
           Icon={Sparkles}
           badgePastel={BADGES.Rédigé.pastel}
           vivid={BADGES.Rédigé.vivid}
-          tone="marine"
         />
         <GenererActionCard
           href="/generer/remplir-document"
@@ -100,7 +99,6 @@ export default function GenererHub({ embedded = false }: Props) {
           Icon={FileEdit}
           badgePastel={BADGES.Complété.pastel}
           vivid={BADGES.Complété.vivid}
-          tone="gradient"
         />
         <GenererActionCard
           href="/generer/select-document"
@@ -109,7 +107,6 @@ export default function GenererHub({ embedded = false }: Props) {
           Icon={PenLine}
           badgePastel={BADGES.Signé.pastel}
           vivid={BADGES.Signé.vivid}
-          tone="violet"
         />
       </div>
 

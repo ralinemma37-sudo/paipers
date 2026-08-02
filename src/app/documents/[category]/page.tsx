@@ -13,6 +13,7 @@ import Protected from "@/components/Protected";
 import AppShell from "@/components/AppShell";
 import DocumentGridTile from "@/components/documents/DocumentGridTile";
 import { labelCat, normCat } from "@/lib/documentCategories";
+import { effectiveDocumentCategory } from "@/lib/runDocumentAnalysis";
 import { supabase } from "@/lib/supabase";
 import { PAIPERS_COLORS, PAIPERS_SPACE } from "@/lib/paipersTheme";
 
@@ -21,6 +22,7 @@ type Doc = {
   title: string | null;
   original_filename: string | null;
   category: string | null;
+  ai_category?: string | null;
   created_at: string;
   mime_type: string | null;
   file_path: string | null;
@@ -52,7 +54,7 @@ export default function CategoryPage() {
 
       const { data, error } = await supabase
         .from("documents")
-        .select("id,title,original_filename,category,created_at,mime_type,file_path")
+        .select("id,title,original_filename,category,ai_category,created_at,mime_type,file_path")
         .eq("user_id", user.id)
         .eq("is_ready", true)
         .order("created_at", { ascending: false });
@@ -62,7 +64,13 @@ export default function CategoryPage() {
         setDocs([]);
       } else {
         const all = (data || []) as Doc[];
-        setDocs(all.filter((d) => normCat(d.category) === categoryParam));
+        setDocs(
+          all.filter(
+            (d) =>
+              normCat(effectiveDocumentCategory(d.category, d.ai_category)) ===
+              categoryParam,
+          ),
+        );
       }
       setLoading(false);
     };

@@ -6,6 +6,7 @@ import Protected from "@/components/Protected";
 import AppShell from "@/components/AppShell";
 import { supabase } from "@/lib/supabase";
 import { labelCat } from "@/lib/documentCategories";
+import { effectiveDocumentCategory } from "@/lib/runDocumentAnalysis";
 import {
   ChevronLeft,
   FileText,
@@ -21,8 +22,11 @@ import {
   ChevronDown,
   Lock,
   Unlock,
+  Star,
 } from "lucide-react";
 import { PDFDocument } from "pdf-lib";
+import { useDocumentFavorites } from "@/hooks/useDocumentFavorites";
+import { PAIPERS_COLORS } from "@/lib/paipersTheme";
 
 type DocRow = {
   id: string;
@@ -32,6 +36,7 @@ type DocRow = {
   is_ready: boolean | null;
   mime_type: string | null;
   category: string | null;
+  ai_category?: string | null;
   created_at: string;
   source: string | null;
   original_filename: string | null;
@@ -70,6 +75,8 @@ function slugify(s: string) {
 export default function DocumentViewPage() {
   const sp = useSearchParams();
   const id = useMemo(() => sp.get("id"), [sp]);
+  const openSign = useMemo(() => sp.get("sign") === "1", [sp]);
+  const { isFavorite, toggleFavorite, ready: favoritesReady } = useDocumentFavorites();
 
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
@@ -181,7 +188,7 @@ export default function DocumentViewPage() {
         const { data: row, error } = await supabase
           .from("documents")
           .select(
-            "id,title,user_id,file_path,is_ready,mime_type,category,created_at,source,original_filename"
+            "id,title,user_id,file_path,is_ready,mime_type,category,ai_category,created_at,source,original_filename"
           )
           .eq("id", id)
           .single();
@@ -246,6 +253,11 @@ export default function DocumentViewPage() {
   const filePath = doc?.file_path || "";
   const isTxt = isText(mimeType, filePath);
   const isPDF = isPdf(mimeType, filePath);
+
+  useEffect(() => {
+    if (!openSign || !doc || loading) return;
+    if (isPDF) setShowSignature(true);
+  }, [openSign, doc, loading, isPDF]);
 
   const title = doc?.title || "Document";
   const createdLabel = doc?.created_at ? new Date(doc.created_at).toLocaleDateString() : "—";
@@ -893,7 +905,7 @@ export default function DocumentViewPage() {
       {/* CARD ACTIONS */}
       <div className="card p-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <InfoRow icon={<Folder size={18} />} label="Catégorie" value={labelCat(doc?.category || null)} />
+          <InfoRow icon={<Folder size={18} />} label="Catégorie" value={labelCat(effectiveDocumentCategory(doc?.category, doc?.ai_category))} />
           <InfoRow icon={<Calendar size={18} />} label="Ajouté le" value={createdLabel} />
           <InfoRow icon={<Mail size={18} />} label="Source" value={labelSource(doc?.source || null)} />
         </div>
@@ -925,6 +937,34 @@ export default function DocumentViewPage() {
           >
             <ExternalLink className="text-slate-700" size={18} />
           </a>
+
+          {doc && favoritesReady ? (
+            <button
+              type="button"
+              onClick={() => {
+                const added = toggleFavorite({
+                  id: doc.id,
+                  title: doc.title || "Document",
+                });
+                setUiMsg(added ? "Ajouté aux favoris" : "Retiré des favoris");
+                window.setTimeout(() => setUiMsg(""), 2200);
+              }}
+              className="w-12 py-3 rounded-full border border-slate-200 bg-white flex items-center justify-center
+                shadow-sm active:scale-95 transition"
+              aria-label={
+                isFavorite(doc.id) ? "Retirer des favoris" : "Ajouter aux favoris"
+              }
+              title={
+                isFavorite(doc.id) ? "Retirer des favoris" : "Ajouter aux favoris"
+              }
+            >
+              <Star
+                size={18}
+                color={PAIPERS_COLORS.navy}
+                fill={isFavorite(doc.id) ? PAIPERS_COLORS.navy : "transparent"}
+              />
+            </button>
+          ) : null}
         </div>
 
         {/* SIGN toggle */}

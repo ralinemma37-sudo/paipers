@@ -31,7 +31,7 @@ export default function CguPage() {
     >
       <div style={{ maxWidth: 720, margin: "0 auto" }}>
         <Link
-          href="/signup"
+          href="/"
           style={{
             fontWeight: 700,
             color: PAIPERS_PALETTES.light.textMuted,

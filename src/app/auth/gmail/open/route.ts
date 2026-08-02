@@ -9,6 +9,29 @@ const GMAIL_SCOPES = [
   "openid",
 ] as const;
 
+function missingEnvHtml(missing: string[]) {
+  const list = missing.map((k) => `<code>${k}</code>`).join(", ");
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gmail — configuration manquante</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 520px; margin: 48px auto; padding: 0 20px; color: #1a2b4a; line-height: 1.5; }
+    code { background: #f0f3f8; padding: 2px 6px; border-radius: 6px; font-size: 13px; }
+    a { color: #1a2b4a; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <h1>Connexion Gmail indisponible</h1>
+  <p>Variables manquantes côté serveur : ${list}.</p>
+  <p>Ajoute-les dans <code>.env.local</code> (voir <code>.env.gmail.example</code>), puis redémarre <code>npm run dev</code>.</p>
+  <p><a href="/profil/gmail">← Retour</a></p>
+</body>
+</html>`;
+}
+
 /**
  * Démarre le flux OAuth Google (Gmail).
  * Query : user_id (obligatoire), platform, account_scope.
@@ -24,10 +47,10 @@ export async function GET(req: NextRequest) {
 
   const oauth = resolveGmailOAuthEnv();
   if (!oauth.ok) {
-    return NextResponse.json(
-      { error: oauth.error, missing: oauth.missing },
-      { status: 500 }
-    );
+    return new NextResponse(missingEnvHtml(oauth.missing), {
+      status: 500,
+      headers: { "Content-Type": "text/html; charset=utf-8" },
+    });
   }
   const { clientId, redirectUri } = oauth;
 

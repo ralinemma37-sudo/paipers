@@ -1,8 +1,7 @@
 "use client";
 
 /**
- * Chrome desktop connecté : sidebar nuit + header discret.
- * Masqué sur pages publiques / auth (même liste que l’ancienne top nav).
+ * Chrome desktop connecté : sidebar fixe pleine hauteur + contenu décalé.
  */
 
 import { usePathname } from "next/navigation";
@@ -18,7 +17,8 @@ function isPublicPath(pathname: string): boolean {
     pathname.startsWith("/design-system") ||
     pathname.startsWith("/auth") ||
     pathname.startsWith("/legal") ||
-    pathname.startsWith("/onboarding")
+    pathname.startsWith("/onboarding") ||
+    pathname.startsWith("/waitlist")
   );
 }
 
@@ -35,14 +35,16 @@ export default function DesktopChromeGate({
   }
 
   return (
-    <div className="md:flex md:min-h-screen w-full">
+    <div
+      className="w-full md:min-h-[100dvh]"
+      style={{ background: DESKTOP_SURFACES.canvas }}
+    >
       <DesktopSidebar />
       <div
-        className="flex-1 min-w-0 flex flex-col md:min-h-screen"
-        style={{ background: DESKTOP_SURFACES.canvas }}
+        className="flex flex-col flex-1 min-w-0 w-full md:min-h-[100dvh] md:ml-[232px] md:w-[calc(100%-232px)]"
       >
         <DesktopAppHeader />
-        <div className="flex-1 min-w-0">{children}</div>
+        <div className="flex-1 min-w-0 w-full relative">{children}</div>
       </div>
     </div>
   );

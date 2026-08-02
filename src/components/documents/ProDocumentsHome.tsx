@@ -5,8 +5,10 @@
  * Réf. : paipers-mobile/src/features/proDocuments/ProDocumentsScreen.tsx
  */
 
-import { FileText, FolderPlus, ScanLine, Star, Upload } from "lucide-react";
+import { FileText, Layers, Star, Upload } from "lucide-react";
+import { useRouter } from "next/navigation";
 import DocumentsQuickActionCard from "@/components/documents/DocumentsQuickActionCard";
+import { useDocumentFavorites } from "@/hooks/useDocumentFavorites";
 import { PRO_DOCUMENTS_HOME_SPACES } from "@/lib/proDocumentsSpaces";
 import { PAIPERS_COLORS } from "@/lib/paipersTheme";
 
@@ -23,6 +25,8 @@ export default function ProDocumentsHome({
   importBusy,
   onImport,
 }: Props) {
+  const router = useRouter();
+  const { favorites } = useDocumentFavorites();
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
       <div>
@@ -55,25 +59,6 @@ export default function ProDocumentsHome({
             }}
           />
         </div>
-        <button
-          type="button"
-          disabled
-          aria-disabled
-          title="Filtres Pro — non disponibles sur le web"
-          className="paipers-elevated-card"
-          style={{
-            padding: "0 16px",
-            border: "none",
-            fontWeight: 800,
-            fontSize: 13,
-            cursor: "not-allowed",
-            color: PAIPERS_COLORS.navy,
-            borderRadius: 14,
-            opacity: 0.55,
-          }}
-        >
-          Filtrer
-        </button>
       </div>
 
       <section>
@@ -87,7 +72,7 @@ export default function ProDocumentsHome({
         >
           Actions rapides
         </h2>
-        <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-2.5">
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:max-w-2xl md:gap-2.5">
           <DocumentsQuickActionCard
             label={importBusy ? "Import…" : "Importer"}
             Icon={Upload}
@@ -96,21 +81,19 @@ export default function ProDocumentsHome({
             pro
           />
           <DocumentsQuickActionCard
-            label="Nouveau dossier"
-            Icon={FolderPlus}
-            unavailable
-            pro
-          />
-          <DocumentsQuickActionCard
-            label="Scanner"
-            Icon={ScanLine}
-            unavailable
-            pro
-          />
-          <DocumentsQuickActionCard
-            label="Favoris"
+            label={
+              favorites.length > 0
+                ? `Favoris (${favorites.length})`
+                : "Favoris"
+            }
             Icon={Star}
-            unavailable
+            onClick={() => router.push("/documents/favorites")}
+            pro
+          />
+          <DocumentsQuickActionCard
+            label="Fusionner des PDF"
+            Icon={Layers}
+            onClick={() => router.push("/documents/fusionner")}
             pro
           />
         </div>

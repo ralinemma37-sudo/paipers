@@ -13,7 +13,8 @@ export default function BottomNavGate() {
     pathname.startsWith("/design-system") ||
     pathname.startsWith("/auth") ||
     pathname.startsWith("/legal") ||
-    pathname.startsWith("/onboarding");
+    pathname.startsWith("/onboarding") ||
+    pathname.startsWith("/waitlist");
 
   if (hide) return null;
 

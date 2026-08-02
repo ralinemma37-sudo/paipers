@@ -6,7 +6,7 @@
  */
 
 import { useMemo, useState } from "react";
-import { PAIPERS_COLORS, PAIPERS_GRADIENTS, PAIPERS_RADIUS, gradientCss } from "@/lib/paipersTheme";
+import { PAIPERS_COLORS, PAIPERS_RADIUS } from "@/lib/paipersTheme";
 
 export type HomeImportInboxItem = {
   id: string;
@@ -65,8 +65,15 @@ export default function HomeImportInboxSection({
 
   return (
     <div
-      className="paipers-card-gradient md:!p-4"
-      style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 0, padding: 16 }}
+      className="paipers-elevated-card"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 10,
+        marginTop: 0,
+        padding: 16,
+        background: "#fff",
+      }}
     >
       <div>
         <p style={{ fontWeight: 800, color: PAIPERS_COLORS.textPrimary, fontSize: 15, margin: 0 }}>
@@ -138,10 +145,10 @@ export default function HomeImportInboxSection({
                       padding: "12px 8px",
                       borderRadius: PAIPERS_RADIUS.button,
                       border: "none",
-                      backgroundImage: gradientCss(PAIPERS_GRADIENTS.button, 90),
+                      background: PAIPERS_COLORS.navy,
                       fontWeight: 800,
                       fontSize: 12,
-                      color: PAIPERS_COLORS.textPrimary,
+                      color: "#fff",
                       cursor: busy ? "wait" : "pointer",
                       opacity: busy ? 0.55 : 1,
                     }}

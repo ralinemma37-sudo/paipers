@@ -13,6 +13,7 @@ import Protected from "@/components/Protected";
 import AppShell from "@/components/AppShell";
 import { buildLetterPdfBytes, slugify } from "@/lib/buildLetterPdf";
 import {
+  edgeTypeForWebGenerate,
   inferWebGenerateType,
   titleForGenerateType,
   type WebGenerateType,
@@ -55,21 +56,56 @@ export default function RedigerDocumentPage() {
     setResult("");
     setEditableText("");
 
+    const title = titleForGenerateType(type);
+    const details = situation.trim();
+
     try {
+      // 1) Même edge que le mobile (clés OpenAI côté Supabase)
+      const { data: edgeData, error: edgeError } = await supabase.functions.invoke(
+        "generate-document",
+        {
+          body: {
+            type: edgeTypeForWebGenerate(type),
+            title,
+            fields: { situation: details, subtype: type },
+          },
+        },
+      );
+
+      if (!edgeError && edgeData && (edgeData as { success?: boolean }).success) {
+        const text = String(
+          (edgeData as { content?: string; text?: string }).content ||
+            (edgeData as { text?: string }).text ||
+            "",
+        );
+        if (text.trim()) {
+          setLoading(false);
+          setResult(text);
+          setEditableText(text);
+          return;
+        }
+      }
+
+      // 2) Fallback API Next (si OPENAI_API_KEY côté web)
       const response = await fetch("/api/generate-document", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, details: situation.trim() }),
+        body: JSON.stringify({ type, details }),
       });
 
       const data = await response.json().catch(() => ({}));
       setLoading(false);
 
       if (!response.ok || data?.error) {
+        const edgeMsg =
+          edgeError?.message ||
+          (typeof (edgeData as { error?: string })?.error === "string"
+            ? (edgeData as { error: string }).error
+            : "");
         setErrorMsg(
           typeof data?.error === "string" && data.error.trim()
             ? data.error
-            : "Génération impossible pour le moment.",
+            : edgeMsg || "Génération impossible pour le moment.",
         );
         return;
       }

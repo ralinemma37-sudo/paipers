@@ -2,7 +2,7 @@
 
 /**
  * Header site public — navigation marketing (hors AppShell / BottomNav).
- * Style premium : verre sur fond nuit.
+ * Pré-lancement : CTA waitlist + Accès privé discret.
  */
 
 import Link from "next/link";
@@ -18,6 +18,7 @@ const LINKS = [
   { href: "#professionnels", label: "Professionnels" },
   { href: "#tarifs", label: "Tarifs" },
   { href: "#faq", label: "Questions fréquentes" },
+  { href: "#waitlist", label: "Liste d’attente" },
 ] as const;
 
 export default function PublicSiteHeader() {
@@ -46,11 +47,11 @@ export default function PublicSiteHeader() {
         className="mx-auto flex items-center gap-6 px-5 md:px-8"
         style={{ maxWidth: 1200, height: 64 }}
       >
-        <Link href="/" className="shrink-0 inline-flex items-center gap-2.5">
+        <Link href="/" className="shrink-0 inline-flex items-center">
           <img
-            src={PAIPERS_ASSETS.logoSplashLight}
+            src={PAIPERS_ASSETS.logoNight}
             alt="Paipers"
-            className="h-9 w-auto brightness-0 invert"
+            className="paipers-brand-logo h-11 w-auto"
           />
         </Link>
 
@@ -80,18 +81,22 @@ export default function PublicSiteHeader() {
             <>
               <Link
                 href="/login"
-                className="text-[14px] font-semibold"
-                style={{ color: DESKTOP_SURFACES.onDark, textDecoration: "none" }}
+                className="text-[13px] font-medium"
+                style={{
+                  color: DESKTOP_SURFACES.onDarkSoft,
+                  textDecoration: "none",
+                  opacity: 0.72,
+                }}
               >
-                Se connecter
+                Accès privé
               </Link>
-              <Link
-                href="/signup"
+              <a
+                href="#waitlist"
                 className="paipers-button"
-                style={{ padding: "10px 20px", fontSize: 14 }}
+                style={{ padding: "10px 20px", fontSize: 14, textDecoration: "none" }}
               >
-                Essayer Paipers
-              </Link>
+                Rejoindre la liste d’attente
+              </a>
             </>
           )}
         </div>
@@ -143,20 +148,21 @@ export default function PublicSiteHeader() {
               </Link>
             ) : (
               <>
-                <Link
-                  href="/login"
-                  className="py-2 text-center font-semibold"
-                  style={{ color: DESKTOP_SURFACES.onDark }}
-                  onClick={() => setOpen(false)}
-                >
-                  Se connecter
-                </Link>
-                <Link
-                  href="/signup"
+                <a
+                  href="#waitlist"
                   className="paipers-button text-center"
                   onClick={() => setOpen(false)}
+                  style={{ textDecoration: "none" }}
                 >
-                  Essayer Paipers
+                  Rejoindre la liste d’attente
+                </a>
+                <Link
+                  href="/login"
+                  className="py-2 text-center text-[13px] font-medium"
+                  style={{ color: DESKTOP_SURFACES.onDarkSoft, opacity: 0.75 }}
+                  onClick={() => setOpen(false)}
+                >
+                  Accès privé
                 </Link>
               </>
             )}

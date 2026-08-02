@@ -5,19 +5,24 @@
  */
 
 import Link from "next/link";
-import { FileText } from "lucide-react";
-import { PAIPERS_COLORS, PAIPERS_PALETTES } from "@/lib/paipersTheme";
+import DocumentThumbnail from "@/components/documents/DocumentThumbnail";
+import { PAIPERS_COLORS } from "@/lib/paipersTheme";
 
 export type DocumentListItem = {
   id: string;
   title: string | null;
   created_at: string;
+  file_path?: string | null;
+  storage_path?: string | null;
+  mime_type?: string | null;
 };
 
 type Props = {
   doc: DocumentListItem;
   href?: string;
   selected?: boolean;
+  /** Rang dans la sélection (1-based) — mode fusion. */
+  selectionOrder?: number | null;
   onSelect?: (id: string) => void;
 };
 
@@ -31,25 +36,41 @@ export default function DocumentGridTile({
   doc,
   href,
   selected,
+  selectionOrder,
   onSelect,
 }: Props) {
   const title = doc.title?.trim() || "Document";
   const content = (
     <>
-      <div
-        style={{
-          aspectRatio: "210 / 297",
-          borderRadius: 12,
-          background: PAIPERS_PALETTES.light.muted,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          border: selected
-            ? `2px solid ${PAIPERS_COLORS.navy}`
-            : `1px solid ${PAIPERS_COLORS.border}`,
-        }}
-      >
-        <FileText size={28} color={PAIPERS_COLORS.navy} strokeWidth={2} />
+      <div style={{ position: "relative" }}>
+        <DocumentThumbnail
+          filePath={doc.file_path}
+          storagePath={doc.storage_path}
+          mimeType={doc.mime_type}
+          selected={selected}
+        />
+        {selected && selectionOrder != null ? (
+          <span
+            style={{
+              position: "absolute",
+              top: 8,
+              left: 8,
+              width: 26,
+              height: 26,
+              borderRadius: 999,
+              background: PAIPERS_COLORS.navy,
+              color: "#fff",
+              fontSize: 12,
+              fontWeight: 800,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.25)",
+            }}
+          >
+            {selectionOrder}
+          </span>
+        ) : null}
       </div>
       <p
         style={{

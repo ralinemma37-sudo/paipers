@@ -1,10 +1,10 @@
 /**
- * Import fichier local → Storage + ligne documents.
+ * Import fichier local → Storage + ligne documents + classification IA.
  * Réutilise uploadDocument.ts + pattern d’insert de generer/page.tsx.
- * Ne modifie pas les routes OCR/API.
  */
 
 import { uploadDocument } from "@/lib/uploadDocument";
+import { classifyDocumentById } from "@/lib/classifyDocumentsClient";
 import { supabase } from "@/lib/supabase";
 
 const ALLOWED_EXT = new Set([
@@ -47,8 +47,8 @@ export type ImportDocumentResult = {
 };
 
 /**
- * Upload + insert. Classification éventuelle via webhook process-new-document
- * si configuré côté Supabase — non invoqué ici (pas de nouvelle route).
+ * Upload + insert, puis classification (titre + catégorie) comme sur mobile.
+ * L’import réussit même si la classification échoue (reste en « Autres »).
  */
 export async function importDocumentFile(
   file: File,
@@ -78,6 +78,12 @@ export async function importDocumentFile(
 
   if (error) throw new Error(error.message);
   if (!data?.id) throw new Error("Import échoué.");
+
+  try {
+    await classifyDocumentById(data.id);
+  } catch {
+    /* classification best-effort */
+  }
 
   return { id: data.id, filePath };
 }

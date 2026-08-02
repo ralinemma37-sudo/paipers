@@ -282,6 +282,8 @@ export default function AssistantPage() {
             minHeight: "100%",
             display: "flex",
             flexDirection: "column",
+            alignItems: idleVisible ? "center" : undefined,
+            justifyContent: idleVisible ? "center" : undefined,
             background: idleVisible ? "transparent" : undefined,
             borderRadius: 20,
           }}

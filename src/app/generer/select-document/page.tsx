@@ -146,7 +146,7 @@ export default function SelectDocumentToSignPage() {
             {docs.map((doc) => (
               <Link
                 key={doc.id}
-                href={`/documents/view?id=${doc.id}`}
+                href={`/documents/view?id=${doc.id}&sign=1`}
                 className="paipers-elevated-card"
                 style={{
                   display: "flex",
@@ -182,7 +182,7 @@ export default function SelectDocumentToSignPage() {
                     {doc.title?.trim() || "Document"}
                   </span>
                   <span className="paipers-text-muted" style={{ fontSize: 12 }}>
-                    Ouvre le document puis utilise Signer
+                    Ouvrir et signer
                   </span>
                 </span>
                 <ChevronRight size={18} color={PAIPERS_PALETTES.light.textMuted} />

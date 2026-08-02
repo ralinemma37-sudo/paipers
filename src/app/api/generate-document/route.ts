@@ -12,9 +12,18 @@ export async function POST(req: Request) {
       );
     }
 
-    const client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY!,
-    });
+    const apiKey = process.env.OPENAI_API_KEY?.trim();
+    if (!apiKey) {
+      return NextResponse.json(
+        {
+          error:
+            "Génération indisponible : clé OpenAI non configurée sur le serveur web.",
+        },
+        { status: 503 },
+      );
+    }
+
+    const client = new OpenAI({ apiKey });
 
     const prompt = `
 Tu es une IA qui rédige des documents administratifs français très professionnels.

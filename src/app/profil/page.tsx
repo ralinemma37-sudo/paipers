@@ -5,7 +5,6 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   Building2,
   Cloud,
@@ -21,23 +20,14 @@ import AppShell from "@/components/AppShell";
 import { useNavSpace } from "@/components/NavSpaceProvider";
 import ProfilIdentityCard from "@/components/profil/ProfilIdentityCard";
 import ProfilMenuRow from "@/components/profil/ProfilMenuRow";
-import { useEscapeToClose } from "@/hooks/useEscapeToClose";
 import { supabase } from "@/lib/supabase";
-import { PAIPERS_COLORS, PAIPERS_RADIUS, PAIPERS_SPACE } from "@/lib/paipersTheme";
+import { PAIPERS_COLORS, PAIPERS_SPACE } from "@/lib/paipersTheme";
 
 export default function ProfilHomePage() {
-  const router = useRouter();
   const { showProTabs, spaceLabel, loaded: spaceLoaded } = useNavSpace();
 
   const [displayName, setDisplayName] = useState("Mon compte");
   const [email, setEmail] = useState("");
-  const [logoutOpen, setLogoutOpen] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
-
-  const closeLogout = useCallback(() => {
-    if (!loggingOut) setLogoutOpen(false);
-  }, [loggingOut]);
-  useEscapeToClose(logoutOpen, closeLogout);
 
   const load = useCallback(async () => {
     const { data: auth } = await supabase.auth.getUser();
@@ -58,14 +48,6 @@ export default function ProfilHomePage() {
   useEffect(() => {
     void load();
   }, [load]);
-
-  const handleLogout = async () => {
-    setLoggingOut(true);
-    await supabase.auth.signOut();
-    setLoggingOut(false);
-    setLogoutOpen(false);
-    router.replace("/login");
-  };
 
   const isPro = showProTabs;
 
@@ -118,7 +100,6 @@ export default function ProfilHomePage() {
                   : "Tes infos personnelles et préférences."
               }
               Icon={isPro ? Building2 : User}
-              tone="marine"
             />
             <ProfilMenuRow
               href="/profil/emails"
@@ -129,35 +110,30 @@ export default function ProfilHomePage() {
                   : "Connecte ta boîte mail personnelle."
               }
               Icon={Mail}
-              tone="gradient"
             />
             <ProfilMenuRow
               href="/profil/cloud"
               title="Cloud"
               desc="Stockage et synchronisation."
               Icon={Cloud}
-              tone="muted"
             />
             <ProfilMenuRow
               href="/profil/abonnement"
               title="Abonnements"
               desc="Consulter la formule actuelle."
               Icon={CreditCard}
-              tone="white"
             />
             <ProfilMenuRow
               href="/profil/parametres"
               title="Paramètres"
               desc="Réglages de l’application."
               Icon={Settings}
-              tone="muted"
             />
             <ProfilMenuRow
               href="/profil/legal"
               title="Confidentialité & légal"
               desc="Politique, CGU, assistant IA, espaces, Gmail."
               Icon={Shield}
-              tone="white"
             />
             <ProfilMenuRow
               href="/profil/support"
@@ -168,108 +144,8 @@ export default function ProfilHomePage() {
                   : "Questions fréquentes et contact Paipers."
               }
               Icon={LifeBuoy}
-              tone="gradient"
             />
           </div>
-
-          <button
-            type="button"
-            onClick={() => setLogoutOpen(true)}
-            className="md:max-w-sm"
-            style={{
-              marginTop: 28,
-              width: "100%",
-              padding: "14px 18px",
-              borderRadius: PAIPERS_RADIUS.button,
-              border: "none",
-              background: "#fee2e2",
-              fontWeight: 800,
-              fontSize: 16,
-              color: "#991b1b",
-              cursor: "pointer",
-            }}
-          >
-            Se déconnecter
-          </button>
-
-          {logoutOpen ? (
-            <div
-              role="dialog"
-              aria-modal
-              aria-labelledby="logout-title"
-              style={{
-                position: "fixed",
-                inset: 0,
-                zIndex: 80,
-                background: "rgba(15,23,42,0.45)",
-                display: "flex",
-                alignItems: "flex-end",
-                justifyContent: "center",
-              }}
-              onClick={() => !loggingOut && setLogoutOpen(false)}
-            >
-              <div
-                className="paipers-elevated-card"
-                style={{
-                  width: "100%",
-                  maxWidth: 440,
-                  margin: 16,
-                  borderRadius: 24,
-                  padding: 20,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 12,
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <p
-                  id="logout-title"
-                  style={{
-                    fontSize: 17,
-                    fontWeight: 900,
-                    color: PAIPERS_COLORS.textPrimary,
-                    margin: 0,
-                  }}
-                >
-                  Se déconnecter ?
-                </p>
-                <p className="paipers-text-muted" style={{ margin: 0, fontSize: 14, lineHeight: "20px" }}>
-                  Tu devras te reconnecter pour accéder à tes documents et à tes espaces.
-                </p>
-                <button
-                  type="button"
-                  disabled={loggingOut}
-                  onClick={() => void handleLogout()}
-                  style={{
-                    padding: "14px 16px",
-                    borderRadius: PAIPERS_RADIUS.button,
-                    border: "none",
-                    background: "#B91C1C",
-                    color: "#fff",
-                    fontWeight: 800,
-                    cursor: loggingOut ? "wait" : "pointer",
-                  }}
-                >
-                  {loggingOut ? "…" : "Se déconnecter"}
-                </button>
-                <button
-                  type="button"
-                  disabled={loggingOut}
-                  onClick={() => setLogoutOpen(false)}
-                  style={{
-                    padding: "14px 16px",
-                    borderRadius: PAIPERS_RADIUS.button,
-                    border: `1px solid ${PAIPERS_COLORS.border}`,
-                    background: "#fff",
-                    fontWeight: 800,
-                    cursor: "pointer",
-                  }}
-                >
-                  Annuler
-                </button>
-              </div>
-            </div>
-          ) : null}
         </div>
       </AppShell>
     </Protected>

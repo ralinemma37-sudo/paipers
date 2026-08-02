@@ -1,33 +1,46 @@
 "use client";
 
 /**
- * Tuiles Accueil — Démarches → /demarches, Agenda → /agenda.
+ * Tuiles Accueil — Démarches + Agenda (même bleu marine), sans chevauchement.
  */
 
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { Compass } from "lucide-react";
 import HomeMiniMonthCalendar from "@/components/home/HomeMiniMonthCalendar";
 import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
-import {
-  PAIPERS_COLORS,
-  PAIPERS_PALETTES,
-  PAIPERS_RADIUS,
-} from "@/lib/paipersTheme";
 
 type Props = {
   eventDays: Set<number>;
 };
 
 export default function HomeTopSquareCards({ eventDays }: Props) {
+  const cardStyle: CSSProperties = {
+    background: DESKTOP_SURFACES.marine,
+    border: "1px solid rgba(255,255,255,0.08)",
+    borderRadius: 16,
+    textDecoration: "none",
+    color: "inherit",
+    display: "flex",
+    flexDirection: "column",
+    padding: 16,
+    minHeight: 180,
+    width: "100%",
+    maxWidth: "100%",
+    boxSizing: "border-box",
+    position: "relative",
+    overflow: "hidden",
+  };
+
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.35fr)] md:items-stretch md:gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
       <Link
         href="/demarches"
-        className="paipers-card-marine relative overflow-hidden flex flex-col aspect-square md:aspect-auto md:min-h-0 p-4 paipers-hover-lift"
-        style={{ textDecoration: "none" }}
+        className="paipers-hover-lift min-w-0"
+        style={cardStyle}
         aria-label="Démarches administratives"
       >
-        <div className="flex items-start gap-3 md:items-center">
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
           <div
             style={{
               width: 40,
@@ -42,7 +55,7 @@ export default function HomeTopSquareCards({ eventDays }: Props) {
           >
             <Compass size={20} color={DESKTOP_SURFACES.onDark} strokeWidth={2.2} />
           </div>
-          <div className="min-w-0 flex-1">
+          <div style={{ minWidth: 0, flex: 1 }}>
             <p
               style={{
                 fontSize: 15,
@@ -65,50 +78,45 @@ export default function HomeTopSquareCards({ eventDays }: Props) {
             >
               Sites officiels pour vos démarches
             </p>
-            <p
-              style={{
-                marginTop: 8,
-                fontSize: 11,
-                fontWeight: 700,
-                color: DESKTOP_SURFACES.accentLine,
-                marginBottom: 0,
-              }}
-            >
-              Ouvrir l’annuaire →
-            </p>
           </div>
         </div>
+        <p
+          style={{
+            marginTop: "auto",
+            paddingTop: 14,
+            fontSize: 11,
+            fontWeight: 700,
+            color: DESKTOP_SURFACES.accentLine,
+            marginBottom: 0,
+          }}
+        >
+          Ouvrir l’annuaire →
+        </p>
       </Link>
 
       <Link
         href="/agenda"
-        className="paipers-card-white text-left aspect-square md:aspect-auto md:min-h-0 w-full paipers-hover-lift block"
-        style={{
-          padding: 14,
-          borderRadius: PAIPERS_RADIUS.card,
-          background: PAIPERS_PALETTES.light.card,
-          textDecoration: "none",
-          color: "inherit",
-        }}
+        className="paipers-hover-lift min-w-0"
+        style={cardStyle}
         aria-label="Agenda — voir le calendrier"
       >
         <p
           style={{
-            margin: "0 0 8px",
-            fontSize: 13,
+            margin: "0 0 10px",
+            fontSize: 15,
             fontWeight: 800,
-            color: PAIPERS_COLORS.navy,
+            color: DESKTOP_SURFACES.onDark,
           }}
         >
           Agenda
         </p>
-        <HomeMiniMonthCalendar eventDays={eventDays} fill />
+        <HomeMiniMonthCalendar eventDays={eventDays} fill dark />
         <p
           style={{
-            margin: "10px 0 0",
+            margin: "12px 0 0",
             fontSize: 11,
             fontWeight: 700,
-            color: PAIPERS_COLORS.navy,
+            color: DESKTOP_SURFACES.accentLine,
           }}
         >
           Voir le calendrier →
