@@ -185,7 +185,7 @@ export default function DesignSystemPage() {
         </p>
 
         {/* Assets */}
-        <Section title="Logo & mascotte Pupo">
+        <Section title="Logo & mascotte Archi">
           <div
             style={{
               display: "flex",
@@ -210,14 +210,14 @@ export default function DesignSystemPage() {
             <figure style={{ margin: 0, textAlign: "center" }}>
               <img
                 src={PAIPERS_ASSETS.mascot}
-                alt="Mascotte Pupo"
+                alt="Mascotte Archi"
                 style={{ width: 200, height: "auto" }}
               />
               <figcaption
                 className="paipers-text-muted"
                 style={{ fontSize: 12, marginTop: 8 }}
               >
-                assistant-mascot.png (Pupo)
+                assistant-mascot.png (Archi)
               </figcaption>
             </figure>
             <div
@@ -235,7 +235,7 @@ export default function DesignSystemPage() {
             >
               <img
                 src={PAIPERS_ASSETS.mascot}
-                alt="Avatar Pupo tab"
+                alt="Avatar Archi tab"
                 style={{
                   width: 48,
                   height: 48,

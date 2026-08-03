@@ -5,7 +5,7 @@
  * Réf. : paipers-mobile/app/(tabs)/_layout.tsx
  * - Ordre / libellés / icônes selon espace
  * - Actif : spaceTheme.tabActive · Inactif : textMuted
- * - Assistant : mascotte Pupo centrale
+ * - Assistant : mascotte Archi centrale
  */
 
 import Link from "next/link";

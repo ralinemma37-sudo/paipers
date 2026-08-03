@@ -16,7 +16,7 @@
  * - sparkles / sparkles-outline → Sparkles
  * - receipt-outline → Receipt
  * - person-outline → User
- * Assistant : mascotte Pupo (pas une icône Lucide)
+ * Assistant : mascotte Archi (pas une icône Lucide)
  */
 
 import type { LucideIcon } from "lucide-react";

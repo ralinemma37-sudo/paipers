@@ -41,7 +41,7 @@ export default function AssistantComposer({
   attachment,
   onRemoveAttachment,
   onAttachClick,
-  ariaLabel = "Message à Pupo",
+  ariaLabel = "Message à Archi",
 }: Props) {
   const canSubmit = value.trim().length > 0 || !!attachment;
   const isPill = variant === "pill";

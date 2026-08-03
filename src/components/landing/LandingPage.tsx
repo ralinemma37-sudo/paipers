@@ -128,33 +128,37 @@ export default function LandingPage() {
           </div>
 
           <div className="relative flex justify-center lg:justify-end">
-            {/* Halo soft sans filter:blur — évite le flash « carré semi-transparent » au 1er paint */}
-            <div
-              className="absolute -inset-10 pointer-events-none"
-              style={{
-                background: `
-                  radial-gradient(ellipse 72% 62% at 50% 42%, rgba(172,228,255,0.38), transparent 68%),
-                  radial-gradient(ellipse 58% 52% at 62% 72%, rgba(247,196,232,0.3), transparent 66%),
-                  radial-gradient(ellipse 48% 44% at 32% 58%, rgba(255,236,201,0.22), transparent 62%)
-                `,
-              }}
-              aria-hidden
-            />
-            <div className="relative w-full max-w-md space-y-3">
-              <div className="paipers-card-night p-7 paipers-hover-lift">
+            <div className="relative w-full max-w-lg space-y-4">
+              <div className="relative mx-auto w-fit">
+                {/* Halo multi-stops : fondu long, sans bord circulaire net */}
+                <div
+                  className="pointer-events-none absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2"
+                  style={{
+                    width: "140%",
+                    height: "140%",
+                    background: `radial-gradient(ellipse 52% 48% at 50% 50%,
+                      rgba(172,228,255,0.28) 0%,
+                      rgba(172,228,255,0.16) 22%,
+                      rgba(172,228,255,0.08) 42%,
+                      rgba(172,228,255,0.03) 62%,
+                      transparent 78%
+                    )`,
+                  }}
+                  aria-hidden
+                />
                 <img
                   src={PAIPERS_ASSETS.mascot}
-                  alt="Pupo, l’assistant Paipers"
-                  className="mx-auto w-36 h-auto"
-                  width={144}
-                  height={144}
+                  alt="Archi, l’assistant Paipers"
+                  className="relative mx-auto w-56 md:w-72 h-auto"
+                  width={288}
+                  height={288}
                   decoding="async"
                   fetchPriority="high"
                 />
-                <p className="mt-4 text-center text-lg font-extrabold" style={{ color: DESKTOP_SURFACES.onDark }}>
-                  Pupo t’accompagne
-                </p>
               </div>
+              <p className="text-center text-lg font-extrabold" style={{ color: DESKTOP_SURFACES.onDark }}>
+                Archi t’accompagne
+              </p>
               <div className="grid grid-cols-3 gap-2">
                 {[
                   { t: "Documents", d: "Classement" },
@@ -223,7 +227,7 @@ export default function LandingPage() {
           {[
             { Icon: FolderOpen, t: "Coffre-fort documents", d: "Importe, classe et consulte tes documents administratifs.", dark: false },
             { Icon: Mail, t: "Emails connectés", d: "Branche Gmail ou Outlook pour importer des pièces jointes.", dark: true },
-            { Icon: Bot, t: "Assistant Pupo", d: "Pose des questions sur ton admin et avance étape par étape.", dark: false },
+            { Icon: Bot, t: "Assistant Archi", d: "Pose des questions sur ton admin et avance étape par étape.", dark: false },
             { Icon: Sparkles, t: "Générer des documents", d: "Rédige des courriers et prépare des PDF à partir de tes besoins.", dark: false },
             { Icon: Calendar, t: "Échéances", d: "Garde un œil sur les dates importantes liées à ton espace.", dark: true },
             { Icon: FileText, t: "Espace Professionnel", d: "Navigation Factures et coque Pro : la facturation complète reste sur mobile pour l’instant.", dark: false },
@@ -258,14 +262,14 @@ export default function LandingPage() {
         </div>
       </Section>
 
-      <Section id="pupo" tone="marine">
+      <Section id="archi" tone="marine">
         <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
           <div className="order-2 lg:order-1">
             <h2 className="text-[32px] font-extrabold tracking-tight" style={{ color: DESKTOP_SURFACES.onDark }}>
-              Pupo, ton assistant administratif
+              Archi, ton assistant administratif
             </h2>
             <p className="mt-4 leading-relaxed" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
-              Pupo t’aide à comprendre un document, à préparer une démarche et à
+              Archi t’aide à comprendre un document, à préparer une démarche et à
               rester dans le périmètre administratif. Ce n’est pas un chatbot
               généraliste : il reste centré sur ton admin Paipers.
             </p>
@@ -284,7 +288,7 @@ export default function LandingPage() {
           </div>
           <div className="order-1 lg:order-2 flex justify-center">
             <div className="paipers-card-night p-10 paipers-hover-lift">
-              <img src={PAIPERS_ASSETS.mascot} alt="Pupo" className="w-52 md:w-60 h-auto mx-auto" />
+              <img src={PAIPERS_ASSETS.mascot} alt="Archi" className="w-52 md:w-60 h-auto mx-auto" />
             </div>
           </div>
         </div>
@@ -341,7 +345,7 @@ export default function LandingPage() {
           {[
             { n: "1", t: "Crée ton compte", d: "Inscription rapide, puis un onboarding guidé.", card: "paipers-card-white" },
             { n: "2", t: "Importe tes documents", d: "Fichiers, emails connectés, classement assisté.", card: "paipers-card-marine" },
-            { n: "3", t: "Agis avec Pupo", d: "Questions, génération, suivi de ton admin.", card: "paipers-card-gradient" },
+            { n: "3", t: "Agis avec Archi", d: "Questions, génération, suivi de ton admin.", card: "paipers-card-gradient" },
           ].map((s) => (
             <div key={s.n} className={`${s.card} p-[18px] paipers-hover-lift`}>
               <span
@@ -507,8 +511,8 @@ export default function LandingPage() {
               a: "Paipers n’est pas encore ouvert au public. Rejoins la liste d’attente pour être informé(e) en priorité à l’ouverture. Un accès privé reste réservé à l’équipe.",
             },
             {
-              q: "Qu’est-ce que Pupo ?",
-              a: "Pupo est l’assistant Paipers. Il t’aide sur ton administratif, sans promettre des actions hors périmètre.",
+              q: "Qu’est-ce qu’Archi ?",
+              a: "Archi est l’assistant Paipers. Il t’aide sur ton administratif, sans promettre des actions hors périmètre.",
             },
           ].map((item) => (
             <details key={item.q} className="paipers-card-white p-[18px] group">

@@ -13,7 +13,7 @@ import Protected from "@/components/Protected";
 import AppShell from "@/components/AppShell";
 import { useNavSpace } from "@/components/NavSpaceProvider";
 import AssistantIdleHero, {
-  AssistantPupoFloatStyles,
+  AssistantArchiFloatStyles,
 } from "@/components/assistant/AssistantIdleHero";
 import AssistantComposer, {
   type AssistantComposerAttachment,
@@ -264,14 +264,14 @@ export default function AssistantPage() {
   const idleVisible = spaceLoaded && session === "idle";
 
   const headerTitle = useMemo(
-    () => (session === "active" ? "Conversation" : "Pupo"),
+    () => (session === "active" ? "Conversation" : "Archi"),
     [session],
   );
 
   return (
     <Protected>
       <AppShell>
-        <AssistantPupoFloatStyles />
+        <AssistantArchiFloatStyles />
         <div
           className="md:max-w-none md:pb-6"
           style={{
@@ -282,7 +282,7 @@ export default function AssistantPage() {
             minHeight: "100%",
             display: "flex",
             flexDirection: "column",
-            alignItems: idleVisible ? "center" : undefined,
+            alignItems: idleVisible ? "stretch" : undefined,
             justifyContent: idleVisible ? "center" : undefined,
             background: idleVisible ? "transparent" : undefined,
             borderRadius: 20,

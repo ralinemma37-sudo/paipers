@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Hero idle Pupo — pièce centrale, centrée (mobile + desktop).
+ * Hero idle Archi — colonne mobile, panneau large en 2 colonnes sur desktop.
  * Réf. AssistantHeroBlock.tsx
  */
 
@@ -60,150 +60,167 @@ export default function AssistantIdleHero({
 
   return (
     <div
+      className="w-full max-w-none"
       style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 14,
-        width: "100%",
-        maxWidth: 560,
         margin: "0 auto",
-        background: `radial-gradient(ellipse 70% 55% at 50% 18%, rgba(172,228,255,0.28), transparent 58%),
+        background: `radial-gradient(ellipse 55% 70% at 18% 45%, rgba(172,228,255,0.26), transparent 62%),
+          radial-gradient(ellipse 45% 55% at 88% 70%, rgba(247,196,232,0.22), transparent 58%),
           linear-gradient(165deg, #EAF3FF 0%, #F8F9FC 42%, #FADDEA 100%)`,
         borderRadius: 24,
         padding: "28px 22px 26px",
         border: "1px solid rgba(26,43,74,0.08)",
       }}
     >
-      <div style={{ textAlign: "center", width: "100%" }}>
-        <p
-          style={{
-            color: ACCENT,
-            fontSize: 22,
-            fontWeight: 800,
-            letterSpacing: -0.3,
-            margin: 0,
-          }}
-        >
-          Pupo
-        </p>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 5,
-            marginTop: 4,
-          }}
-        >
-          <span
-            style={{
-              width: 7,
-              height: 7,
-              borderRadius: 4,
-              background: SUCCESS,
-            }}
-          />
-          <span
-            className="paipers-text-muted"
-            style={{ fontSize: 12, fontWeight: 600 }}
-          >
-            En ligne
-          </span>
+      <div className="flex flex-col items-center gap-3.5 md:grid md:grid-cols-[minmax(200px,0.9fr)_minmax(0,1.4fr)] md:items-center md:gap-10 lg:gap-14 md:px-4 lg:px-8">
+        <div className="flex w-full flex-col items-center gap-3 md:gap-4">
+          <div style={{ textAlign: "center", width: "100%" }}>
+            <p
+              style={{
+                color: ACCENT,
+                fontSize: 22,
+                fontWeight: 800,
+                letterSpacing: -0.3,
+                margin: 0,
+              }}
+            >
+              Archi
+            </p>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 5,
+                marginTop: 4,
+              }}
+            >
+              <span
+                style={{
+                  width: 7,
+                  height: 7,
+                  borderRadius: 4,
+                  background: SUCCESS,
+                }}
+              />
+              <span
+                className="paipers-text-muted"
+                style={{ fontSize: 12, fontWeight: 600 }}
+              >
+                En ligne
+              </span>
+            </div>
+          </div>
+
+          <div className="assistant-archi-float w-[200px] md:w-[260px]" style={{ padding: 0 }} aria-hidden>
+            <AssistantMascot size={260} />
+          </div>
         </div>
-      </div>
 
-      <div className="assistant-pupo-float" style={{ padding: 0 }} aria-hidden>
-        <AssistantMascot size={240} />
-      </div>
+        <div className="flex w-full min-w-0 flex-col items-stretch gap-3.5 md:gap-4">
+          <div className="relative w-full">
+            {/* Pointe mobile (vers le haut / Archi) */}
+            <div
+              className="md:hidden"
+              style={{
+                width: 0,
+                height: 0,
+                margin: "0 auto -1px",
+                borderLeft: "9px solid transparent",
+                borderRight: "9px solid transparent",
+                borderBottom: "11px solid #1A2B4A",
+              }}
+            />
+            {/* Pointe desktop (vers la gauche / Archi) */}
+            <div
+              className="hidden md:block absolute left-0 top-8 -translate-x-full"
+              style={{
+                width: 0,
+                height: 0,
+                borderTop: "9px solid transparent",
+                borderBottom: "9px solid transparent",
+                borderRight: "11px solid #1A2B4A",
+              }}
+              aria-hidden
+            />
+            <div
+              className="paipers-card-marine"
+              style={{
+                borderRadius: 18,
+                padding: "16px 18px 14px",
+                textAlign: "center",
+              }}
+            >
+              <p
+                style={{
+                  fontSize: 16,
+                  fontWeight: 600,
+                  margin: "0 0 3px",
+                  color: DESKTOP_SURFACES.onDark,
+                }}
+              >
+                Salut {firstName} ! 👋
+              </p>
+              <p
+                className="md:text-[18px] md:leading-7"
+                style={{
+                  fontSize: 16,
+                  fontWeight: 800,
+                  color: DESKTOP_SURFACES.accentLine,
+                  letterSpacing: -0.2,
+                  lineHeight: "22px",
+                  margin: 0,
+                }}
+              >
+                {headline}
+              </p>
+              <p
+                style={{
+                  fontSize: 13,
+                  marginTop: 5,
+                  lineHeight: "18px",
+                  marginBottom: 0,
+                  color: DESKTOP_SURFACES.onDarkMuted,
+                }}
+              >
+                {sub}
+              </p>
+              <p
+                style={{
+                  fontSize: 11,
+                  marginTop: 10,
+                  marginBottom: 0,
+                  color: DESKTOP_SURFACES.onDarkSoft,
+                }}
+              >
+                {formatClock()}
+              </p>
+            </div>
+          </div>
 
-      <div className="w-full" style={{ maxWidth: 440, marginTop: -4 }}>
-        <div
-          style={{
-            width: 0,
-            height: 0,
-            margin: "0 auto -1px",
-            borderLeft: "9px solid transparent",
-            borderRight: "9px solid transparent",
-            borderBottom: "11px solid #1A2B4A",
-          }}
-        />
-        <div
-          className="paipers-card-marine"
-          style={{
-            borderRadius: 18,
-            padding: "14px 16px 12px",
-            textAlign: "center",
-          }}
-        >
-          <p
-            style={{
-              fontSize: 16,
-              fontWeight: 600,
-              margin: "0 0 3px",
-              color: DESKTOP_SURFACES.onDark,
-            }}
-          >
-            Salut {firstName} ! 👋
-          </p>
-          <p
-            style={{
-              fontSize: 16,
-              fontWeight: 800,
-              color: DESKTOP_SURFACES.accentLine,
-              letterSpacing: -0.2,
-              lineHeight: "22px",
-              margin: 0,
-            }}
-          >
-            {headline}
-          </p>
-          <p
-            style={{
-              fontSize: 13,
-              marginTop: 5,
-              lineHeight: "18px",
-              marginBottom: 0,
-              color: DESKTOP_SURFACES.onDarkMuted,
-            }}
-          >
-            {sub}
-          </p>
-          <p
-            style={{
-              fontSize: 11,
-              marginTop: 10,
-              marginBottom: 0,
-              color: DESKTOP_SURFACES.onDarkSoft,
-            }}
-          >
-            {formatClock()}
-          </p>
+          <div className="w-full">
+            {adminScore != null && !isProMode ? (
+              <AdminScoreCard score={adminScore} onPress={onOpenPriorities} />
+            ) : (
+              <StatusCard />
+            )}
+          </div>
+
+          <div className="w-full md:mt-1">
+            <AssistantComposer
+              value={input}
+              onChange={onChangeInput}
+              onSubmit={onSubmit}
+              loading={loading}
+              placeholder={
+                attachment ? "Que veux-tu faire avec ce document ?" : placeholder
+              }
+              variant="pill"
+              attachment={attachment}
+              onRemoveAttachment={onRemoveAttachment}
+              onAttachClick={onAttachClick}
+            />
+          </div>
         </div>
-      </div>
-
-      <div className="w-full" style={{ maxWidth: 440 }}>
-        {adminScore != null && !isProMode ? (
-          <AdminScoreCard score={adminScore} onPress={onOpenPriorities} />
-        ) : (
-          <StatusCard />
-        )}
-      </div>
-
-      <div className="w-full" style={{ maxWidth: 480, marginTop: 4 }}>
-        <AssistantComposer
-          value={input}
-          onChange={onChangeInput}
-          onSubmit={onSubmit}
-          loading={loading}
-          placeholder={
-            attachment ? "Que veux-tu faire avec ce document ?" : placeholder
-          }
-          variant="pill"
-          attachment={attachment}
-          onRemoveAttachment={onRemoveAttachment}
-          onAttachClick={onAttachClick}
-        />
       </div>
     </div>
   );
@@ -407,24 +424,24 @@ function StatusCard() {
   );
 }
 
-export function AssistantPupoFloatStyles() {
+export function AssistantArchiFloatStyles() {
   useEffect(() => {
-    const id = "assistant-pupo-float-style";
+    const id = "assistant-archi-float-style";
     if (document.getElementById(id)) return;
     const style = document.createElement("style");
     style.id = id;
     style.textContent = `
-      @keyframes assistant-pupo-float {
+      @keyframes assistant-archi-float {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-6px); }
       }
       @keyframes assistant-spin {
         to { transform: rotate(360deg); }
       }
-      .assistant-pupo-float {
-        animation: assistant-pupo-float 4.4s ease-in-out infinite;
+      .assistant-archi-float {
+        animation: assistant-archi-float 4.4s ease-in-out infinite;
       }
-      .assistant-pupo-float:active {
+      .assistant-archi-float:active {
         animation: none;
       }
       .assistant-spinner {

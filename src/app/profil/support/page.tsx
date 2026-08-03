@@ -42,7 +42,7 @@ export default function SupportPage() {
             >
               <p style={{ fontWeight: 800, margin: 0 }}>Contacter l&apos;assistant</p>
               <p className="paipers-text-muted" style={{ margin: "4px 0 0", fontSize: 13 }}>
-                Pose une question à Pupo
+                Pose une question à Archi
               </p>
             </Link>
 

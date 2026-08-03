@@ -47,7 +47,7 @@ export default function AssistantMascot({ size = 230, variant = "full" }: Props)
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src={PAIPERS_ASSETS.mascot}
-      alt="Pupo"
+      alt="Archi"
       width={size}
       height={size}
       style={{
