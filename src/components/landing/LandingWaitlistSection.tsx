@@ -1,5 +1,5 @@
 /**
- * Section liste d’attente (#waitlist).
+ * Section liste d’attente (#waitlist) — renforcement rédactionnel, même technique.
  */
 
 import LandingSection from "@/components/landing/LandingSection";
@@ -37,16 +37,37 @@ export default function LandingWaitlistSection() {
               color: PAIPERS_COLORS.navy,
             }}
           >
-            Rejoins les premiers utilisateurs de Paipers.
+            Fais partie des premiers à découvrir Paipers.
           </h2>
           <p
             className="text-center paipers-text-muted"
-            style={{ marginTop: 12, marginBottom: 14, lineHeight: 1.55 }}
+            style={{ marginTop: 12, marginBottom: 10, lineHeight: 1.55 }}
           >
-            Inscris-toi gratuitement. Tu seras averti(e) dès l’ouverture
-            officielle et recevras les actualités importantes concernant
-            Paipers si tu le souhaites.
+            Laisse ton e-mail pour être informé(e) de l’ouverture et suivre les
+            prochaines étapes du projet. Inscription gratuite.
           </p>
+          <ul
+            className="text-sm paipers-text-muted"
+            style={{
+              margin: "0 0 14px",
+              padding: 0,
+              listStyle: "none",
+              textAlign: "center",
+            }}
+          >
+            {[
+              "Être informé(e) du lancement",
+              "Découvrir Paipers parmi les premiers",
+              "Possibilité de participer aux phases de bêta-test",
+            ].map((line) => (
+              <li key={line} style={{ marginTop: 6 }}>
+                <span style={{ color: PAIPERS_COLORS.navy, fontWeight: 700 }} aria-hidden>
+                  ·{" "}
+                </span>
+                {line}
+              </li>
+            ))}
+          </ul>
           <WaitlistSocialProof />
           <WaitlistForm embedded />
         </div>

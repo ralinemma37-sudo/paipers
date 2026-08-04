@@ -1,5 +1,5 @@
 /**
- * Section « En 3 étapes ».
+ * Section « Comment ça marche » — 3 étapes factuelles.
  */
 
 import LandingSection from "@/components/landing/LandingSection";
@@ -10,13 +10,31 @@ export default function LandingHowItWorksSection() {
   return (
     <LandingSection tone="alt">
       <h2 className="paipers-screen-title text-center" style={{ fontSize: 32 }}>
-        En 3 étapes
+        Comment ça marche
       </h2>
+      <p className="mt-3 text-center paipers-text-muted max-w-xl mx-auto">
+        Un parcours simple pour reprendre le contrôle de ton administratif.
+      </p>
       <div className="mt-10 grid gap-4 md:grid-cols-3">
         {[
-          { n: "1", t: "Crée ton compte", d: "Inscription rapide, puis un onboarding guidé.", card: "paipers-card-white" },
-          { n: "2", t: "Importe tes documents", d: "Fichiers, emails connectés, classement assisté.", card: "paipers-card-marine" },
-          { n: "3", t: "Agis avec Archi", d: "Questions, génération, suivi de ton admin.", card: "paipers-card-gradient" },
+          {
+            n: "1",
+            t: "Tu centralises",
+            d: "Tes documents, e-mails et fichiers arrivent dans Paipers.",
+            card: "paipers-card-white",
+          },
+          {
+            n: "2",
+            t: "Paipers organise",
+            d: "Les informations utiles sont analysées et classées.",
+            card: "paipers-card-marine",
+          },
+          {
+            n: "3",
+            t: "Archi t’accompagne",
+            d: "Échéances, documents et actions importantes remontent au bon moment.",
+            card: "paipers-card-gradient",
+          },
         ].map((s) => (
           <div key={s.n} className={`${s.card} p-[18px] paipers-hover-lift`}>
             <span

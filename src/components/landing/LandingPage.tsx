@@ -1,8 +1,7 @@
 "use client";
 
 /**
- * Landing publique Paipers — composition des sections.
- * Contenu et styles inchangés ; découpage pour maintenabilité.
+ * Landing publique Paipers — composition des sections vitrine.
  */
 
 import PublicSiteHeader from "@/components/landing/PublicSiteHeader";
@@ -12,6 +11,8 @@ import LandingFeaturesSection from "@/components/landing/LandingFeaturesSection"
 import LandingArchiSection from "@/components/landing/LandingArchiSection";
 import LandingAudienceSection from "@/components/landing/LandingAudienceSection";
 import LandingHowItWorksSection from "@/components/landing/LandingHowItWorksSection";
+import LandingFoundersSection from "@/components/landing/LandingFoundersSection";
+import LandingRoadmapSection from "@/components/landing/LandingRoadmapSection";
 import LandingSecuritySection from "@/components/landing/LandingSecuritySection";
 import LandingPricingSection from "@/components/landing/LandingPricingSection";
 import LandingWaitlistSection from "@/components/landing/LandingWaitlistSection";
@@ -30,6 +31,8 @@ export default function LandingPage() {
       <LandingArchiSection />
       <LandingAudienceSection />
       <LandingHowItWorksSection />
+      <LandingFoundersSection />
+      <LandingRoadmapSection />
       <LandingSecuritySection />
       <LandingPricingSection />
       <LandingWaitlistSection />

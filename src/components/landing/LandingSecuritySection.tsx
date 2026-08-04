@@ -1,5 +1,5 @@
 /**
- * Section sécurité / validation humaine.
+ * Section confiance — affirmations sobres, validation humaine.
  */
 
 import { Shield } from "lucide-react";
@@ -14,10 +14,10 @@ export default function LandingSecuritySection() {
           <Shield size={40} color={DESKTOP_SURFACES.accentLine} />
           <div>
             <p className="font-extrabold text-lg" style={{ color: DESKTOP_SURFACES.onDark }}>
-              Sécurité & validation humaine
+              Tes données, ton contrôle
             </p>
             <p className="mt-1 text-sm" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
-              Tu restes maître des actions importantes.
+              Connexions e-mail via OAuth. Actions importantes sous ta validation.
             </p>
           </div>
         </div>
@@ -27,8 +27,8 @@ export default function LandingSecuritySection() {
           </h2>
           <p className="mt-3 leading-relaxed paipers-text-muted">
             Paipers propose des analyses et des aides à l’action. Les imports à
-            revoir, les suppressions et les connexions email restent sous ton
-            contrôle — pas d’automatisation totale inventée.
+            revoir, les suppressions et les connexions e-mail restent sous ton
+            contrôle. Archi n’agit pas à ta place.
           </p>
         </div>
       </div>
