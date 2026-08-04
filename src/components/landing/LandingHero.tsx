@@ -2,8 +2,15 @@
  * Hero landing — nuit / Archi / CTA.
  */
 
+import { Bot, Flag, Shield } from "lucide-react";
 import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 import { PAIPERS_ASSETS, PAIPERS_RADIUS } from "@/lib/paipersTheme";
+
+const REASSURANCE = [
+  { Icon: Flag, label: "Startup française" },
+  { Icon: Shield, label: "Données sécurisées" },
+  { Icon: Bot, label: "Assistant IA" },
+] as const;
 
 export default function LandingHero() {
   return (
@@ -27,17 +34,19 @@ export default function LandingHero() {
             Paipers
           </p>
           <h1
-            className="text-[2.5rem] md:text-5xl lg:text-[3.4rem] font-extrabold leading-[1.06] tracking-tight"
+            className="text-[2.5rem] md:text-5xl lg:text-[3.25rem] font-extrabold leading-[1.08] tracking-tight max-w-xl"
             style={{ color: DESKTOP_SURFACES.onDark }}
           >
-            Le copilote administratif intelligent arrive bientôt.
+            Tout ton administratif.
+            <br />
+            Une seule app.
           </h1>
           <p
             className="mt-5 text-base md:text-lg leading-relaxed max-w-xl"
             style={{ color: DESKTOP_SURFACES.onDarkMuted }}
           >
-            Rejoins la liste d’attente et sois informé(e) en priorité de
-            l’ouverture de Paipers.
+            Classe tes documents, suis tes démarches, reçois tes rappels et
+            avance avec Archi, ton assistant IA.
           </p>
           <div className="mt-9 flex flex-col sm:flex-row gap-3">
             <a
@@ -62,6 +71,26 @@ export default function LandingHero() {
               Découvrir Paipers
             </a>
           </div>
+          <ul
+            className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2.5"
+            style={{ listStyle: "none", padding: 0 }}
+          >
+            {REASSURANCE.map(({ Icon, label }) => (
+              <li
+                key={label}
+                className="inline-flex items-center gap-1.5 text-[12px] md:text-[13px] font-semibold"
+                style={{ color: DESKTOP_SURFACES.onDarkSoft }}
+              >
+                <Icon
+                  size={14}
+                  color={DESKTOP_SURFACES.accentLine}
+                  strokeWidth={2.25}
+                  aria-hidden
+                />
+                <span>{label}</span>
+              </li>
+            ))}
+          </ul>
         </div>
 
         <div className="relative flex justify-center lg:justify-end">
@@ -92,6 +121,56 @@ export default function LandingHero() {
                 decoding="async"
                 fetchPriority="high"
               />
+              {/* Bulle conversation Archi — desktop / tablette à droite, mobile sous Archi */}
+              <div
+                className="relative z-10 mt-4 mx-auto w-[min(100%,280px)] lg:absolute lg:mt-0 lg:left-[70%] lg:top-[2%] lg:mx-0 lg:w-[255px] paipers-fade-in"
+                style={{
+                  borderRadius: 18,
+                  padding: "14px 16px",
+                  background:
+                    "linear-gradient(165deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)",
+                  border: "1px solid rgba(255,255,255,0.18)",
+                  boxShadow: "0 12px 40px rgba(0,0,0,0.28)",
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                }}
+              >
+                <p
+                  className="text-[13px] font-extrabold"
+                  style={{ color: DESKTOP_SURFACES.onDark, margin: 0 }}
+                >
+                  Bonjour 👋
+                </p>
+                <p
+                  className="text-[12px] font-semibold mt-1.5"
+                  style={{ color: DESKTOP_SURFACES.onDarkMuted, margin: 0 }}
+                >
+                  Aujourd’hui j’ai détecté :
+                </p>
+                <ul
+                  className="mt-2 space-y-1 text-[12px] font-medium"
+                  style={{
+                    color: DESKTOP_SURFACES.onDarkSoft,
+                    margin: "8px 0 0",
+                    padding: 0,
+                    listStyle: "none",
+                  }}
+                >
+                  {[
+                    "une facture EDF",
+                    "un remboursement CPAM",
+                    "un document à signer",
+                    "une échéance demain",
+                  ].map((line) => (
+                    <li key={line} className="flex gap-1.5">
+                      <span style={{ color: DESKTOP_SURFACES.accentLine }} aria-hidden>
+                        •
+                      </span>
+                      <span>{line}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
             <p className="text-center text-lg font-extrabold" style={{ color: DESKTOP_SURFACES.onDark }}>
               Archi t’accompagne
