@@ -1,4 +1,12 @@
-import { createClient } from "@supabase/supabase-js";
+/**
+ * Client Supabase navigateur (cookies via @supabase/ssr).
+ * Compatible proxy Next.js 16 / protection serveur.
+ *
+ * Note : les sessions anciennement en localStorage nécessitent une
+ * reconnexion après bascule cookies — comportement attendu.
+ */
+
+import { createBrowserClient } from "@supabase/ssr";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
@@ -14,4 +22,4 @@ if (!anon) {
   );
 }
 
-export const supabase = createClient(url, anon);
+export const supabase = createBrowserClient(url, anon);

@@ -3,7 +3,10 @@
  * WAITLIST_ADMIN_EMAILS=a@x.com,b@y.com
  */
 
-import { normalizeEmail } from "@/lib/waitlist/types";
+import {
+  isWaitlistAdminEmailFromEnv,
+  normalizeEmail,
+} from "@/lib/authRoutePolicy";
 
 export function getWaitlistAdminEmails(): string[] {
   const raw =
@@ -18,8 +21,5 @@ export function getWaitlistAdminEmails(): string[] {
 }
 
 export function isWaitlistAdminEmail(email: string | null | undefined): boolean {
-  if (!email) return false;
-  const admins = getWaitlistAdminEmails();
-  if (admins.length === 0) return false;
-  return admins.includes(normalizeEmail(email));
+  return isWaitlistAdminEmailFromEnv(email);
 }

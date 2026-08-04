@@ -42,14 +42,13 @@ function mapErrorToState(status: number, apiError?: string): ConfirmState {
 export default function WaitlistConfirmClient() {
   const search = useSearchParams();
   const token = search.get("token") || "";
-  const [state, setState] = useState<ConfirmState>("loading");
+  const [state, setState] = useState<ConfirmState>(() =>
+    token ? "loading" : "invalid",
+  );
   const [proofText, setProofText] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!token) {
-      setState("invalid");
-      return;
-    }
+    if (!token) return;
     let cancelled = false;
     void (async () => {
       try {
@@ -65,6 +64,12 @@ export default function WaitlistConfirmClient() {
         if (!res.ok || !json.ok) {
           setState(mapErrorToState(res.status, json.error));
           return;
+        }
+        // Retire le token de l’URL (historique navigateur / partage d’écran).
+        try {
+          window.history.replaceState({}, "", "/waitlist/confirm");
+        } catch {
+          /* ignore */
         }
         setState(json.alreadyConfirmed ? "already" : "ok");
       } catch {

@@ -3,9 +3,15 @@
  */
 
 import { NextResponse } from "next/server";
-import { randomBytes } from "crypto";
+import { createHash, randomBytes } from "crypto";
 import { getAppBaseUrl, getServiceSupabase } from "@/lib/supabaseAdmin";
 import { sendWaitlistConfirmEmail } from "@/lib/waitlist/email";
+import {
+  clientIpFromRequest,
+  getRateLimitStore,
+  rateLimitExceededResponse,
+  WAITLIST_RATE_LIMITS,
+} from "@/lib/rateLimit";
 import {
   isValidEmail,
   normalizeEmail,
@@ -32,6 +38,10 @@ const PROFILES = new Set<WaitlistProfile>([
   "les_deux",
 ]);
 
+function emailRateKey(email: string): string {
+  return createHash("sha256").update(email).digest("hex").slice(0, 32);
+}
+
 export async function POST(req: Request) {
   try {
     const body = (await req.json()) as Body;
@@ -52,6 +62,22 @@ export async function POST(req: Request) {
         { error: "Choisis un profil (Particulier, Professionnel ou Les deux)." },
         { status: 400 },
       );
+    }
+
+    const limiter = getRateLimitStore();
+    const ip = clientIpFromRequest(req);
+    const emailHit = await limiter.hit(
+      `waitlist:join:email:${emailRateKey(email)}`,
+      WAITLIST_RATE_LIMITS.joinPerEmail.limit,
+      WAITLIST_RATE_LIMITS.joinPerEmail.windowMs,
+    );
+    const ipHit = await limiter.hit(
+      `waitlist:join:ip:${ip}`,
+      WAITLIST_RATE_LIMITS.joinPerIp.limit,
+      WAITLIST_RATE_LIMITS.joinPerIp.windowMs,
+    );
+    if (!emailHit.ok || !ipHit.ok) {
+      return rateLimitExceededResponse();
     }
 
     let supabase;
@@ -87,7 +113,9 @@ export async function POST(req: Request) {
     }
 
     let token = existing?.confirmation_token as string | undefined;
-    if (!token) token = randomBytes(32).toString("hex");
+    if (!token || String(token).startsWith("used_")) {
+      token = randomBytes(32).toString("hex");
+    }
 
     if (existing) {
       const { error: upErr } = await supabase
