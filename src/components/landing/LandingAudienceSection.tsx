@@ -8,7 +8,7 @@ import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 export default function LandingAudienceSection() {
   return (
     <>
-      <LandingSection id="particuliers" tone="canvas">
+      <LandingSection id="particuliers" tone="alt">
         <h2 className="paipers-screen-title" style={{ fontSize: 32 }}>
           Pour les particuliers
         </h2>

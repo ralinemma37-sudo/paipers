@@ -7,6 +7,18 @@
    (miroir paipers-mobile/src/theme/*)
 -------------------------------------------------- */
 
+html {
+  scroll-behavior: smooth;
+  /* Compense le header sticky public (~64px) */
+  scroll-padding-top: 72px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   background-color: #f8f9fc;
   color: var(--paipers-foreground);

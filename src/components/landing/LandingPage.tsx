@@ -20,11 +20,13 @@ import LandingWaitlistSection from "@/components/landing/LandingWaitlistSection"
 import LandingFaqSection from "@/components/landing/LandingFaqSection";
 import LandingFinalCta from "@/components/landing/LandingFinalCta";
 import LandingFooter from "@/components/landing/LandingFooter";
+import LandingSmoothAnchorScroll from "@/components/landing/LandingSmoothAnchorScroll";
 import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen w-full overflow-x-hidden" style={{ background: DESKTOP_SURFACES.night }}>
+      <LandingSmoothAnchorScroll />
       <PublicSiteHeader />
       <LandingHero />
       <LandingProblemSection />

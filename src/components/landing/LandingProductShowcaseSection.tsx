@@ -97,7 +97,7 @@ export default function LandingProductShowcaseSection() {
   }, [prev, next]);
 
   return (
-    <LandingSection id="produit" tone="canvas">
+    <LandingSection id="produit" tone="white">
       <h2 className="paipers-screen-title text-center" style={{ fontSize: 32 }}>
         Paipers, concrètement.
       </h2>
@@ -168,29 +168,70 @@ export default function LandingProductShowcaseSection() {
             <ChevronLeft size={22} strokeWidth={2.25} aria-hidden />
           </button>
 
+          {/* Cadre type iPhone autour de la capture */}
           <div
             className={`paipers-showcase-frame relative w-full max-w-[280px] sm:max-w-[300px] md:max-w-[320px] ${
               entering ? "paipers-showcase-frame-enter" : ""
             }`}
             style={{
-              borderRadius: 28,
-              overflow: "hidden",
-              border: `1px solid ${PAIPERS_COLORS.border}`,
-              boxShadow: "0 18px 48px rgba(26, 43, 74, 0.16)",
-              background: "#0B1220",
+              padding: "11px 10px 12px",
+              borderRadius: 42,
+              background:
+                "linear-gradient(165deg, #3a3a3f 0%, #1a1a1d 42%, #0d0d0f 100%)",
+              boxShadow:
+                "0 22px 56px rgba(15, 23, 42, 0.22), inset 0 1px 0 rgba(255,255,255,0.14)",
+              border: "1px solid rgba(255,255,255,0.08)",
             }}
           >
-            <Image
-              key={slide.src}
-              src={slide.src}
-              alt={slide.alt}
-              width={SCREENSHOT_W}
-              height={SCREENSHOT_H}
-              className="h-auto w-full"
-              sizes="(max-width: 640px) 280px, (max-width: 768px) 300px, 320px"
-              loading="lazy"
-              quality={85}
+            {/* Bouton latéral volume (décoratif) */}
+            <span
+              className="pointer-events-none absolute -left-[2px] top-[96px] w-[3px] h-8 rounded-l-sm"
+              style={{ background: "#2c2c30" }}
+              aria-hidden
             />
+            <span
+              className="pointer-events-none absolute -left-[2px] top-[136px] w-[3px] h-12 rounded-l-sm"
+              style={{ background: "#2c2c30" }}
+              aria-hidden
+            />
+            <span
+              className="pointer-events-none absolute -right-[2px] top-[120px] w-[3px] h-14 rounded-r-sm"
+              style={{ background: "#2c2c30" }}
+              aria-hidden
+            />
+
+            <div
+              className="relative overflow-hidden"
+              style={{
+                borderRadius: 32,
+                background: "#000",
+              }}
+            >
+              {/* Dynamic Island */}
+              <div
+                className="pointer-events-none absolute z-10 left-1/2 -translate-x-1/2"
+                style={{
+                  top: 10,
+                  width: 86,
+                  height: 22,
+                  borderRadius: 999,
+                  background: "#0a0a0a",
+                  boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06)",
+                }}
+                aria-hidden
+              />
+              <Image
+                key={slide.src}
+                src={slide.src}
+                alt={slide.alt}
+                width={SCREENSHOT_W}
+                height={SCREENSHOT_H}
+                className="h-auto w-full block"
+                sizes="(max-width: 640px) 260px, (max-width: 768px) 280px, 300px"
+                loading="lazy"
+                quality={85}
+              />
+            </div>
           </div>
 
           <button

@@ -95,62 +95,89 @@ export default function LandingHero() {
 
         <div className="relative flex justify-center lg:justify-end">
           <div className="relative w-full max-w-lg space-y-4">
-            <div className="relative mx-auto w-fit">
-              {/* Halo multi-stops : fondu long, sans bord circulaire net */}
-              <div
-                className="pointer-events-none absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2"
-                style={{
-                  width: "140%",
-                  height: "140%",
-                  background: `radial-gradient(ellipse 52% 48% at 50% 50%,
+            {/* Archi + bulle de parole (sous Archi / à côté, jamais par-dessus) */}
+            <div className="relative mx-auto flex flex-col items-center lg:flex-row lg:items-center lg:justify-end lg:gap-3">
+              <div className="relative w-fit shrink-0">
+                {/* Halo multi-stops : fondu long, sans bord circulaire net */}
+                <div
+                  className="pointer-events-none absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2"
+                  style={{
+                    width: "140%",
+                    height: "140%",
+                    background: `radial-gradient(ellipse 52% 48% at 50% 50%,
                       rgba(172,228,255,0.28) 0%,
                       rgba(172,228,255,0.16) 22%,
                       rgba(172,228,255,0.08) 42%,
                       rgba(172,228,255,0.03) 62%,
                       transparent 78%
                     )`,
-                }}
-                aria-hidden
-              />
-              <img
-                src={PAIPERS_ASSETS.mascot}
-                alt="Archi, l’assistant Paipers"
-                className="relative mx-auto w-56 md:w-72 h-auto"
-                width={288}
-                height={288}
-                decoding="async"
-                fetchPriority="high"
-              />
-              {/* Bulle conversation Archi — desktop / tablette à droite, mobile sous Archi */}
+                  }}
+                  aria-hidden
+                />
+                <img
+                  src={PAIPERS_ASSETS.mascot}
+                  alt="Archi, l’assistant Paipers"
+                  className="relative mx-auto w-56 md:w-72 h-auto"
+                  width={288}
+                  height={288}
+                  decoding="async"
+                  fetchPriority="high"
+                />
+              </div>
+
+              {/* Bulle de conversation — pointe vers Archi */}
               <div
-                className="relative z-10 mt-4 mx-auto w-[min(100%,280px)] lg:absolute lg:mt-0 lg:left-[70%] lg:top-[2%] lg:mx-0 lg:w-[255px] paipers-fade-in"
+                className="relative z-10 mt-1 w-[min(100%,280px)] lg:mt-0 lg:w-[240px] paipers-fade-in"
                 style={{
-                  borderRadius: 18,
+                  borderRadius: 20,
+                  borderTopLeftRadius: 20,
                   padding: "14px 16px",
-                  background:
-                    "linear-gradient(165deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%)",
-                  border: "1px solid rgba(255,255,255,0.18)",
-                  boxShadow: "0 12px 40px rgba(0,0,0,0.28)",
-                  backdropFilter: "blur(12px)",
-                  WebkitBackdropFilter: "blur(12px)",
+                  background: "rgba(255,255,255,0.97)",
+                  border: "1px solid rgba(255,255,255,0.55)",
+                  boxShadow: "0 10px 32px rgba(0,0,0,0.22)",
                 }}
               >
+                {/* Queue mobile : pointe vers le haut (Archi) */}
+                <span
+                  className="lg:hidden absolute left-1/2 -top-2 -translate-x-1/2"
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderLeft: "9px solid transparent",
+                    borderRight: "9px solid transparent",
+                    borderBottom: "10px solid rgba(255,255,255,0.97)",
+                    filter: "drop-shadow(0 -1px 0 rgba(255,255,255,0.4))",
+                  }}
+                  aria-hidden
+                />
+                {/* Queue desktop : pointe vers la gauche (Archi) */}
+                <span
+                  className="hidden lg:block absolute -left-2 top-10"
+                  style={{
+                    width: 0,
+                    height: 0,
+                    borderTop: "9px solid transparent",
+                    borderBottom: "9px solid transparent",
+                    borderRight: "10px solid rgba(255,255,255,0.97)",
+                  }}
+                  aria-hidden
+                />
                 <p
                   className="text-[13px] font-extrabold"
-                  style={{ color: DESKTOP_SURFACES.onDark, margin: 0 }}
+                  style={{ color: DESKTOP_SURFACES.marine, margin: 0 }}
                 >
                   Bonjour 👋
                 </p>
                 <p
                   className="text-[12px] font-semibold mt-1.5"
-                  style={{ color: DESKTOP_SURFACES.onDarkMuted, margin: 0 }}
+                  style={{ color: "rgba(26,43,74,0.72)", margin: 0 }}
                 >
                   Aujourd’hui j’ai détecté :
                 </p>
                 <ul
                   className="mt-2 space-y-1 text-[12px] font-medium"
                   style={{
-                    color: DESKTOP_SURFACES.onDarkSoft,
+                    color: "rgba(26,43,74,0.62)",
                     margin: "8px 0 0",
                     padding: 0,
                     listStyle: "none",
@@ -163,7 +190,7 @@ export default function LandingHero() {
                     "une échéance demain",
                   ].map((line) => (
                     <li key={line} className="flex gap-1.5">
-                      <span style={{ color: DESKTOP_SURFACES.accentLine }} aria-hidden>
+                      <span style={{ color: DESKTOP_SURFACES.marine }} aria-hidden>
                         •
                       </span>
                       <span>{line}</span>
