@@ -380,12 +380,31 @@
   }
 }
 
+/* Showcase produit — transition douce entre captures */
+.paipers-showcase-frame {
+  transition: opacity 280ms ease, transform 280ms ease;
+}
+
+.paipers-showcase-frame-enter {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .paipers-hover-lift,
   .paipers-hover-lift:hover,
   .paipers-fade-in {
     transition: none;
     animation: none;
+    transform: none;
+  }
+
+  .paipers-showcase-frame {
+    transition: none;
+  }
+
+  .paipers-showcase-frame-enter {
+    opacity: 1;
     transform: none;
   }
 }

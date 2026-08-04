@@ -9,6 +9,7 @@ import LandingHero from "@/components/landing/LandingHero";
 import LandingProblemSection from "@/components/landing/LandingProblemSection";
 import LandingFeaturesSection from "@/components/landing/LandingFeaturesSection";
 import LandingArchiSection from "@/components/landing/LandingArchiSection";
+import LandingProductShowcaseSection from "@/components/landing/LandingProductShowcaseSection";
 import LandingAudienceSection from "@/components/landing/LandingAudienceSection";
 import LandingHowItWorksSection from "@/components/landing/LandingHowItWorksSection";
 import LandingFoundersSection from "@/components/landing/LandingFoundersSection";
@@ -29,6 +30,7 @@ export default function LandingPage() {
       <LandingProblemSection />
       <LandingFeaturesSection />
       <LandingArchiSection />
+      <LandingProductShowcaseSection />
       <LandingAudienceSection />
       <LandingHowItWorksSection />
       <LandingFoundersSection />
