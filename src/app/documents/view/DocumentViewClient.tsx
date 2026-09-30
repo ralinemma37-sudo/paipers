@@ -5,6 +5,10 @@ import { useSearchParams } from "next/navigation";
 import Protected from "@/components/Protected";
 import AppShell from "@/components/AppShell";
 import { supabase } from "@/lib/supabase";
+import {
+  deletePaipersCloudDocument,
+  userMessageForDocumentDeletionError,
+} from "@/lib/deleteDocumentCascade";
 import { labelCat } from "@/lib/documentCategories";
 import { effectiveDocumentCategory } from "@/lib/runDocumentAnalysis";
 import {
@@ -836,26 +840,35 @@ export default function DocumentViewPage() {
     setDeleting(true);
 
     try {
-      if (doc.file_path) {
-        const { error: rmErr } = await supabase.storage.from("documents").remove([doc.file_path]);
-        if (rmErr) {
-          setDeleting(false);
-          setUiMsg(`Erreur suppression fichier : ${rmErr.message}`);
-          return;
-        }
-      }
-
-      const { error: delErr } = await supabase.from("documents").delete().eq("id", doc.id);
-      if (delErr) {
+      const { data: auth, error: authErr } = await supabase.auth.getUser();
+      const userId = String(auth?.user?.id ?? "").trim();
+      if (authErr || !userId) {
         setDeleting(false);
-        setUiMsg(`Erreur suppression document : ${delErr.message}`);
+        setUiMsg("Suppression non autorisée.");
         return;
       }
 
+      const res = await deletePaipersCloudDocument({
+        userId,
+        documentId: doc.id,
+      });
+      if (!res.ok) {
+        setDeleting(false);
+        setUiMsg(userMessageForDocumentDeletionError(res.error));
+        return;
+      }
+
+      if (res.warnings.length > 0) {
+        window.alert(
+          "Le document a été supprimé, mais le fichier n'a pas pu être retiré du stockage.",
+        );
+      }
+
       window.location.href = "/documents";
-    } catch (e: any) {
+    } catch (e: unknown) {
       setDeleting(false);
-      setUiMsg(`Erreur : ${e?.message ?? "inconnue"}`);
+      const message = e instanceof Error ? e.message : "inconnue";
+      setUiMsg(`Erreur : ${message}`);
     }
   };
 
