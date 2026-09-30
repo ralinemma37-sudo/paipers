@@ -15,7 +15,31 @@ export type EmailConnectionUpsertRow = {
   scopes: string[];
   metadata: Record<string, unknown>;
   updated_at: string;
+  /** Écrit uniquement pour REMETTRE À ZÉRO la reprise quand la boîte change. */
+  mailbox_synced_through?: string | null;
 };
+
+function normalizeAccountEmail(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim().toLowerCase();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+/**
+ * Reconnexion OAuth sur la clé (user, provider, account_scope).
+ * Même boîte (ou boîte indéterminée) → le point de reprise est conservé :
+ * renouveler des scopes ne doit pas déclencher un backfill complet.
+ * Boîte différente → le curseur de l’ancien compte est effacé, jamais réutilisé.
+ */
+export function shouldKeepMailboxCursorOnReconnect(input: {
+  previousAccountEmail: unknown;
+  nextAccountEmail: unknown;
+}): boolean {
+  const previous = normalizeAccountEmail(input.previousAccountEmail);
+  const next = normalizeAccountEmail(input.nextAccountEmail);
+  if (!previous || !next) return true;
+  return previous === next;
+}
 
 function isOnConflictConstraintError(message: string): boolean {
   return /no unique or exclusion constraint matching the on conflict specification/i.test(message);
@@ -30,13 +54,40 @@ function isMissingAccountScopeColumn(message: string): boolean {
  * Upsert `external_connections` aligné sur UNIQUE(user_id, provider, account_scope).
  * Repli legacy UNIQUE(user_id, provider) si la migration scope n’est pas encore appliquée.
  */
-/** Client sans types générés `external_connections` (évite `never` au build Next). */
 type UntypedSupabase = SupabaseClient<any, "public", any>;
+
+/**
+ * L’upsert n’écrit jamais `mailbox_synced_through` : une reconnexion du même compte
+ * conserve donc la valeur en base. Le champ n’est ajouté (à null) que pour effacer
+ * la reprise quand l’adresse de la boîte a changé sur cette clé.
+ */
+async function withMailboxCursorPolicy(
+  supabase: UntypedSupabase,
+  row: EmailConnectionUpsertRow
+): Promise<EmailConnectionUpsertRow> {
+  const { data, error } = await supabase
+    .from("external_connections")
+    .select("account_email")
+    .eq("user_id", row.user_id)
+    .eq("provider", row.provider)
+    .eq("account_scope", row.account_scope)
+    .maybeSingle();
+
+  if (error || !data) return row;
+  if (shouldKeepMailboxCursorOnReconnect({
+    previousAccountEmail: (data as { account_email?: unknown }).account_email,
+    nextAccountEmail: row.account_email,
+  })) {
+    return row;
+  }
+  return { ...row, mailbox_synced_through: null };
+}
 
 export async function upsertEmailConnection(
   supabase: UntypedSupabase,
-  row: EmailConnectionUpsertRow
+  rowIn: EmailConnectionUpsertRow
 ): Promise<{ error: string | null; userMessage: string | null }> {
+  const row = await withMailboxCursorPolicy(supabase, rowIn);
   const scoped = await supabase.from("external_connections").upsert(row, {
     onConflict: "user_id,provider,account_scope",
   });

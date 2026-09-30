@@ -1,13 +1,18 @@
 import { parseAccountScope } from "../../../../lib/accountScope";
-import { resolveGmailOAuthEnv } from "../../../../lib/gmailOAuthEnv";
-import { GMAIL_SCOPES } from "../../../../lib/gmailScopes";
 import { encodeOAuthState } from "../../../../lib/oauthState";
 import { NextRequest, NextResponse } from "next/server";
 
+const OUTLOOK_SCOPES = [
+  "offline_access",
+  "openid",
+  "profile",
+  "email",
+  "Mail.Read",
+] as const;
+
 /**
- * Démarre le flux OAuth Google (Gmail).
- * Query : user_id (obligatoire), platform, account_scope.
- * access_type=offline + prompt=consent → refresh_token à chaque reconnexion.
+ * Démarre le flux OAuth Microsoft (comptes personnels + Microsoft 365).
+ * Query : user_id (obligatoire), platform, account_scope (aligné Gmail).
  */
 export async function GET(req: NextRequest) {
   const userId = req.nextUrl.searchParams.get("user_id")?.trim();
@@ -18,25 +23,21 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "missing_user_id" }, { status: 400 });
   }
 
-  const oauth = resolveGmailOAuthEnv();
-  if (!oauth.ok) {
-    return NextResponse.json(
-      { error: oauth.error, missing: oauth.missing },
-      { status: 500 }
-    );
+  const clientId = process.env.MICROSOFT_CLIENT_ID;
+  const redirectUri = process.env.MICROSOFT_REDIRECT_URI;
+  if (!clientId || !redirectUri) {
+    return NextResponse.json({ error: "missing_microsoft_oauth_env" }, { status: 500 });
   }
-  const { clientId, redirectUri } = oauth;
 
+  const tenant = process.env.MICROSOFT_TENANT_ID || "common";
   const state = encodeOAuthState({ user_id: userId, platform, account_scope: accountScope });
 
-  const authorize = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+  const authorize = new URL(`https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize`);
   authorize.searchParams.set("client_id", clientId);
   authorize.searchParams.set("response_type", "code");
   authorize.searchParams.set("redirect_uri", redirectUri);
-  authorize.searchParams.set("scope", GMAIL_SCOPES.join(" "));
-  authorize.searchParams.set("access_type", "offline");
-  authorize.searchParams.set("prompt", "consent");
-  authorize.searchParams.set("include_granted_scopes", "true");
+  authorize.searchParams.set("response_mode", "query");
+  authorize.searchParams.set("scope", OUTLOOK_SCOPES.join(" "));
   authorize.searchParams.set("state", state);
 
   return NextResponse.redirect(authorize.toString());

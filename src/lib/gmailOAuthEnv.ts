@@ -26,7 +26,6 @@ export type GmailServerEnv = {
   serviceKey: string;
 };
 
-/** Variables serveur pour le callback OAuth Gmail (types sûrs après guard). */
 export function resolveGmailServerEnv():
   | { ok: true; env: GmailServerEnv }
   | { ok: false; missing: string[] } {

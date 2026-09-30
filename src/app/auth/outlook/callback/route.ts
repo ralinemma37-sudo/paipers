@@ -1,267 +1,131 @@
+import { oauthSuccessHtml } from "../../../../lib/oauthSuccessHtml";
+import { decodeOAuthState } from "../../../../lib/oauthState";
 import {
   upsertEmailConnection,
   userFacingEmailConnectionDbError,
-} from "@/lib/upsertEmailConnection";
+} from "../../../../lib/upsertEmailConnection";
 import { createClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
-
-export const dynamic = "force-dynamic";
+import { NextRequest, NextResponse } from "next/server";
 
 const OUTLOOK_SCOPES = [
   "offline_access",
   "openid",
   "profile",
   "email",
-  "User.Read",
   "Mail.Read",
 ];
 
-function requireEnv(name: string) {
-  const v = process.env[name];
-  if (!v) throw new Error(`Missing env: ${name}`);
-  return v;
-}
-
-function decodeTries(input: string) {
-  const tries: string[] = [input];
-  try {
-    tries.push(decodeURIComponent(input));
-  } catch {}
-  try {
-    tries.push(decodeURIComponent(decodeURIComponent(input)));
-  } catch {}
-  return tries;
-}
-
-function extractUuid(str: string) {
-  const m = str.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
-  return m?.[0] ?? "";
-}
-
-type ParsedState = {
-  platform: string;
-  userId: string;
-  account_scope: "personal" | "pro" | "family";
-};
-
-function safeParseState(state?: string): ParsedState {
-  const fallback: ParsedState = { platform: "web", userId: "", account_scope: "personal" };
-  if (!state) return fallback;
-
-  for (const s of decodeTries(state)) {
-    try {
-      const obj = JSON.parse(s);
-      const platform = obj?.platform ?? "web";
-      const userId = obj?.userId ?? obj?.user_id ?? "";
-      const rawScope = obj?.account_scope ?? obj?.accountScope ?? "personal";
-      const account_scope =
-        rawScope === "pro" || rawScope === "family" || rawScope === "personal"
-          ? rawScope
-          : "personal";
-      if (userId) return { platform, userId, account_scope };
-    } catch {}
-
-    const uuid = extractUuid(s);
-    if (uuid) return { platform: "web", userId: uuid, account_scope: "personal" };
+/**
+ * Callback OAuth Microsoft → upsert external_connections (provider = outlook).
+ * Aligné sur external_connections (user_id, provider, account_scope).
+ */
+export async function GET(req: NextRequest) {
+  const url = req.nextUrl;
+  const err = url.searchParams.get("error");
+  const errDesc = url.searchParams.get("error_description");
+  if (err) {
+    return NextResponse.json({ error: err, error_description: errDesc }, { status: 400 });
   }
 
-  return fallback;
-}
+  const code = url.searchParams.get("code");
+  const stateB64 = url.searchParams.get("state");
+  if (!code || !stateB64) {
+    return NextResponse.json({ error: "missing_code_or_state" }, { status: 400 });
+  }
 
-async function exchangeCodeForTokens(code: string, redirectUri: string) {
-  const client_id = requireEnv("MICROSOFT_CLIENT_ID");
-  const client_secret = requireEnv("MICROSOFT_CLIENT_SECRET");
+  const state = decodeOAuthState(stateB64);
+  if (!state) {
+    return NextResponse.json({ error: "invalid_state" }, { status: 400 });
+  }
+
+  const clientId = process.env.MICROSOFT_CLIENT_ID;
+  const clientSecret = process.env.MICROSOFT_CLIENT_SECRET;
+  const redirectUri = process.env.MICROSOFT_REDIRECT_URI;
   const tenant = process.env.MICROSOFT_TENANT_ID || "common";
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!clientId || !clientSecret || !redirectUri || !supabaseUrl || !serviceKey) {
+    return NextResponse.json({ error: "server_misconfigured" }, { status: 500 });
+  }
+
   const tokenUrl = `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`;
-  const res = await fetch(tokenUrl, {
+  const tokenRes = await fetch(tokenUrl, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
-      client_id,
-      client_secret,
+      client_id: clientId,
+      client_secret: clientSecret,
       code,
       redirect_uri: redirectUri,
       grant_type: "authorization_code",
     }),
   });
 
-  const json = await res.json();
-  if (!res.ok) {
-    throw new Error(`Microsoft token error: ${JSON.stringify(json)}`);
+  const tokenJson = await tokenRes.json();
+  if (!tokenRes.ok) {
+    return NextResponse.json({ error: "token_exchange_failed", detail: tokenJson }, { status: 502 });
   }
 
-  return json as {
-    access_token: string;
-    refresh_token?: string;
-    expires_in?: number;
-    id_token?: string;
-  };
-}
-
-function emailFromIdToken(idToken?: string): string | null {
-  if (!idToken) return null;
-  try {
-    const parts = idToken.split(".");
-    if (parts.length < 2) return null;
-    const payload = JSON.parse(
-      Buffer.from(parts[1].replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8")
-    ) as Record<string, unknown>;
-    const candidates = [
-      payload.preferred_username,
-      payload.email,
-      payload.upn,
-      payload.unique_name,
-    ];
-    for (const c of candidates) {
-      if (typeof c === "string" && c.includes("@")) return c;
-    }
-  } catch {
-    /* ignore */
-  }
-  return null;
-}
-
-async function fetchGraphMe(accessToken: string): Promise<{
-  mail?: string;
-  userPrincipalName?: string;
-  id?: string;
-} | null> {
-  const url =
-    "https://graph.microsoft.com/v1.0/me?$select=id,mail,userPrincipalName,displayName";
-  const res = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      Accept: "application/json",
-    },
-  });
-  const json = await res.json();
-  if (!res.ok) return null;
-  return json as { mail?: string; userPrincipalName?: string; id?: string };
-}
-
-/** Ne bloque pas la connexion si Graph /me échoue (comptes perso MSA parfois UnknownError). */
-async function resolveMicrosoftIdentity(
-  accessToken: string,
-  idToken?: string
-): Promise<{ accountEmail: string | null; providerAccountId: string | null; graphOk: boolean }> {
-  let profile = await fetchGraphMe(accessToken);
-  if (!profile) {
-    await new Promise((r) => setTimeout(r, 400));
-    profile = await fetchGraphMe(accessToken);
-  }
-
-  if (profile) {
-    const accountEmail = profile.mail?.trim() || profile.userPrincipalName?.trim() || null;
-    return {
-      accountEmail,
-      providerAccountId: profile.id ?? null,
-      graphOk: true,
-    };
-  }
-
-  const fromId = emailFromIdToken(idToken);
-  return {
-    accountEmail: fromId,
-    providerAccountId: null,
-    graphOk: false,
-  };
-}
-
-export async function GET(request: Request) {
-  try {
-    const url = new URL(request.url);
-
-    const code = url.searchParams.get("code");
-    const state = url.searchParams.get("state");
-    const error = url.searchParams.get("error");
-    const errorDescription = url.searchParams.get("error_description");
-
-    if (error) {
-      return NextResponse.json({
-        error,
-        error_description: errorDescription,
-        params: Object.fromEntries(url.searchParams.entries()),
-      });
-    }
-
-    if (!code) {
-      return NextResponse.json({
-        error: "Missing code",
-        params: Object.fromEntries(url.searchParams.entries()),
-      });
-    }
-
-    const { platform, userId, account_scope } = safeParseState(state ?? undefined);
-
-    if (!userId) {
-      return NextResponse.json({
-        error: "Missing userId in state",
-        received_state: state,
-        decoded_tries: state ? decodeTries(state) : [],
-      });
-    }
-
-    const redirectUri =
-      process.env.MICROSOFT_REDIRECT_URI ?? "https://paipers.vercel.app/auth/outlook/callback";
-
-    const tokens = await exchangeCodeForTokens(code, redirectUri);
-    if (!tokens.refresh_token) {
-      return NextResponse.json(
-        { error: "no_refresh_token", hint: "offline_access scope required" },
-        { status: 502 }
-      );
-    }
-
-    const identity = await resolveMicrosoftIdentity(
-      tokens.access_token,
-      tokens.id_token
+  const refreshToken = tokenJson.refresh_token as string | undefined;
+  const accessToken = tokenJson.access_token as string | undefined;
+  if (!refreshToken) {
+    return NextResponse.json(
+      { error: "no_refresh_token", hint: "ensure offline_access scope and consent" },
+      { status: 502 }
     );
+  }
 
-    const supabase = createClient(
-      requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
-      requireEnv("SUPABASE_SERVICE_ROLE_KEY")
-    );
-
-    const expiresIn = typeof tokens.expires_in === "number" ? tokens.expires_in : 3600;
-    const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
-
-    const { error: upsertError, userMessage } = await upsertEmailConnection(supabase, {
-      user_id: userId,
-      provider: "outlook",
-      account_scope,
-      account_email: identity.accountEmail,
-      provider_account_id: identity.providerAccountId,
-      refresh_token: tokens.refresh_token,
-      access_token: tokens.access_token,
-      expires_at: expiresAt,
-      scopes: OUTLOOK_SCOPES,
-      metadata: {
-        connected_via: "vercel_oauth_outlook",
-        platform,
-        graph_profile_ok: identity.graphOk,
-      },
-      updated_at: new Date().toISOString(),
+  let accountEmail: string | null = null;
+  let providerAccountId: string | null = null;
+  if (accessToken) {
+    const meRes = await fetch("https://graph.microsoft.com/v1.0/me", {
+      headers: { Authorization: `Bearer ${accessToken}` },
     });
-
-    if (upsertError) {
-      return NextResponse.json(
-        {
-          error: "supabase_upsert_failed",
-          userMessage: userMessage ?? userFacingEmailConnectionDbError(upsertError),
-          detail: upsertError,
-        },
-        { status: 500 }
-      );
+    if (meRes.ok) {
+      const me = await meRes.json();
+      accountEmail =
+        (typeof me.mail === "string" && me.mail) ||
+        (typeof me.userPrincipalName === "string" && me.userPrincipalName) ||
+        null;
+      providerAccountId = typeof me.id === "string" ? me.id : null;
     }
-
-    if (platform === "mobile") {
-      return NextResponse.redirect(new URL("/auth/outlook/open?status=connected", url.origin));
-    }
-
-    return NextResponse.redirect(new URL("/profil/emails?status=outlook_connected", url.origin));
-  } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : String(e);
-    return NextResponse.json({ error: message }, { status: 500 });
   }
+
+  const supabase = createClient(supabaseUrl, serviceKey);
+  const expiresIn = typeof tokenJson.expires_in === "number" ? tokenJson.expires_in : 3600;
+  const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
+
+  const { error: upErr, userMessage } = await upsertEmailConnection(supabase, {
+    user_id: state.user_id,
+    provider: "outlook",
+    account_scope: state.account_scope,
+    account_email: accountEmail,
+    provider_account_id: providerAccountId,
+    refresh_token: refreshToken,
+    access_token: accessToken ?? null,
+    expires_at: expiresAt,
+    scopes: OUTLOOK_SCOPES,
+    metadata: {
+      connected_via: "vercel_oauth_outlook",
+      platform: state.platform,
+    },
+    updated_at: new Date().toISOString(),
+  });
+
+  if (upErr) {
+    return NextResponse.json(
+      {
+        error: "supabase_upsert_failed",
+        userMessage: userMessage ?? userFacingEmailConnectionDbError(upErr),
+        detail: upErr,
+      },
+      { status: 500 }
+    );
+  }
+
+  return new NextResponse(oauthSuccessHtml("Outlook"), {
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  });
 }

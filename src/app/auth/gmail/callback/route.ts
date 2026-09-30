@@ -1,4 +1,8 @@
 import { resolveGmailServerEnv } from "../../../../lib/gmailOAuthEnv";
+import {
+  GMAIL_SCOPES,
+  resolveGrantedGmailScopes,
+} from "../../../../lib/gmailScopes";
 import { oauthSuccessHtml } from "../../../../lib/oauthSuccessHtml";
 import { decodeOAuthState } from "../../../../lib/oauthState";
 import {
@@ -8,14 +12,9 @@ import {
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
-const GMAIL_SCOPES = [
-  "https://www.googleapis.com/auth/gmail.readonly",
-  "https://www.googleapis.com/auth/userinfo.email",
-  "openid",
-];
-
 /**
  * Callback OAuth Google → upsert external_connections (provider = gmail).
+ * Reconnexion même compte : UNIQUE(user_id, provider, account_scope) → update, pas de doublon.
  */
 export async function GET(req: NextRequest) {
   const url = req.nextUrl;
@@ -58,35 +57,7 @@ export async function GET(req: NextRequest) {
 
   const tokenJson = await tokenRes.json();
   if (!tokenRes.ok) {
-    const googleError = String(tokenJson?.error || "");
-    if (googleError === "invalid_grant") {
-      const html = `<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gmail — reconnexion</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 520px; margin: 48px auto; padding: 0 20px; color: #1a2b4a; line-height: 1.5; }
-    a { color: #1a2b4a; font-weight: 700; }
-  </style>
-</head>
-<body>
-  <h1>Connexion Gmail à recommencer</h1>
-  <p>Le code Google a expiré ou a déjà été utilisé (souvent après un rafraîchissement de page).</p>
-  <p>Ne recharge pas cette URL. Repars depuis Profil → Gmail → Connecter.</p>
-  <p><a href="/profil/gmail">← Retour à Gmail</a></p>
-</body>
-</html>`;
-      return new NextResponse(html, {
-        status: 400,
-        headers: { "Content-Type": "text/html; charset=utf-8" },
-      });
-    }
-    return NextResponse.json(
-      { error: "token_exchange_failed", detail: tokenJson },
-      { status: 502 },
-    );
+    return NextResponse.json({ error: "token_exchange_failed", detail: tokenJson }, { status: 502 });
   }
 
   const refreshToken = tokenJson.refresh_token as string | undefined;
@@ -109,6 +80,10 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  const grantedScopes = resolveGrantedGmailScopes(tokenJson.scope);
+  const scopesToStore =
+    grantedScopes.length > 0 ? grantedScopes : [...GMAIL_SCOPES];
+
   const supabase = createClient(supabaseUrl, serviceKey);
   const expiresIn = typeof tokenJson.expires_in === "number" ? tokenJson.expires_in : 3600;
   const expiresAt = new Date(Date.now() + expiresIn * 1000).toISOString();
@@ -121,10 +96,12 @@ export async function GET(req: NextRequest) {
     refresh_token: refreshToken,
     access_token: accessToken ?? null,
     expires_at: expiresAt,
-    scopes: GMAIL_SCOPES,
+    scopes: scopesToStore,
     metadata: {
       connected_via: "vercel_oauth_gmail",
       platform: state.platform,
+      // Miroir client-lisible (colonne scopes non GRANT au rôle authenticated).
+      oauth_scopes: scopesToStore,
     },
     updated_at: new Date().toISOString(),
   });
