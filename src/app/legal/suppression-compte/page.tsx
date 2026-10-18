@@ -94,6 +94,32 @@ export default function SuppressionComptePage() {
         </section>
 
         <section style={card}>
+          <h2 style={h2}>Supprimer seulement certaines données (sans supprimer ton compte)</h2>
+          <ul style={{ margin: 0, paddingLeft: 22, lineHeight: 1.8, listStyle: "disc" }}>
+            <li>
+              <b>Un document ou une photo</b> : ouvre-le dans Paipers, puis touche{" "}
+              <b>«&nbsp;Supprimer&nbsp;»</b>. Le fichier est effacé.
+            </li>
+            <li>
+              <b>Ta boîte mail</b> : dans <b>Profil</b>, ouvre ta boîte Gmail ou Outlook connectée et
+              touche <b>«&nbsp;Déconnecter Gmail&nbsp;»</b> (ou <b>«&nbsp;Déconnecter Outlook&nbsp;»</b>).
+              Paipers n’a plus accès à tes mails.
+            </li>
+            <li>
+              <b>Ta signature enregistrée</b> : dans <b>Générer</b> → <b>Mes signatures</b>, touche{" "}
+              <b>«&nbsp;Supprimer&nbsp;»</b>.
+            </li>
+            <li>
+              Pour toute autre donnée, écris-nous à{" "}
+              <a href={`mailto:${CONTACT_EMAIL}`}>
+                <b>{CONTACT_EMAIL}</b>
+              </a>{" "}
+              : nous la supprimons sous <b>30 jours</b> au plus.
+            </li>
+          </ul>
+        </section>
+
+        <section style={card}>
           <h2 style={h2}>Ce qui est supprimé</h2>
           <ul style={{ margin: 0, paddingLeft: 22, lineHeight: 1.8, listStyle: "disc" }}>
             <li>Ton compte (adresse e-mail, identifiant, mot de passe) et ton profil.</li>
