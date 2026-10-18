@@ -2,7 +2,7 @@
 
 /**
  * Réf. : paipers-mobile/src/components/assistant/AssistantMascot.tsx
- * Asset unique : public/brand/assistant-mascot.png
+ * Asset unique : public/brand/archi.png
  */
 
 import { PAIPERS_ASSETS } from "@/lib/paipersTheme";

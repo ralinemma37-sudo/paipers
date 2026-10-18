@@ -2,7 +2,7 @@
 
 /**
  * Avatar onglet Assistant — miroir AssistantMascotAvatar + styles tab _layout.tsx
- * Asset : public/brand/assistant-mascot.png ← assets/images/assistant-mascot.png
+ * Asset : public/brand/archi.png ← assets/images/assistant-mascot.png
  */
 
 import { ASSISTANT_TAB_STYLE, NAV_ASSETS } from "@/lib/navConfig";

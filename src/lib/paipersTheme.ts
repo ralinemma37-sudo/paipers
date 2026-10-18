@@ -12,12 +12,12 @@
  * - src/components/PaipersButton.tsx
  *
  * Chemins assets web (copies exactes) :
- * - /brand/assistant-mascot.png ← assets/images/assistant-mascot.png
+ * - /brand/archi.png ← assets/images/assistant-mascot.png
  * - /brand/splash-logo-light.png ← assets/images/splash-logo-light.png
  */
 
 export const PAIPERS_ASSETS = {
-  mascot: "/brand/assistant-mascot.png",
+  mascot: "/brand/archi.png",
   logoSplashLight: "/brand/splash-logo-light.png",
   /** Logo sur fond marine (sidebar) — pas de carré blanc / pas de trous. */
   logoMarine: "/brand/splash-logo-marine.png",
