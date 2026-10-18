@@ -2,6 +2,7 @@
  * Hero landing — nuit / Archi / CTA.
  */
 
+import { APP_HOME_URL, APP_LOGIN_URL, APP_SIGNUP_URL } from "@/lib/appLinks";
 import { Bot, Flag, Shield } from "lucide-react";
 import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 import { PAIPERS_ASSETS, PAIPERS_RADIUS } from "@/lib/paipersTheme";
@@ -50,11 +51,11 @@ export default function LandingHero() {
           </p>
           <div className="mt-9 flex flex-col sm:flex-row gap-3">
             <a
-              href="#waitlist"
+              href={APP_SIGNUP_URL}
               className="paipers-button text-center"
               style={{ minWidth: 200, textDecoration: "none" }}
             >
-              Rejoindre la liste d’attente
+              Créer mon compte
             </a>
             <a
               href="#fonctionnalites"

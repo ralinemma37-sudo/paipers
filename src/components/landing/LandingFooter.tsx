@@ -2,6 +2,7 @@
  * Footer landing publique.
  */
 
+import { APP_HOME_URL, APP_LOGIN_URL, APP_SIGNUP_URL } from "@/lib/appLinks";
 import Link from "next/link";
 import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 import { PAIPERS_ASSETS } from "@/lib/paipersTheme";
@@ -39,8 +40,11 @@ export default function LandingFooter() {
             <a href="#tarifs" style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
               Tarifs
             </a>
-            <a href="#waitlist" style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
-              Liste d’attente
+            <a href={APP_SIGNUP_URL} style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
+              Créer mon compte
+            </a>
+            <a href={APP_LOGIN_URL} style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
+              Se connecter
             </a>
           </div>
           <div className="flex flex-col gap-2">
@@ -54,16 +58,8 @@ export default function LandingFooter() {
             >
               Confidentialité
             </Link>
-            <Link
-              href="/login"
-              style={{
-                color: DESKTOP_SURFACES.onDarkSoft,
-                textDecoration: "none",
-                opacity: 0.7,
-                fontSize: 12,
-              }}
-            >
-              Accès privé
+            <Link href="/legal/suppression-compte" style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
+              Supprimer mon compte
             </Link>
           </div>
         </div>

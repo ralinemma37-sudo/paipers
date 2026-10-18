@@ -11,8 +11,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import LandingSection from "@/components/landing/LandingSection";
 import { PAIPERS_COLORS } from "@/lib/paipersTheme";
 
-const SCREENSHOT_W = 470;
-const SCREENSHOT_H = 1024;
+const SCREENSHOT_W = 462;
+const SCREENSHOT_H = 1000;
 
 type Slide = {
   id: string;
@@ -22,42 +22,49 @@ type Slide = {
   alt: string;
 };
 
-/** Ordre : vue d’ensemble → Archi → documents → génération → Pro factures. */
+/** Ordre : Accueil → rangement automatique → Archi → budget → Générer → Pro (captures du 18/10/2026). */
 const SLIDES: Slide[] = [
   {
     id: "accueil",
-    src: "/screenshots/paipers-accueil.jpg",
+    src: "/screenshots/v2-accueil.png",
     tab: "Accueil",
-    caption: "Tout ce qui mérite ton attention",
-    alt: "Écran Accueil Paipers : démarches, agenda, abonnements détectés et pièces à importer depuis la messagerie.",
+    caption: "Archi te dit ce qu’il y a à faire",
+    alt: "Écran Accueil Paipers : Archi, score administratif et cartes À faire, À surveiller, Fait par Archi.",
+  },
+  {
+    id: "rangement",
+    src: "/screenshots/v2-rangement.png",
+    tab: "Rangement",
+    caption: "Tes documents rangés tout seuls",
+    alt: "Import d’un document dans Paipers : « Ton document est enregistré ! Rangé dans Personnel → Logement ».",
   },
   {
     id: "archi",
-    src: "/screenshots/paipers-archi-assistant.jpg",
+    src: "/screenshots/v2-archi.png",
     tab: "Archi",
-    caption: "Archi t’aide à savoir quoi faire",
-    alt: "Écran Assistant Archi Paipers : score administratif et suggestions de priorités.",
+    caption: "Demande à Archi, il retrouve tout",
+    alt: "Conversation avec Archi : il retrouve la facture d’électricité demandée.",
   },
   {
-    id: "documents",
-    src: "/screenshots/paipers-documents.jpg",
-    tab: "Documents",
-    caption: "Tes documents automatiquement organisés",
-    alt: "Écran Documents Paipers : recherche, import, scanner et dossiers classés par catégorie.",
+    id: "budget",
+    src: "/screenshots/v2-budget.png",
+    tab: "Budget",
+    caption: "Ton budget, calculé pour toi",
+    alt: "Écran Mon budget Paipers : entrées, sorties et mouvements du mois.",
   },
   {
     id: "generer",
-    src: "/screenshots/paipers-generer.jpg",
+    src: "/screenshots/v2-generer.png",
     tab: "Générer",
-    caption: "Rédige, complète et signe dans Paipers",
-    alt: "Écran Générer Paipers : rédiger un document, compléter un PDF et signer.",
+    caption: "Rédige, complète et signe tes documents",
+    alt: "Écran Générer Paipers : rédiger, compléter, signer et fusionner des PDF.",
   },
   {
-    id: "factures",
-    src: "/screenshots/paipers-factures-pro.jpg",
-    tab: "Factures",
-    caption: "Suis tes factures et devis Pro",
-    alt: "Écran Factures de l’espace Professionnel Paipers : création, suivi des encaissements et liste des factures.",
+    id: "pro",
+    src: "/screenshots/v2-pro.png",
+    tab: "Pro",
+    caption: "Un espace Pro pour ton activité",
+    alt: "Espace Professionnel Paipers : import, scanner, nouvelle facture et nouveau devis.",
   },
 ];
 

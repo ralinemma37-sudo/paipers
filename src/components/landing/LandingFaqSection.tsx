@@ -21,8 +21,8 @@ export default function LandingFaqSection() {
             a: "Les connexions Gmail et Outlook passent par OAuth. Tu pourras déconnecter un compte à tout moment depuis le Profil.",
           },
           {
-            q: "Puis-je utiliser Paipers gratuitement aujourd’hui ?",
-            a: "Paipers n’est pas encore ouvert au public. Rejoins la liste d’attente pour être informé(e) en priorité à l’ouverture. Un accès privé reste réservé à l’équipe.",
+            q: "Puis-je essayer Paipers gratuitement ?",
+            a: "Oui : crée ton compte et profite de 7 jours d’essai gratuit en Personnel (14 jours en Pro). Paipers fonctionne sur iPhone, Android et directement sur ce site.",
           },
           {
             q: "Qu’est-ce qu’Archi ?",

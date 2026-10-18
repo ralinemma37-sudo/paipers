@@ -5,6 +5,7 @@
  * Pré-lancement : CTA waitlist + Accès privé discret.
  */
 
+import { APP_HOME_URL, APP_LOGIN_URL, APP_SIGNUP_URL } from "@/lib/appLinks";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
@@ -18,7 +19,6 @@ const LINKS = [
   { href: "#professionnels", label: "Professionnels" },
   { href: "#tarifs", label: "Tarifs" },
   { href: "#faq", label: "Questions fréquentes" },
-  { href: "#waitlist", label: "Liste d’attente" },
 ] as const;
 
 export default function PublicSiteHeader() {
@@ -70,32 +70,28 @@ export default function PublicSiteHeader() {
 
         <div className="hidden md:flex items-center gap-5 ml-auto lg:ml-0">
           {loggedIn ? (
-            <Link
-              href="/dashboard"
+            <a
+              href={APP_HOME_URL}
               className="paipers-button"
-              style={{ padding: "10px 20px", fontSize: 14 }}
+              style={{ padding: "10px 20px", fontSize: 14, textDecoration: "none" }}
             >
-              Accéder à mon espace
-            </Link>
+              Ouvrir Paipers
+            </a>
           ) : (
             <>
-              <Link
-                href="/login"
-                className="text-[13px] font-medium"
-                style={{
-                  color: DESKTOP_SURFACES.onDarkSoft,
-                  textDecoration: "none",
-                  opacity: 0.72,
-                }}
-              >
-                Accès privé
-              </Link>
               <a
-                href="#waitlist"
+                href={APP_LOGIN_URL}
+                className="text-[14px] font-bold"
+                style={{ color: DESKTOP_SURFACES.onDark, textDecoration: "none" }}
+              >
+                Se connecter
+              </a>
+              <a
+                href={APP_SIGNUP_URL}
                 className="paipers-button"
                 style={{ padding: "10px 20px", fontSize: 14, textDecoration: "none" }}
               >
-                Rejoindre la liste d’attente
+                Créer mon compte
               </a>
             </>
           )}
@@ -139,31 +135,25 @@ export default function PublicSiteHeader() {
             style={{ borderColor: "rgba(255,255,255,0.08)" }}
           >
             {loggedIn ? (
-              <Link
-                href="/dashboard"
-                className="paipers-button text-center"
-                onClick={() => setOpen(false)}
-              >
-                Accéder à mon espace
-              </Link>
+              <a href={APP_HOME_URL} className="paipers-button text-center" style={{ textDecoration: "none" }}>
+                Ouvrir Paipers
+              </a>
             ) : (
               <>
                 <a
-                  href="#waitlist"
+                  href={APP_SIGNUP_URL}
                   className="paipers-button text-center"
-                  onClick={() => setOpen(false)}
                   style={{ textDecoration: "none" }}
                 >
-                  Rejoindre la liste d’attente
+                  Créer mon compte
                 </a>
-                <Link
-                  href="/login"
-                  className="py-2 text-center text-[13px] font-medium"
-                  style={{ color: DESKTOP_SURFACES.onDarkSoft, opacity: 0.75 }}
-                  onClick={() => setOpen(false)}
+                <a
+                  href={APP_LOGIN_URL}
+                  className="py-2 text-center text-[14px] font-bold"
+                  style={{ color: DESKTOP_SURFACES.onDark, textDecoration: "none" }}
                 >
-                  Accès privé
-                </Link>
+                  Se connecter
+                </a>
               </>
             )}
           </div>

@@ -2,6 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  /**
+   * L'appli Paipers (version web de l'appli mobile) est copiée dans public/app.
+   * Toute adresse /app/… sans fichier correspondant renvoie à la page de l'appli, qui affiche le bon écran.
+   */
+  async rewrites() {
+    return [
+      { source: "/app", destination: "/app/index.html" },
+      { source: "/app/:path*", destination: "/app/index.html" },
+    ];
+  },
   async headers() {
     return [
       {

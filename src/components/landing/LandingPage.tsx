@@ -16,7 +16,6 @@ import LandingFoundersSection from "@/components/landing/LandingFoundersSection"
 import LandingRoadmapSection from "@/components/landing/LandingRoadmapSection";
 import LandingSecuritySection from "@/components/landing/LandingSecuritySection";
 import LandingPricingSection from "@/components/landing/LandingPricingSection";
-import LandingWaitlistSection from "@/components/landing/LandingWaitlistSection";
 import LandingFaqSection from "@/components/landing/LandingFaqSection";
 import LandingFinalCta from "@/components/landing/LandingFinalCta";
 import LandingFooter from "@/components/landing/LandingFooter";
@@ -39,7 +38,6 @@ export default function LandingPage() {
       <LandingRoadmapSection />
       <LandingSecuritySection />
       <LandingPricingSection />
-      <LandingWaitlistSection />
       <LandingFaqSection />
       <LandingFinalCta />
       <LandingFooter />

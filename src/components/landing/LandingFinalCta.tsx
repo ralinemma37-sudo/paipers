@@ -2,6 +2,7 @@
  * CTA final (#essayer).
  */
 
+import { APP_HOME_URL, APP_LOGIN_URL, APP_SIGNUP_URL } from "@/lib/appLinks";
 import LandingSection from "@/components/landing/LandingSection";
 import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 import { PAIPERS_RADIUS } from "@/lib/paipersTheme";
@@ -14,12 +15,12 @@ export default function LandingFinalCta() {
           Sois parmi les premiers.
         </h2>
         <p className="mt-3 mx-auto max-w-xl" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
-          Rejoins la liste d’attente et sois informé(e) en priorité de
-          l’ouverture de Paipers.
+          Crée ton compte en une minute : 7 jours d’essai gratuit en Personnel,
+          14 jours en Pro.
         </p>
         <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-          <a href="#waitlist" className="paipers-button" style={{ minWidth: 200, textAlign: "center", textDecoration: "none" }}>
-            Rejoindre la liste d’attente
+          <a href={APP_SIGNUP_URL} className="paipers-button" style={{ minWidth: 200, textAlign: "center", textDecoration: "none" }}>
+            Créer mon compte
           </a>
           <a
             href="#fonctionnalites"
