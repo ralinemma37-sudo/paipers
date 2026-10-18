@@ -24,7 +24,7 @@ import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen w-full overflow-x-hidden" style={{ background: DESKTOP_SURFACES.night }}>
+    <div className="paipers-landing min-h-screen w-full overflow-x-hidden" style={{ background: "#493653" }}>
       <LandingSmoothAnchorScroll />
       <PublicSiteHeader />
       <LandingHero />

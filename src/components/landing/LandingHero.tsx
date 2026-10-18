@@ -16,11 +16,12 @@ const REASSURANCE = [
 export default function LandingHero() {
   return (
     <section
+      data-dark="1"
       className="relative px-5 md:px-8 pt-14 pb-20 md:pt-24 md:pb-28 overflow-hidden"
       style={{
         background: `radial-gradient(ellipse 80% 60% at 70% 20%, rgba(172,228,255,0.18), transparent 55%),
             radial-gradient(ellipse 50% 40% at 10% 80%, rgba(247,196,232,0.12), transparent 50%),
-            linear-gradient(165deg, ${DESKTOP_SURFACES.night} 0%, #121a2b 45%, ${DESKTOP_SURFACES.marine} 100%)`,
+            linear-gradient(160deg, #3a2a44 0%, #493653 45%, #6e4f7e 100%)`,
       }}
     >
       <div

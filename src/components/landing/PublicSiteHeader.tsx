@@ -37,9 +37,10 @@ export default function PublicSiteHeader() {
 
   return (
     <header
+      data-dark="1"
       className="sticky top-0 z-50 border-b backdrop-blur-md"
       style={{
-        background: "rgba(11, 18, 32, 0.88)",
+        background: "rgba(58, 42, 68, 0.94)",
         borderColor: "rgba(255,255,255,0.08)",
       }}
     >
@@ -116,7 +117,7 @@ export default function PublicSiteHeader() {
           className="md:hidden border-t px-5 py-4 flex flex-col gap-1"
           style={{
             borderColor: "rgba(255,255,255,0.08)",
-            background: DESKTOP_SURFACES.nightElevated,
+            background: "#3A2A44",
           }}
         >
           {LINKS.map((l) => (

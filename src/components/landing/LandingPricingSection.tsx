@@ -35,7 +35,7 @@ export default function LandingPricingSection() {
             Créer mon compte
           </a>
         </div>
-        <div className="paipers-card-night p-[22px] paipers-hover-lift">
+        <div className="paipers-card-marine p-[22px] paipers-hover-lift">
           <p className="text-sm font-extrabold" style={{ color: DESKTOP_SURFACES.accentLine }}>
             Offre Professionnelle
           </p>

@@ -11,8 +11,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import LandingSection from "@/components/landing/LandingSection";
 import { PAIPERS_COLORS } from "@/lib/paipersTheme";
 
-const SCREENSHOT_W = 462;
-const SCREENSHOT_H = 1000;
+const SCREENSHOT_W = 1080;
+const SCREENSHOT_H = 1920;
 
 type Slide = {
   id: string;
@@ -26,42 +26,42 @@ type Slide = {
 const SLIDES: Slide[] = [
   {
     id: "accueil",
-    src: "/screenshots/v2-accueil.png",
+    src: "/screenshots/store-1.png",
     tab: "Accueil",
     caption: "Archi te dit ce qu’il y a à faire",
     alt: "Écran Accueil Paipers : Archi, score administratif et cartes À faire, À surveiller, Fait par Archi.",
   },
   {
     id: "rangement",
-    src: "/screenshots/v2-rangement.png",
+    src: "/screenshots/store-2.png",
     tab: "Rangement",
     caption: "Tes documents rangés tout seuls",
     alt: "Import d’un document dans Paipers : « Ton document est enregistré ! Rangé dans Personnel → Logement ».",
   },
   {
     id: "archi",
-    src: "/screenshots/v2-archi.png",
+    src: "/screenshots/store-3.png",
     tab: "Archi",
     caption: "Demande à Archi, il retrouve tout",
     alt: "Conversation avec Archi : il retrouve la facture d’électricité demandée.",
   },
   {
     id: "budget",
-    src: "/screenshots/v2-budget.png",
+    src: "/screenshots/store-4.png",
     tab: "Budget",
     caption: "Ton budget, calculé pour toi",
     alt: "Écran Mon budget Paipers : entrées, sorties et mouvements du mois.",
   },
   {
     id: "generer",
-    src: "/screenshots/v2-generer.png",
+    src: "/screenshots/store-5.png",
     tab: "Générer",
     caption: "Rédige, complète et signe tes documents",
     alt: "Écran Générer Paipers : rédiger, compléter, signer et fusionner des PDF.",
   },
   {
     id: "pro",
-    src: "/screenshots/v2-pro.png",
+    src: "/screenshots/store-6.png",
     tab: "Pro",
     caption: "Un espace Pro pour ton activité",
     alt: "Espace Professionnel Paipers : import, scanner, nouvelle facture et nouveau devis.",
@@ -181,52 +181,13 @@ export default function LandingProductShowcaseSection() {
               entering ? "paipers-showcase-frame-enter" : ""
             }`}
             style={{
-              padding: "11px 10px 12px",
-              borderRadius: 42,
-              background:
-                "linear-gradient(165deg, #3a3a3f 0%, #1a1a1d 42%, #0d0d0f 100%)",
-              boxShadow:
-                "0 22px 56px rgba(15, 23, 42, 0.22), inset 0 1px 0 rgba(255,255,255,0.14)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: 28,
+              overflow: "hidden",
+              boxShadow: "0 22px 56px rgba(58, 42, 68, 0.28)",
             }}
           >
-            {/* Bouton latéral volume (décoratif) */}
-            <span
-              className="pointer-events-none absolute -left-[2px] top-[96px] w-[3px] h-8 rounded-l-sm"
-              style={{ background: "#2c2c30" }}
-              aria-hidden
-            />
-            <span
-              className="pointer-events-none absolute -left-[2px] top-[136px] w-[3px] h-12 rounded-l-sm"
-              style={{ background: "#2c2c30" }}
-              aria-hidden
-            />
-            <span
-              className="pointer-events-none absolute -right-[2px] top-[120px] w-[3px] h-14 rounded-r-sm"
-              style={{ background: "#2c2c30" }}
-              aria-hidden
-            />
-
-            <div
-              className="relative overflow-hidden"
-              style={{
-                borderRadius: 32,
-                background: "#000",
-              }}
-            >
-              {/* Dynamic Island */}
-              <div
-                className="pointer-events-none absolute z-10 left-1/2 -translate-x-1/2"
-                style={{
-                  top: 10,
-                  width: 86,
-                  height: 22,
-                  borderRadius: 999,
-                  background: "#0a0a0a",
-                  boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06)",
-                }}
-                aria-hidden
-              />
+            {/* 18/10 (choix Vanessa) : captures de la fiche Play Store (fond prune + titre), sans cadre de téléphone. */}
+            <div className="relative">
               <Image
                 key={slide.src}
                 src={slide.src}

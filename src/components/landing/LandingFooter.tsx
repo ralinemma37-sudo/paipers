@@ -10,10 +10,11 @@ import { PAIPERS_ASSETS } from "@/lib/paipersTheme";
 export default function LandingFooter() {
   return (
     <footer
+      data-dark="1"
       className="border-t px-5 md:px-8 py-10"
       style={{
         borderColor: "rgba(255,255,255,0.08)",
-        background: DESKTOP_SURFACES.nightElevated,
+        background: "#3A2A44",
         color: DESKTOP_SURFACES.onDark,
       }}
     >

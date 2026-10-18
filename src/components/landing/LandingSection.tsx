@@ -29,15 +29,17 @@ export default function LandingSection({
     light: "#FFFFFF",
     canvas: DESKTOP_SURFACES.canvas,
     alt: DESKTOP_SURFACES.canvasAlt,
-    night: DESKTOP_SURFACES.night,
+    // 18/10 (choix Vanessa) : vraies couleurs Paipers — prune (Personnel) et bleu marine (Pro).
+    night: "#493653",
     marine: DESKTOP_SURFACES.marine,
-    violet: DESKTOP_SURFACES.violetDeep,
+    violet: "#3A2A44",
     white: "#FFFFFF",
   };
   const isDark = tone === "night" || tone === "marine" || tone === "violet";
 
   return (
     <section
+      data-dark={isDark ? "1" : undefined}
       id={id}
       className={`px-5 md:px-8 py-16 md:py-24 ${className}`}
       style={{ background: bg[tone], color: isDark ? DESKTOP_SURFACES.onDark : undefined }}

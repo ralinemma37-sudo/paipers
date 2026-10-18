@@ -408,3 +408,35 @@
     transform: none;
   }
 }
+
+/* —— Vitrine (18/10, choix Vanessa) : vraies couleurs Paipers — prune (Personnel) et bleu marine (Pro). —— */
+.paipers-landing .paipers-card-night {
+  background: linear-gradient(165deg, #3a2a44 0%, #493653 100%);
+  box-shadow: 0 12px 40px rgba(58, 42, 68, 0.3);
+}
+.paipers-landing .paipers-card-violet {
+  background: linear-gradient(160deg, #493653 0%, #3a2a44 100%);
+}
+.paipers-landing .paipers-button {
+  background-image: none !important;
+  background-color: #493653 !important;
+  color: #ffffff !important;
+}
+.paipers-landing .paipers-button:hover {
+  background-color: #5e4469 !important;
+}
+/* Sur fond prune ou bleu marine : bouton blanc, texte de la couleur du fond. */
+.paipers-landing [data-dark="1"] .paipers-button,
+.paipers-landing .paipers-card-night .paipers-button {
+  background-color: #ffffff !important;
+  color: #493653 !important;
+}
+.paipers-landing .paipers-card-marine .paipers-button {
+  background-color: #ffffff !important;
+  color: #1a2b4a !important;
+}
+.paipers-landing [data-dark="1"] .paipers-button:hover,
+.paipers-landing .paipers-card-marine .paipers-button:hover,
+.paipers-landing .paipers-card-night .paipers-button:hover {
+  background-color: #f3eef6 !important;
+}
