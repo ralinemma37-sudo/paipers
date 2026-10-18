@@ -34,8 +34,10 @@ export default function LandingSmoothAnchorScroll() {
       e.preventDefault();
 
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const top =
-        target.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+      // 18/10 (retour Vanessa) : on vise le titre de la section, juste sous l'en-tête
+      // (et non le haut de la section, qui laissait un grand vide au-dessus du titre).
+      const heading = target.querySelector("h1, h2") ?? target;
+      const top = heading.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET - 28;
 
       if (reduce) {
         window.scrollTo(0, top);

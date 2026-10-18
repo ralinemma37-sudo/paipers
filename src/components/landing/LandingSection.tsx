@@ -26,14 +26,16 @@ export default function LandingSection({
   tone?: LandingSectionTone;
 }) {
   const bg: Record<LandingSectionTone, string> = {
+    // 18/10 (retour Vanessa : sections « fades ») : fonds doux aux couleurs de l'appli —
+    // lilas très clair (Personnel) et bleu ciel Paipers, au lieu du gris.
     light: "#FFFFFF",
-    canvas: DESKTOP_SURFACES.canvas,
-    alt: DESKTOP_SURFACES.canvasAlt,
+    canvas: "linear-gradient(180deg, #F6F0F9 0%, #F1E9F5 100%)",
+    alt: "linear-gradient(180deg, #EEF6FF 0%, #E6F0FC 100%)",
     // 18/10 (choix Vanessa) : vraies couleurs Paipers — prune (Personnel) et bleu marine (Pro).
     night: "#493653",
     marine: DESKTOP_SURFACES.marine,
     violet: "#3A2A44",
-    white: "#FFFFFF",
+    white: "linear-gradient(180deg, #FFFFFF 0%, #FBF8FD 100%)",
   };
   const isDark = tone === "night" || tone === "marine" || tone === "violet";
 

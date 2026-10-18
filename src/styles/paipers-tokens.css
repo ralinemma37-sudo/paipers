@@ -440,3 +440,16 @@
 .paipers-landing .paipers-card-night .paipers-button:hover {
   background-color: #f3eef6 !important;
 }
+
+/* Vitrine : titres et accents en prune sur les sections claires (comme les écritures de l'appli). */
+.paipers-landing section:not([data-dark]) h2,
+.paipers-landing section:not([data-dark]) .paipers-screen-title {
+  color: #493653;
+}
+.paipers-landing section:not([data-dark]) h3 {
+  color: #493653;
+}
+.paipers-landing .paipers-card-white {
+  border: 1px solid rgba(73, 54, 83, 0.12);
+  box-shadow: 0 6px 22px rgba(73, 54, 83, 0.08);
+}
