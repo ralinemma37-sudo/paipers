@@ -4,9 +4,9 @@
  */
 
 const WAITLIST_PUBLIC_ORIGIN =
-  (process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://paipers.fr")
+  (process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://plaidoc.fr")
     .trim()
-    .replace(/\/$/, "") || "https://paipers.fr";
+    .replace(/\/$/, "") || "https://plaidoc.fr";
 
 const LOGO_PATH = "/brand/splash-logo-light.png";
 const PRIVACY_URL = `${WAITLIST_PUBLIC_ORIGIN}/legal/politique-confidentialite`;
@@ -138,7 +138,7 @@ export function buildWaitlistConfirmEmailHtml(params: {
           <tr>
             <td style="padding:22px 28px 26px;border-top:1px solid #EEF2F7;">
               <p style="margin:0 0 10px;font-size:11px;line-height:1.5;color:#7B879C;">
-                Tu reçois cet email car une inscription à la liste d’attente de Plaidoc a été demandée avec cette adresse sur paipers.fr.
+                Tu reçois cet email car une inscription à la liste d’attente de Plaidoc a été demandée avec cette adresse sur plaidoc.fr.
               </p>
               <p style="margin:0 0 10px;font-size:11px;line-height:1.5;color:#7B879C;">
                 <a href="${PRIVACY_URL}" style="color:#5B6B86;text-decoration:underline;">

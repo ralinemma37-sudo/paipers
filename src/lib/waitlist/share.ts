@@ -2,7 +2,7 @@
  * Liens et textes de partage organique Plaidoc (aucune donnée personnelle).
  */
 
-export const WAITLIST_SHARE_URL = "https://paipers.fr/#waitlist";
+export const WAITLIST_SHARE_URL = "https://plaidoc.fr/#waitlist";
 
 export const WAITLIST_SHARE_TITLE =
   "Plaidoc — Le copilote administratif intelligent";
@@ -11,7 +11,7 @@ export const WAITLIST_SHARE_TEXT =
   "Découvre Plaidoc et rejoins sa liste d’attente.";
 
 export const WAITLIST_SHARE_MESSAGE =
-  "Je viens de rejoindre la liste d’attente de Plaidoc, le futur copilote administratif intelligent. Tu peux découvrir le projet ici : https://paipers.fr/#waitlist";
+  "Je viens de rejoindre la liste d’attente de Plaidoc, le futur copilote administratif intelligent. Tu peux découvrir le projet ici : https://plaidoc.fr/#waitlist";
 
 export function whatsappShareUrl(message = WAITLIST_SHARE_MESSAGE): string {
   return `https://wa.me/?text=${encodeURIComponent(message)}`;
