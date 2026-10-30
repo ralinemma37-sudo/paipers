@@ -2,7 +2,7 @@
 
 /**
  * Navigation desktop interne — fine, professionnelle (sans capsules pastel).
- * Logo → site public /. Avatar → menu (Profil + Voir le site Paipers).
+ * Logo → site public /. Avatar → menu (Profil + Voir le site Plaidoc).
  */
 
 import Link from "next/link";
@@ -62,8 +62,8 @@ export default function DesktopTopNav() {
         className="mx-auto flex items-center gap-5 px-6 lg:px-8"
         style={{ maxWidth: 1280, height: 64 }}
       >
-        <Link href="/" className="shrink-0 inline-flex items-center" title="Site Paipers">
-          <img src={NAV_ASSETS.logo} alt="Paipers" className="paipers-brand-logo h-9 w-auto" />
+        <Link href="/" className="shrink-0 inline-flex items-center" title="Site Plaidoc">
+          <img src={NAV_ASSETS.logo} alt="Plaidoc" className="paipers-brand-logo h-9 w-auto" />
         </Link>
 
         <nav className="flex flex-1 items-center gap-0.5 min-w-0 overflow-x-auto">
@@ -188,7 +188,7 @@ export default function DesktopTopNav() {
                     }}
                   >
                     <ExternalLink size={16} color={PAIPERS_COLORS.navy} />
-                    Voir le site Paipers
+                    Voir le site Plaidoc
                   </Link>
                 </div>
               </>

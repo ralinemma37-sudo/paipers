@@ -245,7 +245,7 @@ export default function DashboardPage() {
                       letterSpacing: -0.4,
                     }}
                   >
-                    Ton espace Paipers
+                    Ton espace Plaidoc
                   </h1>
                   {spaceLoaded ? (
                     <p

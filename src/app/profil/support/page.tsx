@@ -20,7 +20,7 @@ export default function SupportPage() {
         >
           <ProfilSubpageHeader
             title="Aide & assistance"
-            subtitle="Besoin d'aide ? Retrouvez les réponses fréquentes ou contactez l'équipe Paipers."
+            subtitle="Besoin d'aide ? Retrouvez les réponses fréquentes ou contactez l'équipe Plaidoc."
           />
 
           <p
@@ -59,7 +59,7 @@ export default function SupportPage() {
           </div>
 
           <div className="paipers-elevated-card">
-            <p style={{ fontWeight: 800, margin: "0 0 8px" }}>Contacter Paipers</p>
+            <p style={{ fontWeight: 800, margin: "0 0 8px" }}>Contacter Plaidoc</p>
             <p className="paipers-text-muted" style={{ margin: 0, fontSize: 14, lineHeight: "20px" }}>
               Notre équipe vous répond sous 48 h ouvrées.
             </p>

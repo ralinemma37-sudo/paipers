@@ -50,7 +50,7 @@ export default function LandingArchiSection() {
           <div className="paipers-card-night p-10 paipers-hover-lift">
             <img
               src={PAIPERS_ASSETS.mascot}
-              alt="Archi, l’assistant administratif Paipers"
+              alt="Archi, l’assistant administratif Plaidoc"
               className="w-52 md:w-60 h-auto mx-auto"
               width={240}
               height={240}

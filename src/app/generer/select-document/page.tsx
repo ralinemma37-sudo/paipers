@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Signer — sélection document — réf. generer/select-document.tsx (pick Paipers).
+ * Signer — sélection document — réf. generer/select-document.tsx (pick Plaidoc).
  * Suite : ouverture /documents/view (signature PDF déjà fonctionnelle sur le web).
  * Import téléphone : non branché (pas d’équivalent démontré hors Documents).
  */
@@ -100,7 +100,7 @@ export default function SelectDocumentToSignPage() {
                 margin: "0 0 4px",
               }}
             >
-              Mes documents Paipers
+              Mes documents Plaidoc
             </p>
             <p className="paipers-text-muted" style={{ margin: 0, fontSize: 13, lineHeight: "18px" }}>
               Parcours tes catégories et choisis un PDF déjà enregistré.

@@ -1,17 +1,17 @@
 /**
- * Liens et textes de partage organique Paipers (aucune donnée personnelle).
+ * Liens et textes de partage organique Plaidoc (aucune donnée personnelle).
  */
 
 export const WAITLIST_SHARE_URL = "https://paipers.fr/#waitlist";
 
 export const WAITLIST_SHARE_TITLE =
-  "Paipers — Le copilote administratif intelligent";
+  "Plaidoc — Le copilote administratif intelligent";
 
 export const WAITLIST_SHARE_TEXT =
-  "Découvre Paipers et rejoins sa liste d’attente.";
+  "Découvre Plaidoc et rejoins sa liste d’attente.";
 
 export const WAITLIST_SHARE_MESSAGE =
-  "Je viens de rejoindre la liste d’attente de Paipers, le futur copilote administratif intelligent. Tu peux découvrir le projet ici : https://paipers.fr/#waitlist";
+  "Je viens de rejoindre la liste d’attente de Plaidoc, le futur copilote administratif intelligent. Tu peux découvrir le projet ici : https://paipers.fr/#waitlist";
 
 export function whatsappShareUrl(message = WAITLIST_SHARE_MESSAGE): string {
   return `https://wa.me/?text=${encodeURIComponent(message)}`;
@@ -25,10 +25,10 @@ export function emailShareHref(params?: {
   subject?: string;
   body?: string;
 }): string {
-  const subject = params?.subject ?? "Découvre Paipers";
+  const subject = params?.subject ?? "Découvre Plaidoc";
   const body =
     params?.body ??
-    `Je viens de rejoindre la liste d’attente de Paipers, le futur copilote administratif intelligent.\n\nTu peux découvrir le projet ici :\n${WAITLIST_SHARE_URL}`;
+    `Je viens de rejoindre la liste d’attente de Plaidoc, le futur copilote administratif intelligent.\n\nTu peux découvrir le projet ici :\n${WAITLIST_SHARE_URL}`;
   return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 

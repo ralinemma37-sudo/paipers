@@ -86,7 +86,7 @@ export function assistantSocialReplyText(prompt: string, firstName?: string): st
   if (/^(ca va|comment ca va|tu vas bien)/.test(n)) {
     return `Ça va très bien, merci${hi} ! Je veille sur ton administratif. Que veux-tu que je fasse ?`;
   }
-  return `Salut${hi} ! Je suis ton assistant Paipers. Je peux retrouver une facture, analyser tes mails, classer un document ou t’aider pour une résiliation. Que veux-tu faire ?`;
+  return `Salut${hi} ! Je suis ton assistant Plaidoc. Je peux retrouver une facture, analyser tes mails, classer un document ou t’aider pour une résiliation. Que veux-tu faire ?`;
 }
 
 export function assistantOutOfScopeReplyText(): string {

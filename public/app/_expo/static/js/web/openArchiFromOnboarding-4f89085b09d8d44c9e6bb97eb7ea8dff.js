@@ -1,3 +1,0 @@
-var _sentryDebugIds,_sentryDebugIdIdentifier;void 0===_sentryDebugIds&&(_sentryDebugIds={});try{var stack=(new Error).stack;stack&&(_sentryDebugIds[stack]="d72fcffd-2f26-473b-84eb-323cff26eca3",_sentryDebugIdIdentifier="sentry-dbid-d72fcffd-2f26-473b-84eb-323cff26eca3")}catch(e){}
-var SENTRY_RELEASE;SENTRY_RELEASE={name: "Paipers", version: "1.0.0"};
-__d(function(g,r,i,a,m,e,d){"use strict";Object.defineProperty(e,'__esModule',{value:!0}),e.openArchiFromOnboarding=function(n){t.router.replace("/(tabs)/assistant")};var t=r(d[0])},5028,[394]);

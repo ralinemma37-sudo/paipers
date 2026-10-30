@@ -214,9 +214,9 @@ export default function OnboardingPage() {
 
   const subtitle =
     step === 2
-      ? "Pour que Paipers retrouve automatiquement vos documents, connectez les services que vous utilisez déjà."
+      ? "Pour que Plaidoc retrouve automatiquement vos documents, connectez les services que vous utilisez déjà."
       : step === 3
-        ? "Paipers peut vous prévenir avant une échéance, un renouvellement, un paiement ou une démarche importante."
+        ? "Plaidoc peut vous prévenir avant une échéance, un renouvellement, un paiement ou une démarche importante."
         : undefined;
 
   return (
@@ -276,7 +276,7 @@ export default function OnboardingPage() {
                 optional
               />
               <Hint>
-                Ces informations permettront à Paipers de préremplir vos
+                Ces informations permettront à Plaidoc de préremplir vos
                 documents, courriers et démarches administratives.
               </Hint>
             </>
@@ -319,7 +319,7 @@ export default function OnboardingPage() {
                 optional
               />
               <Hint>
-                Ces informations permettront à Paipers de préparer vos
+                Ces informations permettront à Plaidoc de préparer vos
                 documents, factures et dossiers administratifs. TVA, activité et
                 objectifs pourront être complétés plus tard dans les paramètres
                 professionnels.
@@ -388,7 +388,7 @@ export default function OnboardingPage() {
             </div>
           ))}
           <Hint>
-            Paipers sera plus utile avec au moins une boîte mail connectée, mais
+            Plaidoc sera plus utile avec au moins une boîte mail connectée, mais
             vous pouvez continuer sans rien connecter pour l&apos;instant.
           </Hint>
           <p className="paipers-text-muted" style={{ fontSize: 12, margin: 0 }}>
@@ -524,7 +524,7 @@ export default function OnboardingPage() {
             className="paipers-button w-full"
             onClick={() => void finish()}
           >
-            Accéder à Paipers
+            Accéder à Plaidoc
           </button>
         </div>
       ) : null}

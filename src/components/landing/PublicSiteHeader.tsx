@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
-import { PAIPERS_ASSETS } from "@/lib/paipersTheme";
+import { PAIPERS_ASSETS, PLAIDOC_WORDMARK_STYLE } from "@/lib/paipersTheme";
 import { supabase } from "@/lib/supabase";
 
 const LINKS = [
@@ -48,12 +48,15 @@ export default function PublicSiteHeader() {
         className="mx-auto flex items-center gap-6 px-5 md:px-8"
         style={{ maxWidth: 1200, height: 64 }}
       >
-        <Link href="/" className="shrink-0 inline-flex items-center">
+        <Link href="/" className="shrink-0 inline-flex items-center gap-2" style={{ textDecoration: "none" }}>
           <img
             src={PAIPERS_ASSETS.logoNight}
-            alt="Paipers"
+            alt=""
             className="paipers-brand-logo h-11 w-auto"
           />
+          <span className="text-[26px] font-black tracking-tight leading-none" style={PLAIDOC_WORDMARK_STYLE}>
+            Plaidoc
+          </span>
         </Link>
 
         <nav className="hidden lg:flex flex-1 items-center justify-center gap-7">
@@ -76,7 +79,7 @@ export default function PublicSiteHeader() {
               className="paipers-button"
               style={{ padding: "10px 20px", fontSize: 14, textDecoration: "none" }}
             >
-              Ouvrir Paipers
+              Ouvrir Plaidoc
             </a>
           ) : (
             <>
@@ -137,7 +140,7 @@ export default function PublicSiteHeader() {
           >
             {loggedIn ? (
               <a href={APP_HOME_URL} className="paipers-button text-center" style={{ textDecoration: "none" }}>
-                Ouvrir Paipers
+                Ouvrir Plaidoc
               </a>
             ) : (
               <>

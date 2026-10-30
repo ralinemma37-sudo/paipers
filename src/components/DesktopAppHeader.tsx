@@ -163,7 +163,7 @@ export default function DesktopAppHeader() {
                   }}
                 >
                   <ExternalLink size={16} color={PAIPERS_COLORS.navy} />
-                  Voir le site Paipers
+                  Voir le site Plaidoc
                 </Link>
                 <button
                   type="button"

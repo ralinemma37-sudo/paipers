@@ -438,7 +438,7 @@ export default function AssistantPage() {
                       }}
                     >
                       <p className="paipers-text-muted" style={{ margin: 0, fontSize: 14 }}>
-                        Paipers reflechit{thinkingDots}
+                        Plaidoc reflechit{thinkingDots}
                       </p>
                     </div>
                   </div>

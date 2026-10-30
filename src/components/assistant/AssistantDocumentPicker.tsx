@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Sélection document Paipers — réf. mobile « Depuis Paipers » (select-document).
+ * Sélection document Plaidoc — réf. mobile « Depuis Plaidoc » (select-document).
  */
 
 import { useEffect, useState } from "react";
@@ -67,7 +67,7 @@ export default function AssistantDocumentPicker({ open, onClose, onPick }: Props
     <div
       role="dialog"
       aria-modal
-      aria-label="Depuis Paipers"
+      aria-label="Depuis Plaidoc"
       style={{
         position: "fixed",
         inset: 0,
@@ -101,7 +101,7 @@ export default function AssistantDocumentPicker({ open, onClose, onPick }: Props
               margin: 0,
             }}
           >
-            Depuis Paipers
+            Depuis Plaidoc
           </p>
           <button
             type="button"

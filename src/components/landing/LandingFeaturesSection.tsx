@@ -1,5 +1,5 @@
 /**
- * Section fonctionnalités (#fonctionnalites) — différenciation Paipers.
+ * Section fonctionnalités (#fonctionnalites) — différenciation Plaidoc.
  */
 
 import {
@@ -23,7 +23,7 @@ export default function LandingFeaturesSection() {
         Plus qu’un stockage. Plus qu’une facturation.
       </h2>
       <p className="mt-3 text-center paipers-text-muted max-w-2xl mx-auto">
-        Paipers centralise ton administratif perso et pro, l’analyse, le classe
+        Plaidoc centralise ton administratif perso et pro, l’analyse, le classe
         et t’aide à agir — avec Archi à tes côtés.
       </p>
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -43,7 +43,7 @@ export default function LandingFeaturesSection() {
           {
             Icon: Sparkles,
             t: "Classement automatique",
-            d: "Paipers classe tes documents pour que tu retrouves plus vite ce dont tu as besoin.",
+            d: "Plaidoc classe tes documents pour que tu retrouves plus vite ce dont tu as besoin.",
             dark: false,
           },
           {
@@ -67,13 +67,13 @@ export default function LandingFeaturesSection() {
           {
             Icon: ScanLine,
             t: "Scanner, retrouver, signer",
-            d: "Scanne, retrouve et prépare la signature de documents depuis ton espace Paipers.",
+            d: "Scanne, retrouve et prépare la signature de documents depuis ton espace Plaidoc.",
             dark: false,
           },
           {
             Icon: Bot,
             t: "Archi t’accompagne",
-            d: "Pose tes questions sur ton admin et avance avec un assistant centré sur Paipers.",
+            d: "Pose tes questions sur ton admin et avance avec un assistant centré sur Plaidoc.",
             dark: true,
           },
         ].map(({ Icon, t, d, dark }, i) => (

@@ -133,7 +133,7 @@ export default function WaitlistForm({ embedded = false }: { embedded?: boolean 
         >
           Ton inscription a bien été enregistrée.
           <br />
-          Tu seras parmi les premiers informés du lancement de Paipers.
+          Tu seras parmi les premiers informés du lancement de Plaidoc.
         </p>
         {message ? (
           <p style={{ marginTop: 14, fontSize: 14, color: PAIPERS_COLORS.navy, fontWeight: 600 }}>
@@ -244,7 +244,7 @@ export default function WaitlistForm({ embedded = false }: { embedded?: boolean 
             onChange={(e) => setMarketingConsent(e.target.checked)}
             style={{ marginTop: 3 }}
           />
-          <span>J’accepte de recevoir les actualités de Paipers.</span>
+          <span>J’accepte de recevoir les actualités de Plaidoc.</span>
         </label>
 
         {status === "error" && message ? (
@@ -273,7 +273,7 @@ export default function WaitlistForm({ embedded = false }: { embedded?: boolean 
         >
           Nous utilisons ton adresse email uniquement afin de gérer ton inscription
           à la liste d’attente. Si tu coches la case prévue à cet effet, tu pourras
-          également recevoir les actualités de Paipers. Tu pourras te désinscrire à
+          également recevoir les actualités de Plaidoc. Tu pourras te désinscrire à
           tout moment.{" "}
           <Link
             href="/legal/politique-confidentialite"

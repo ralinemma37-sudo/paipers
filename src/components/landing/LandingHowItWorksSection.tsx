@@ -20,12 +20,12 @@ export default function LandingHowItWorksSection() {
           {
             n: "1",
             t: "Tu centralises",
-            d: "Tes documents, e-mails et fichiers arrivent dans Paipers.",
+            d: "Tes documents, e-mails et fichiers arrivent dans Plaidoc.",
             card: "paipers-card-white",
           },
           {
             n: "2",
-            t: "Paipers organise",
+            t: "Plaidoc organise",
             d: "Les informations utiles sont analysées et classées.",
             card: "paipers-card-marine",
           },

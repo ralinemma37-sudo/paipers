@@ -1,4 +1,4 @@
-/** URI de callback OAuth Gmail (prod Paipers). */
+/** URI de callback OAuth Gmail (prod Plaidoc). */
 export const GMAIL_OAUTH_REDIRECT_URI =
   process.env.GOOGLE_REDIRECT_URI?.trim() ||
   process.env.GOOGLE_GMAIL_REDIRECT_URI?.trim() ||

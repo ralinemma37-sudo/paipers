@@ -26,7 +26,7 @@ export default function EmailsPage() {
             subtitle={
               showProTabs
                 ? `Boîtes connectées pour l’espace ${spaceLabel}. Ajoutez d’autres fournisseurs ci-dessous.`
-                : `Paipers analyse vos emails administratifs. Choisissez un fournisseur pour l’espace ${spaceLabel}.`
+                : `Plaidoc analyse vos emails administratifs. Choisissez un fournisseur pour l’espace ${spaceLabel}.`
             }
           />
 

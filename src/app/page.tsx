@@ -7,9 +7,9 @@ import LandingPage from "@/components/landing/LandingPage";
  */
 
 export const metadata: Metadata = {
-  title: "Paipers — Ton assistant administratif",
+  title: "Plaidoc — Ton assistant administratif",
   description:
-    "Paipers range tes papiers, trie tes mails et veille sur ton budget. Crée ton compte : 7 jours d’essai gratuit.",
+    "Plaidoc range tes papiers, trie tes mails et veille sur ton budget. Crée ton compte : 7 jours d’essai gratuit.",
 };
 
 export default function HomePage() {

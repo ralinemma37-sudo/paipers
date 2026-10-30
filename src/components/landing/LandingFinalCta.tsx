@@ -34,7 +34,7 @@ export default function LandingFinalCta() {
               minWidth: 200,
             }}
           >
-            Découvrir Paipers
+            Découvrir Plaidoc
           </a>
         </div>
       </div>

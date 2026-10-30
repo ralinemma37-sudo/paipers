@@ -234,7 +234,7 @@ export default function RedigerDocumentPage() {
             Rédiger un document
           </h1>
           <p className="paipers-text-muted" style={{ marginBottom: 22, fontSize: 14 }}>
-            Laissez Paipers rédiger vos documents grâce à l&apos;IA. Courriers, contrats, dossiers
+            Laissez Plaidoc rédiger vos documents grâce à l&apos;IA. Courriers, contrats, dossiers
             complets.
           </p>
 
@@ -307,7 +307,7 @@ export default function RedigerDocumentPage() {
                     style={{ margin: 0, fontSize: 14, textAlign: "center" }}
                     aria-live="polite"
                   >
-                    Paipers rédige votre document…
+                    Plaidoc rédige votre document…
                   </p>
                 ) : null}
               </div>

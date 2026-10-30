@@ -12,8 +12,8 @@ export default function GmailPage() {
     <EmailProviderConnectPage
       provider="gmail"
       title="Gmail"
-      subtitlePersonal="Compte Gmail pour l’espace Personnel. Séparé de l’autre espace Paipers."
-      subtitlePro="Compte Gmail pour l’espace Professionnel. Séparé de l’autre espace Paipers."
+      subtitlePersonal="Compte Gmail pour l’espace Personnel. Séparé de l’autre espace Plaidoc."
+      subtitlePro="Compte Gmail pour l’espace Professionnel. Séparé de l’autre espace Plaidoc."
     />
   );
 }

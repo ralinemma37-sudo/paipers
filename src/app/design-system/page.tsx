@@ -178,7 +178,7 @@ export default function DesignSystemPage() {
           Contrôle temporaire — Étape 1
         </p>
         <h1 className="paipers-screen-title" style={{ marginBottom: 8 }}>
-          Design system Paipers
+          Design system Plaidoc
         </h1>
         <p className="paipers-text-muted" style={{ marginBottom: 32 }}>
           Valeurs extraites de paipers-mobile. Aucune couleur inventée.
@@ -197,7 +197,7 @@ export default function DesignSystemPage() {
             <figure style={{ margin: 0, textAlign: "center" }}>
               <img
                 src={PAIPERS_ASSETS.logoSplashLight}
-                alt="Logo Paipers splash light"
+                alt="Logo Plaidoc splash light"
                 style={{ width: 120, height: "auto" }}
               />
               <figcaption

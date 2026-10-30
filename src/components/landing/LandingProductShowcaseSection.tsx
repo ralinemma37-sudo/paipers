@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Showcase produit — captures réelles de l’app mobile Paipers.
+ * Showcase produit — captures réelles de l’app mobile Plaidoc.
  * Navigation par onglets + précédent / suivant. Animations CSS légères.
  */
 
@@ -29,14 +29,14 @@ const SLIDES: Slide[] = [
     src: "/screenshots/store-1.png",
     tab: "Accueil",
     caption: "Archi te dit ce qu’il y a à faire",
-    alt: "Écran Accueil Paipers : Archi, score administratif et cartes À faire, À surveiller, Fait par Archi.",
+    alt: "Écran Accueil Plaidoc : Archi, score administratif et cartes À faire, À surveiller, Fait par Archi.",
   },
   {
     id: "rangement",
     src: "/screenshots/store-2.png",
     tab: "Rangement",
     caption: "Tes documents rangés tout seuls",
-    alt: "Import d’un document dans Paipers : « Ton document est enregistré ! Rangé dans Personnel → Logement ».",
+    alt: "Import d’un document dans Plaidoc : « Ton document est enregistré ! Rangé dans Personnel → Logement ».",
   },
   {
     id: "archi",
@@ -50,21 +50,21 @@ const SLIDES: Slide[] = [
     src: "/screenshots/store-4.png",
     tab: "Budget",
     caption: "Ton budget, calculé pour toi",
-    alt: "Écran Mon budget Paipers : entrées, sorties et mouvements du mois.",
+    alt: "Écran Mon budget Plaidoc : entrées, sorties et mouvements du mois.",
   },
   {
     id: "generer",
     src: "/screenshots/store-5.png",
     tab: "Générer",
     caption: "Rédige, complète et signe tes documents",
-    alt: "Écran Générer Paipers : rédiger, compléter, signer et fusionner des PDF.",
+    alt: "Écran Générer Plaidoc : rédiger, compléter, signer et fusionner des PDF.",
   },
   {
     id: "pro",
     src: "/screenshots/store-6.png",
     tab: "Pro",
     caption: "Un espace Pro pour ton activité",
-    alt: "Espace Professionnel Paipers : import, scanner, nouvelle facture et nouveau devis.",
+    alt: "Espace Professionnel Plaidoc : import, scanner, nouvelle facture et nouveau devis.",
   },
 ];
 
@@ -106,10 +106,10 @@ export default function LandingProductShowcaseSection() {
   return (
     <LandingSection id="produit" tone="white">
       <h2 className="paipers-screen-title text-center" style={{ fontSize: 32 }}>
-        Paipers, concrètement.
+        Plaidoc, concrètement.
       </h2>
       <p className="mt-3 text-center paipers-text-muted max-w-2xl mx-auto leading-relaxed">
-        Découvre comment Paipers centralise tes documents, fait remonter les
+        Découvre comment Plaidoc centralise tes documents, fait remonter les
         informations importantes et t’aide à garder le contrôle.
       </p>
 
@@ -117,7 +117,7 @@ export default function LandingProductShowcaseSection() {
       <div
         className="mt-8 flex flex-wrap justify-center gap-2"
         role="tablist"
-        aria-label="Écrans Paipers"
+        aria-label="Écrans Plaidoc"
       >
         {SLIDES.map((s, i) => {
           const selected = i === index;

@@ -1,6 +1,6 @@
 /**
  * Catalogue de sites officiels — liens externes uniquement.
- * Paipers redirige ; ne réalise aucune démarche et ne stocke aucun identifiant.
+ * Plaidoc redirige ; ne réalise aucune démarche et ne stocke aucun identifiant.
  * Aligné sur paipers-mobile/src/lib/officialServices (périmètre web prudent).
  */
 
@@ -29,7 +29,7 @@ export type DemarcheCategory = {
 };
 
 export const DEMARCHE_DISCLAIMER =
-  "Vous quittez Paipers pour ouvrir un site officiel. Vérifiez toujours l’adresse. Paipers ne réalise aucune démarche à votre place et ne demande jamais vos identifiants de services publics.";
+  "Vous quittez Plaidoc pour ouvrir un site officiel. Vérifiez toujours l’adresse. Plaidoc ne réalise aucune démarche à votre place et ne demande jamais vos identifiants de services publics.";
 
 export const DEMARCHE_SUBTITLE =
   "Retrouve rapidement les principaux services officiels pour effectuer tes démarches.";

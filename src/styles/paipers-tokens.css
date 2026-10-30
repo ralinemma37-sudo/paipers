@@ -1,5 +1,5 @@
 /**
- * Paipers design tokens — CSS
+ * Plaidoc design tokens — CSS
  * Source de vérité visuelle alignée sur paipers-mobile :
  * - src/theme/paipersColors.ts
  * - src/theme/paipers.ts
@@ -409,7 +409,7 @@
   }
 }
 
-/* —— Vitrine (18/10, choix Vanessa) : vraies couleurs Paipers — prune (Personnel) et bleu marine (Pro). —— */
+/* —— Vitrine (18/10, choix Vanessa) : vraies couleurs Plaidoc — prune (Personnel) et bleu marine (Pro). —— */
 .paipers-landing .paipers-card-night {
   background: linear-gradient(165deg, #3a2a44 0%, #493653 100%);
   box-shadow: 0 12px 40px rgba(58, 42, 68, 0.3);

@@ -75,7 +75,7 @@ export default function RemplirDocumentPage() {
                 Non disponible sur le web pour le moment
               </p>
               <p className="paipers-text-muted" style={{ margin: 0, fontSize: 14, lineHeight: "20px" }}>
-                Sur mobile, Paipers prépare et remplit tes PDF via les fonctions{" "}
+                Sur mobile, Plaidoc prépare et remplit tes PDF via les fonctions{" "}
                 <code style={{ fontSize: 12 }}>prepare-document-fill</code> et{" "}
                 <code style={{ fontSize: 12 }}>save-filled-document</code>. Ces parcours ne sont
                 pas branchés côté web.

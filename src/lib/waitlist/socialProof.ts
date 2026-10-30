@@ -28,27 +28,27 @@ export function socialProofForLanding(confirmedCount: number): SocialProofResult
   if (n < 50) {
     return {
       visible: true,
-      text: "Rejoins les premières personnes inscrites à Paipers.",
+      text: "Rejoins les premières personnes inscrites à Plaidoc.",
     };
   }
   if (n < 100) {
     return {
       visible: true,
-      text: "Déjà plus de 50 personnes attendent Paipers.",
+      text: "Déjà plus de 50 personnes attendent Plaidoc.",
       flooredAt: 50,
     };
   }
   if (n < 200) {
     return {
       visible: true,
-      text: "Déjà plus de 100 personnes attendent Paipers.",
+      text: "Déjà plus de 100 personnes attendent Plaidoc.",
       flooredAt: 100,
     };
   }
   const floored = floorConfirmedForDisplay(n);
   return {
     visible: true,
-    text: `Déjà plus de ${floored} personnes attendent Paipers.`,
+    text: `Déjà plus de ${floored} personnes attendent Plaidoc.`,
     flooredAt: floored,
   };
 }
@@ -58,33 +58,33 @@ export function socialProofForConfirm(confirmedCount: number): SocialProofResult
   if (n < 10) {
     return {
       visible: true,
-      text: "Tu fais partie des toutes premières personnes à rejoindre Paipers.",
+      text: "Tu fais partie des toutes premières personnes à rejoindre Plaidoc.",
     };
   }
   if (n < 50) {
     return {
       visible: true,
-      text: "Tu rejoins les premières personnes inscrites à Paipers.",
+      text: "Tu rejoins les premières personnes inscrites à Plaidoc.",
     };
   }
   if (n < 100) {
     return {
       visible: true,
-      text: "Tu rejoins déjà plus de 50 personnes intéressées par Paipers.",
+      text: "Tu rejoins déjà plus de 50 personnes intéressées par Plaidoc.",
       flooredAt: 50,
     };
   }
   if (n < 200) {
     return {
       visible: true,
-      text: "Tu rejoins déjà plus de 100 personnes intéressées par Paipers.",
+      text: "Tu rejoins déjà plus de 100 personnes intéressées par Plaidoc.",
       flooredAt: 100,
     };
   }
   const floored = floorConfirmedForDisplay(n);
   return {
     visible: true,
-    text: `Tu rejoins déjà plus de ${floored} personnes intéressées par Paipers.`,
+    text: `Tu rejoins déjà plus de ${floored} personnes intéressées par Plaidoc.`,
     flooredAt: floored,
   };
 }

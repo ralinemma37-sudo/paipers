@@ -1,5 +1,5 @@
 /**
- * Surfaces desktop SaaS — identité Paipers, contraste multi-niveaux.
+ * Surfaces desktop SaaS — identité Plaidoc, contraste multi-niveaux.
  * Visuel uniquement (pas de logique métier).
  */
 
@@ -16,7 +16,7 @@ export const DESKTOP_SURFACES = {
   marine: "#1A2B4A",
   marineSoft: "#243556",
 
-  /** Violet foncé Paipers (dérivé rose brand) */
+  /** Violet foncé Plaidoc (dérivé rose brand) */
   violetDeep: "#1F1428",
   violetCard: "#2A1B3D",
 

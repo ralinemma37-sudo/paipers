@@ -51,7 +51,7 @@ export default function EmptyInvoicesState({ onCreate }: Props) {
         className="paipers-text-muted"
         style={{ margin: 0, fontSize: 14, lineHeight: "20px", maxWidth: 360 }}
       >
-        Facturez un client en quelques minutes. Paipers prépare le PDF et vous aide à suivre le
+        Facturez un client en quelques minutes. Plaidoc prépare le PDF et vous aide à suivre le
         paiement.
       </p>
       <button

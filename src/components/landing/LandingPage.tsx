@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Landing publique Paipers — composition des sections vitrine.
+ * Landing publique Plaidoc — composition des sections vitrine.
  */
 
 import PublicSiteHeader from "@/components/landing/PublicSiteHeader";

@@ -141,7 +141,7 @@ export default function ProfilHomePage() {
               desc={
                 isPro
                   ? "Questions fréquentes et contact pour votre activité."
-                  : "Questions fréquentes et contact Paipers."
+                  : "Questions fréquentes et contact Plaidoc."
               }
               Icon={LifeBuoy}
             />

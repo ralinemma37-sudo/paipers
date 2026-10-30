@@ -87,7 +87,7 @@ export default function GenererHub({ embedded = false }: Props) {
         <GenererActionCard
           href="/generer/rediger-document"
           title="Rédiger un document"
-          desc="Laissez Paipers rédiger vos documents grâce à l'IA. Courriers, contrats, dossiers complets."
+          desc="Laissez Plaidoc rédiger vos documents grâce à l'IA. Courriers, contrats, dossiers complets."
           Icon={Sparkles}
           badgePastel={BADGES.Rédigé.pastel}
           vivid={BADGES.Rédigé.vivid}

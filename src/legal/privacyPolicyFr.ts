@@ -16,10 +16,10 @@ export const privacyPolicySectionsFr: LegalSection[] = [
   {
     title: "1. Introduction et champ d’application",
     paragraphs: [
-      "La présente politique de confidentialité explique comment Paipers, édité par " +
+      "La présente politique de confidentialité explique comment Plaidoc, édité par " +
         P.denomination +
-        ", traite les données à caractère personnel des utilisateurs de l’application mobile Paipers et, le cas échéant, des services associés (site web, flux de connexion tiers).",
-      "Elle s’applique à toute personne qui crée un compte ou utilise le service. En vous inscrivant ou en continuant à utiliser Paipers après en avoir pris connaissance, vous reconnaissez avoir lu cette politique.",
+        ", traite les données à caractère personnel des utilisateurs de l’application mobile Plaidoc et, le cas échéant, des services associés (site web, flux de connexion tiers).",
+      "Elle s’applique à toute personne qui crée un compte ou utilise le service. En vous inscrivant ou en continuant à utiliser Plaidoc après en avoir pris connaissance, vous reconnaissez avoir lu cette politique.",
     ],
   },
   {
@@ -71,8 +71,8 @@ export const privacyPolicySectionsFr: LegalSection[] = [
     paragraphs: [
       "Un même compte utilisateur peut appartenir à plusieurs espaces (Personnel, Famille d’un foyer, Professionnel d’une activité). Le changement d’« espace actif » dans l’application détermine quel ensemble de documents et de données métier est affiché et traité dans l’interface.",
       "Les documents et métadonnées associés à un espace partagé peuvent être accessibles aux autres membres de cet espace, dans la limite des rôles définis par le propriétaire (ex. membre, lecture seule, collaborateur, comptable).",
-      "Les invitations sont adressées à l’e-mail de la personne invitée ; seule une personne disposant d’un compte Paipers lié à cette adresse peut accepter l’invitation dans l’application.",
-      "L’envoi de l’e-mail d’invitation peut transiter par la messagerie Gmail que le propriétaire a connectée : dans ce cas, Google traite l’envoi selon ses propres conditions ; Paipers enregistre les informations nécessaires au suivi de l’invitation.",
+      "Les invitations sont adressées à l’e-mail de la personne invitée ; seule une personne disposant d’un compte Plaidoc lié à cette adresse peut accepter l’invitation dans l’application.",
+      "L’envoi de l’e-mail d’invitation peut transiter par la messagerie Gmail que le propriétaire a connectée : dans ce cas, Google traite l’envoi selon ses propres conditions ; Plaidoc enregistre les informations nécessaires au suivi de l’invitation.",
       "Pour plus de détails sur le fonctionnement et vos choix : écran « Espaces partagés » dans Confidentialité et légal.",
     ],
   },
@@ -94,7 +94,7 @@ export const privacyPolicySectionsFr: LegalSection[] = [
         " et, le cas échéant, par des sous-traitants strictement nécessaires : hébergement et base de données (ex. Supabase), authentification, stockage de fichiers, fournisseurs d’API d’IA si vous utilisez les fonctions concernées, Google pour le flux OAuth Gmail, prestataire d’hébergement du site utilisé pour la connexion Gmail si distinct.",
       "Ces acteurs traitent les données sur instruction documentée, dans le respect du RGPD (contrats de sous-traitance, clauses types de la Commission européenne en cas de transfert hors UE le cas échéant).",
       "Nous ne vendons pas vos données personnelles à des tiers et ne les cédons pas à des fins publicitaires.",
-      "Au sein d’un espace partagé, certaines données (documents, métadonnées, identité des membres dans l’espace) sont mises à disposition des autres membres autorisés de cet espace, sur instruction du propriétaire et selon les rôles. Ces personnes ne deviennent pas « responsables du traitement » au nom de Paipers pour l’exploitation globale du service, mais doivent respecter la confidentialité des contenus auxquels elles accèdent.",
+      "Au sein d’un espace partagé, certaines données (documents, métadonnées, identité des membres dans l’espace) sont mises à disposition des autres membres autorisés de cet espace, sur instruction du propriétaire et selon les rôles. Ces personnes ne deviennent pas « responsables du traitement » au nom de Plaidoc pour l’exploitation globale du service, mais doivent respecter la confidentialité des contenus auxquels elles accèdent.",
     ],
   },
   {
@@ -121,9 +121,9 @@ export const privacyPolicySectionsFr: LegalSection[] = [
     ],
   },
   {
-    title: "11. Intelligence artificielle et assistant Paipers",
+    title: "11. Intelligence artificielle et assistant Plaidoc",
     paragraphs: [
-      "L’assistant IA permet de dialoguer en langage naturel et d’obtenir de l’aide sur vos documents et démarches dans Paipers. Selon votre demande, nous pouvons transmettre votre message, un historique limité de la conversation, le type d’espace actif et des informations sur les documents concernés (titres, catégories, extraits ou métadonnées) à des prestataires de modèles d’IA agissant en sous-traitants.",
+      "L’assistant IA permet de dialoguer en langage naturel et d’obtenir de l’aide sur vos documents et démarches dans Plaidoc. Selon votre demande, nous pouvons transmettre votre message, un historique limité de la conversation, le type d’espace actif et des informations sur les documents concernés (titres, catégories, extraits ou métadonnées) à des prestataires de modèles d’IA agissant en sous-traitants.",
       "L’assistant est conçu pour respecter la séparation des espaces : en principe, seules les données de l’espace que vous avez sélectionné (Personnel, Famille ou Professionnel) sont prises en compte pour vos requêtes.",
       "Les réponses générées sont indicatives. Elles ne constituent pas un conseil juridique, fiscal, comptable, médical ou administratif officiel. Vous devez vérifier toute information importante avant de la utiliser ou de l’envoyer à un tiers.",
       "Des limites d’usage (nombre de requêtes par mois) peuvent s’appliquer selon votre formule (gratuit, Premium, Pro).",
@@ -152,8 +152,8 @@ export const privacyPolicySectionsFr: LegalSection[] = [
   {
     title: "14. Cookies, traceurs et application mobile",
     paragraphs: [
-      "L’application mobile Paipers n’utilise pas de cookies de navigateur au sens des sites web. Des identifiants techniques peuvent être stockés sur l’appareil pour maintenir la session et les préférences.",
-      "Si vous accédez à des pages web Paipers (ex. flux OAuth Gmail), les politiques de cookies et traceurs de ces sites s’appliquent en complément ; référez-vous aux informations publiées sur ces supports.",
+      "L’application mobile Plaidoc n’utilise pas de cookies de navigateur au sens des sites web. Des identifiants techniques peuvent être stockés sur l’appareil pour maintenir la session et les préférences.",
+      "Si vous accédez à des pages web Plaidoc (ex. flux OAuth Gmail), les politiques de cookies et traceurs de ces sites s’appliquent en complément ; référez-vous aux informations publiées sur ces supports.",
     ],
   },
   {

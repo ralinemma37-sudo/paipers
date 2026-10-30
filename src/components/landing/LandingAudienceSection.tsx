@@ -31,7 +31,7 @@ export default function LandingAudienceSection() {
         </h2>
         <p className="mt-3 max-w-2xl leading-relaxed" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
           Centralise ton admin perso : documents rangés tout seuls, mails triés, budget et abonnements,
-          courriers générés et Archi pour t’aider. L’espace Personnel est le cœur de Paipers au quotidien.
+          courriers générés et Archi pour t’aider. L’espace Personnel est le cœur de Plaidoc au quotidien.
         </p>
         <Chips items={["Documents", "Mails", "Mon budget", "Générer", "Archi"]} color="#493653" />
       </LandingSection>

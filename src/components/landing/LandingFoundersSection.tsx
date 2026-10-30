@@ -12,10 +12,10 @@ export default function LandingFoundersSection() {
         Une histoire de famille devenue un projet.
       </h2>
       <p className="mt-4 text-center mx-auto max-w-2xl leading-relaxed paipers-text-muted">
-        Paipers est né d’un constat simple : notre administratif est partout,
+        Plaidoc est né d’un constat simple : notre administratif est partout,
         alors qu’il devrait nous simplifier la vie. Vanessa a imaginé le
         concept. Emma l’a transformé en application. Aujourd’hui, nous
-        construisons Paipers ensemble avec une ambition : rendre
+        construisons Plaidoc ensemble avec une ambition : rendre
         l’administratif beaucoup plus simple à gérer au quotidien.
       </p>
 
@@ -34,7 +34,7 @@ export default function LandingFoundersSection() {
             Emma
           </p>
           <p className="mt-2 text-sm leading-relaxed paipers-text-muted">
-            Développe principalement l’application. Construit Paipers aux côtés
+            Développe principalement l’application. Construit Plaidoc aux côtés
             de Vanessa.
           </p>
         </div>

@@ -4,8 +4,8 @@ import WaitlistConfirmClient from "./WaitlistConfirmClient";
 import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
 
 export const metadata: Metadata = {
-  title: "Confirmation liste d’attente — Paipers",
-  description: "Confirme ton inscription à la liste d’attente Paipers.",
+  title: "Confirmation liste d’attente — Plaidoc",
+  description: "Confirme ton inscription à la liste d’attente Plaidoc.",
 };
 
 function ConfirmFallback() {

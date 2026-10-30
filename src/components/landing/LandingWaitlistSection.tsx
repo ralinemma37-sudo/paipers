@@ -37,7 +37,7 @@ export default function LandingWaitlistSection() {
               color: PAIPERS_COLORS.navy,
             }}
           >
-            Fais partie des premiers à découvrir Paipers.
+            Fais partie des premiers à découvrir Plaidoc.
           </h2>
           <p
             className="text-center paipers-text-muted"
@@ -57,7 +57,7 @@ export default function LandingWaitlistSection() {
           >
             {[
               "Être informé(e) du lancement",
-              "Découvrir Paipers parmi les premiers",
+              "Découvrir Plaidoc parmi les premiers",
               "Possibilité de participer aux phases de bêta-test",
             ].map((line) => (
               <li key={line} style={{ marginTop: 6 }}>

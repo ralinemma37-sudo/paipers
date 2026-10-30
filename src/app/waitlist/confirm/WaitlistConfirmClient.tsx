@@ -26,7 +26,7 @@ type ConfirmState =
 const WAITLIST_BENEFITS = [
   "L’annonce de l’ouverture officielle",
   "Les étapes importantes avant le lancement",
-  "Les premières informations sur Paipers",
+  "Les premières informations sur Plaidoc",
 ] as const;
 
 function mapErrorToState(status: number, apiError?: string): ConfirmState {
@@ -111,11 +111,11 @@ export default function WaitlistConfirmClient() {
 
   const body =
     state === "ok"
-      ? "Ton inscription à la liste d’attente est confirmée. Tu fais désormais partie des premières personnes qui seront informées de l’ouverture de Paipers."
+      ? "Ton inscription à la liste d’attente est confirmée. Tu fais désormais partie des premières personnes qui seront informées de l’ouverture de Plaidoc."
       : state === "already"
-        ? "Ton inscription est déjà confirmée. Tu seras informé(e) en priorité de l’ouverture de Paipers."
+        ? "Ton inscription est déjà confirmée. Tu seras informé(e) en priorité de l’ouverture de Plaidoc."
         : state === "invalid"
-          ? "Ce lien de confirmation n’est plus valide. Tu peux retourner sur Paipers ou t’inscrire à nouveau depuis la page d’accueil."
+          ? "Ce lien de confirmation n’est plus valide. Tu peux retourner sur Plaidoc ou t’inscrire à nouveau depuis la page d’accueil."
           : state === "server"
             ? "Nous n’avons pas pu confirmer ton inscription pour le moment. Réessaie dans quelques minutes."
             : "Confirmation en cours…";
@@ -331,7 +331,7 @@ export default function WaitlistConfirmClient() {
                     alignItems: "center",
                   }}
                 >
-                  Découvrir Paipers
+                  Découvrir Plaidoc
                 </Link>
                 <Link
                   href="/"
@@ -359,7 +359,7 @@ export default function WaitlistConfirmClient() {
                   alignItems: "center",
                 }}
               >
-                Retourner sur Paipers
+                Retourner sur Plaidoc
               </Link>
             )}
           </div>

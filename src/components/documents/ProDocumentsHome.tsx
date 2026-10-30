@@ -112,7 +112,7 @@ export default function ProDocumentsHome({
             À traiter
           </h2>
           <p className="paipers-text-muted" style={{ margin: 0, fontSize: 13, lineHeight: "19px" }}>
-            Rien en attente. Paipers classera ici les documents qui nécessitent une action.
+            Rien en attente. Plaidoc classera ici les documents qui nécessitent une action.
           </p>
         </section>
 

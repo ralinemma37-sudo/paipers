@@ -7,9 +7,9 @@ import DesktopChromeGate from "@/components/DesktopChromeGate";
 import SpaceSwitcherGate from "@/components/SpaceSwitcherGate";
 
 export const metadata = {
-  title: "Paipers - Le copilote administratif intelligent arrive bientôt",
+  title: "Plaidoc - Le copilote administratif intelligent arrive bientôt",
   description:
-    "Rejoignez la liste d’attente de Paipers et soyez parmi les premiers à découvrir votre futur copilote administratif intelligent.",
+    "Rejoignez la liste d’attente de Plaidoc et soyez parmi les premiers à découvrir votre futur copilote administratif intelligent.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -196,7 +196,7 @@ export default function ParametresPage() {
             }}
           >
             La suppression du compte est irréversible : tu perdras l’accès à tous tes documents,
-            dossiers et connexions email liés à Paipers.
+            dossiers et connexions email liés à Plaidoc.
           </p>
 
           <button

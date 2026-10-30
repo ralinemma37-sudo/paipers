@@ -126,7 +126,7 @@ function LoginForm() {
       brand={
         <img
           src={PAIPERS_ASSETS.logoSplashLight}
-          alt="Logo Paipers"
+          alt="Logo Plaidoc"
           width={88}
           height={88}
           className="paipers-brand-logo"

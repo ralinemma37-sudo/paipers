@@ -1,5 +1,5 @@
 /**
- * Paipers design tokens — miroir TypeScript de paipers-mobile.
+ * Plaidoc design tokens — miroir TypeScript de paipers-mobile.
  *
  * Sources mobiles (ne pas inventer de valeurs) :
  * - src/theme/paipersColors.ts
@@ -24,6 +24,15 @@ export const PAIPERS_ASSETS = {
   /** Logo sur fond nuit (header public). */
   logoNight: "/brand/splash-logo-night.png",
   logo: "/brand/splash-logo-marine.png",
+} as const;
+
+/** 30/10 : dégradé du logo (bleu → violet → rose → pêche → jaune) pour écrire le nom « Plaidoc ». */
+export const PLAIDOC_WORDMARK_STYLE = {
+  backgroundImage: "linear-gradient(90deg, #78c2f7 0%, #bb9ae8 30%, #ec96bf 58%, #f9a99a 80%, #fcd27f 100%)",
+  WebkitBackgroundClip: "text",
+  backgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+  color: "transparent",
 } as const;
 
 /** Palette officielle — paipersColors.ts */

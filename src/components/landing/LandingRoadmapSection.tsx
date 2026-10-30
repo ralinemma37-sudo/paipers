@@ -18,7 +18,7 @@ export default function LandingRoadmapSection() {
   return (
     <LandingSection tone="canvas">
       <h2 className="paipers-screen-title text-center" style={{ fontSize: 32 }}>
-        Paipers avance déjà.
+        Plaidoc avance déjà.
       </h2>
       <p className="mt-3 text-center paipers-text-muted max-w-xl mx-auto">
         Le projet existe. Voici où nous en sommes — sans promesse de date.

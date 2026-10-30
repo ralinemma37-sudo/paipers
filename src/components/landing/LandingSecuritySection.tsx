@@ -26,7 +26,7 @@ export default function LandingSecuritySection() {
             L’IA aide. Toi, tu valides.
           </h2>
           <p className="mt-3 leading-relaxed paipers-text-muted">
-            Paipers propose des analyses et des aides à l’action. Les imports à
+            Plaidoc propose des analyses et des aides à l’action. Les imports à
             revoir, les suppressions et les connexions e-mail restent sous ton
             contrôle. Archi n’agit pas à ta place.
           </p>

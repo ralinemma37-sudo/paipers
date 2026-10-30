@@ -5,7 +5,7 @@
 import { APP_HOME_URL, APP_LOGIN_URL, APP_SIGNUP_URL } from "@/lib/appLinks";
 import { Bot, Flag, Shield } from "lucide-react";
 import { DESKTOP_SURFACES } from "@/lib/desktopSurfaces";
-import { PAIPERS_ASSETS, PAIPERS_RADIUS } from "@/lib/paipersTheme";
+import { PAIPERS_ASSETS, PAIPERS_RADIUS, PLAIDOC_WORDMARK_STYLE } from "@/lib/paipersTheme";
 
 const REASSURANCE = [
   { Icon: Flag, label: "Startup française" },
@@ -30,10 +30,10 @@ export default function LandingHero() {
       >
         <div className="paipers-fade-in">
           <p
-            className="text-[13px] font-bold tracking-[0.08em] uppercase mb-4"
-            style={{ color: DESKTOP_SURFACES.accentLine }}
+            className="inline-block text-[3.25rem] md:text-[4.25rem] lg:text-[5rem] font-black leading-none tracking-tight mb-5 pb-1"
+            style={PLAIDOC_WORDMARK_STYLE}
           >
-            Paipers
+            Plaidoc
           </p>
           <h1
             className="text-[2.5rem] md:text-5xl lg:text-[3.25rem] font-extrabold leading-[1.08] tracking-tight max-w-xl"
@@ -70,7 +70,7 @@ export default function LandingHero() {
                 minWidth: 200,
               }}
             >
-              Découvrir Paipers
+              Découvrir Plaidoc
             </a>
           </div>
           <ul
@@ -118,7 +118,7 @@ export default function LandingHero() {
                 />
                 <img
                   src={PAIPERS_ASSETS.mascot}
-                  alt="Archi, l’assistant Paipers"
+                  alt="Archi, l’assistant Plaidoc"
                   className="relative mx-auto w-56 md:w-72 h-auto"
                   width={288}
                   height={288}

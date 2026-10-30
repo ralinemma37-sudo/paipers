@@ -96,9 +96,9 @@ export default function SignupPage() {
 
   const title =
     phase === "plan"
-      ? "Bienvenue sur Paipers"
+      ? "Bienvenue sur Plaidoc"
       : phase === "account"
-        ? "Créez votre espace Paipers"
+        ? "Créez votre espace Plaidoc"
         : undefined;
 
   const subtitle =
@@ -633,7 +633,7 @@ export default function SignupPage() {
               margin: 0,
             }}
           >
-            Vos données restent privées. Paipers ne lit vos documents que pour
+            Vos données restent privées. Plaidoc ne lit vos documents que pour
             vous aider à les classer et les retrouver.
           </p>
 

@@ -25,7 +25,7 @@ export default function LandingFooter() {
         <div>
           <img
             src={PAIPERS_ASSETS.logoNight}
-            alt="Paipers"
+            alt="Plaidoc"
             className="paipers-brand-logo h-11 w-auto"
           />
           <p className="mt-3 text-sm max-w-xs" style={{ color: DESKTOP_SURFACES.onDarkMuted }}>
@@ -69,7 +69,7 @@ export default function LandingFooter() {
         className="mx-auto mt-10 text-xs"
         style={{ maxWidth: 1120, color: DESKTOP_SURFACES.onDarkSoft }}
       >
-        © {new Date().getFullYear()} Paipers. Mentions éditeur en cours de
+        © {new Date().getFullYear()} Plaidoc. Mentions éditeur en cours de
         finalisation — voir les pages légales.
       </p>
     </footer>

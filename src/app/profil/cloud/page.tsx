@@ -12,7 +12,7 @@ import { PAIPERS_COLORS, PAIPERS_SPACE } from "@/lib/paipersTheme";
 const PROVIDERS = [
   {
     title: "Supabase Storage",
-    desc: "Stockage principal de Paipers.",
+    desc: "Stockage principal de Plaidoc.",
     status: "Actif",
     statusColor: "#15803d",
     disabled: false,

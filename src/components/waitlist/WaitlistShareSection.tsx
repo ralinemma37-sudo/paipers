@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Partage organique Paipers — page confirmation waitlist.
+ * Partage organique Plaidoc — page confirmation waitlist.
  * Aucune donnée personnelle dans les URLs.
  */
 
@@ -92,7 +92,7 @@ export default function WaitlistShareSection() {
           letterSpacing: -0.2,
         }}
       >
-        Aide-nous à faire connaître Paipers
+        Aide-nous à faire connaître Plaidoc
       </h2>
       <p
         style={{
@@ -103,7 +103,7 @@ export default function WaitlistShareSection() {
         }}
       >
         Tu connais quelqu’un qui aimerait enfin simplifier son administratif ?
-        Partage-lui Paipers.
+        Partage-lui Plaidoc.
       </p>
 
       <div className="mt-3.5 grid grid-cols-2 gap-2">
@@ -121,7 +121,7 @@ export default function WaitlistShareSection() {
             }}
           >
             <Share2 size={16} aria-hidden />
-            Partager Paipers
+            Partager Plaidoc
           </button>
         ) : null}
 

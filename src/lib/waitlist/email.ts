@@ -12,10 +12,10 @@ const LOGO_PATH = "/brand/splash-logo-light.png";
 const PRIVACY_URL = `${WAITLIST_PUBLIC_ORIGIN}/legal/politique-confidentialite`;
 
 export const WAITLIST_CONFIRM_EMAIL_SUBJECT =
-  "Confirme ton inscription à la liste d’attente Paipers";
+  "Confirme ton inscription à la liste d’attente Plaidoc";
 
 export const WAITLIST_CONFIRM_EMAIL_PREHEADER =
-  "Une dernière étape pour réserver ta place parmi les premiers utilisateurs de Paipers.";
+  "Une dernière étape pour réserver ta place parmi les premiers utilisateurs de Plaidoc.";
 
 function escapeHtml(value: string): string {
   return value
@@ -67,7 +67,7 @@ export function buildWaitlistConfirmEmailHtml(params: {
             <td align="center" style="padding:28px 28px 8px;">
               <img
                 src="${logoUrl}"
-                alt="Paipers"
+                alt="Plaidoc"
                 width="88"
                 height="88"
                 style="display:block;width:88px;height:auto;border:0;outline:none;text-decoration:none;border-radius:16px;"
@@ -81,7 +81,7 @@ export function buildWaitlistConfirmEmailHtml(params: {
                 ${hello}
               </p>
               <p style="margin:0 0 14px;font-size:16px;line-height:1.55;color:#1A2B4A;font-weight:700;">
-                Bienvenue parmi les premiers à suivre l’aventure Paipers &#127881;
+                Bienvenue parmi les premiers à suivre l’aventure Plaidoc &#127881;
               </p>
               <p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#3D4F6F;">
                 Tu viens de réserver ta place pour découvrir ton futur copilote administratif intelligent avant son ouverture officielle.
@@ -108,16 +108,16 @@ export function buildWaitlistConfirmEmailHtml(params: {
                 </tr>
               </table>
               <p style="margin:0 0 18px;font-size:14px;line-height:1.55;color:#3D4F6F;">
-                Une fois ton inscription confirmée, tu seras informé(e) en priorité de l’ouverture de Paipers et des étapes importantes du projet.
+                Une fois ton inscription confirmée, tu seras informé(e) en priorité de l’ouverture de Plaidoc et des étapes importantes du projet.
               </p>
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:0 0 20px;background:#F4F7FB;border-radius:14px;border:1px solid #E5EAF2;">
                 <tr>
                   <td style="padding:16px 18px;">
                     <p style="margin:0 0 8px;font-size:13px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:#1A2B4A;">
-                      Pourquoi Paipers ?
+                      Pourquoi Plaidoc ?
                     </p>
                     <p style="margin:0;font-size:14px;line-height:1.55;color:#3D4F6F;">
-                      Parce que gérer son administratif devrait prendre quelques minutes, pas plusieurs heures. Paipers a pour ambition de centraliser tes documents, surveiller les échéances importantes et t’aider à agir au bon moment.
+                      Parce que gérer son administratif devrait prendre quelques minutes, pas plusieurs heures. Plaidoc a pour ambition de centraliser tes documents, surveiller les échéances importantes et t’aider à agir au bon moment.
                     </p>
                   </td>
                 </tr>
@@ -130,7 +130,7 @@ export function buildWaitlistConfirmEmailHtml(params: {
               </p>
               <p style="margin:18px 0 0;font-size:15px;line-height:1.55;color:#1A2B4A;">
                 À bientôt,<br />
-                <strong>L’équipe Paipers</strong>
+                <strong>L’équipe Plaidoc</strong>
               </p>
             </td>
           </tr>
@@ -138,7 +138,7 @@ export function buildWaitlistConfirmEmailHtml(params: {
           <tr>
             <td style="padding:22px 28px 26px;border-top:1px solid #EEF2F7;">
               <p style="margin:0 0 10px;font-size:11px;line-height:1.5;color:#7B879C;">
-                Tu reçois cet email car une inscription à la liste d’attente de Paipers a été demandée avec cette adresse sur paipers.fr.
+                Tu reçois cet email car une inscription à la liste d’attente de Plaidoc a été demandée avec cette adresse sur paipers.fr.
               </p>
               <p style="margin:0 0 10px;font-size:11px;line-height:1.5;color:#7B879C;">
                 <a href="${PRIVACY_URL}" style="color:#5B6B86;text-decoration:underline;">

@@ -127,10 +127,10 @@ export function userFacingEmailConnectionDbError(message: string): string {
     return "La connexion Gmail n’a pas pu être enregistrée (configuration serveur incomplète). Réessaie dans quelques minutes ou contacte le support.";
   }
   if (/duplicate key value violates unique constraint/i.test(m)) {
-    return "Ce compte Gmail est déjà connecté à Paipers.";
+    return "Ce compte Gmail est déjà connecté à Plaidoc.";
   }
   if (/violates foreign key constraint/i.test(m)) {
-    return "Compte utilisateur introuvable. Reconnecte-toi à Paipers puis réessaie.";
+    return "Compte utilisateur introuvable. Reconnecte-toi à Plaidoc puis réessaie.";
   }
   return "Impossible d’enregistrer la connexion Gmail. Réessaie dans un instant.";
 }

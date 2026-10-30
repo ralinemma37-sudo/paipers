@@ -1,5 +1,5 @@
 /**
- * Section problème — admin dispersé + transition vers Paipers.
+ * Section problème — admin dispersé + transition vers Plaidoc.
  */
 
 import { ArrowDown } from "lucide-react";
@@ -88,7 +88,7 @@ export default function LandingProblemSection() {
             className="text-[12px] font-bold tracking-[0.06em] uppercase"
             style={{ color: DESKTOP_SURFACES.accentLine, margin: 0 }}
           >
-            Avec Paipers
+            Avec Plaidoc
           </p>
           <p className="mt-2 font-extrabold text-base" style={{ color: DESKTOP_SURFACES.onDark }}>
             Une application + Archi
@@ -121,7 +121,7 @@ export default function LandingProblemSection() {
           className="text-[22px] md:text-[26px] font-extrabold tracking-tight"
           style={{ color: PAIPERS_COLORS.textPrimary }}
         >
-          Avec Paipers, tout se retrouve au même endroit.
+          Avec Plaidoc, tout se retrouve au même endroit.
         </h3>
         <p className="mt-3 leading-relaxed paipers-text-muted">
           Une seule application pour centraliser, comprendre, suivre et agir.

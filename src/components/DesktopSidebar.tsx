@@ -35,10 +35,10 @@ export default function DesktopSidebar() {
       }}
     >
       <div className="px-4 pt-5 pb-4 shrink-0">
-        <Link href="/" className="inline-flex items-center" title="Site Paipers">
+        <Link href="/" className="inline-flex items-center" title="Site Plaidoc">
           <img
             src={NAV_ASSETS.logo}
-            alt="Paipers"
+            alt="Plaidoc"
             className="paipers-brand-logo h-12 w-auto"
           />
         </Link>
