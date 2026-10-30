@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     "Comment supprimer ton compte Plaidoc et toutes tes données : depuis l'application ou par e-mail.",
 };
 
-const CONTACT_EMAIL = "contact@paipers.fr";
+const CONTACT_EMAIL = "contact@plaidoc.fr";
 
 const card: React.CSSProperties = {
   background: "#fff",
