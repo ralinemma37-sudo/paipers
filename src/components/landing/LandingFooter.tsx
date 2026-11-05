@@ -51,7 +51,10 @@ export default function LandingFooter() {
           <div className="flex flex-col gap-2">
             <p className="font-extrabold">Légal</p>
             <Link href="/legal/cgu" style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
-              CGU
+              CGU / CGV
+            </Link>
+            <Link href="/legal/mentions-legales" style={{ color: DESKTOP_SURFACES.onDarkMuted, textDecoration: "none" }}>
+              Mentions légales
             </Link>
             <Link
               href="/legal/politique-confidentialite"
@@ -69,8 +72,7 @@ export default function LandingFooter() {
         className="mx-auto mt-10 text-xs"
         style={{ maxWidth: 1120, color: DESKTOP_SURFACES.onDarkSoft }}
       >
-        © {new Date().getFullYear()} Plaidoc. Mentions éditeur en cours de
-        finalisation — voir les pages légales.
+        © {new Date().getFullYear()} PLAIDOC SAS — 132 446 089 RCS Ajaccio. Tous droits réservés.
       </p>
     </footer>
   );

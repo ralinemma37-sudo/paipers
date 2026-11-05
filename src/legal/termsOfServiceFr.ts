@@ -1,120 +1,124 @@
 /**
- * Conditions générales d’utilisation (CGU) — MVP français.
- * À faire valider par un juriste (responsabilité, médiation, consommateurs, B2B).
+ * Conditions générales d’utilisation et de vente (CGU/CGV) de Plaidoc.
+ * 05/11/2026 : éditeur = SAS PLAIDOC ; ajout des conditions de vente des abonnements (tarifs du 18/10, essai,
+ * achat Apple/Google ou sur le site, rétractation, résiliation, parrainage).
  */
-import { getPublisherPlaceholdersForDisplay } from "@/legal/publisherPlaceholdersFr";
+import { PUBLISHER_IDENTITY_FR, PUBLISHER_PLACEHOLDERS_FR as P } from "@/legal/publisherPlaceholdersFr";
 
-export const TERMS_LAST_UPDATED = "20 mai 2026";
+export const TERMS_LAST_UPDATED = "5 novembre 2026";
+export const TERMS_TITLE_FR = "Conditions générales d’utilisation et de vente";
 
 export type LegalSection = { title: string; paragraphs: string[] };
 
-const P = getPublisherPlaceholdersForDisplay();
-
 export const termsOfServiceSectionsFr: LegalSection[] = [
   {
-    title: "1. Objet",
+    title: "1. Qui sommes-nous et à quoi servent ces conditions",
     paragraphs: [
-      "Les présentes conditions générales d’utilisation (« CGU ») régissent l’accès et l’utilisation de l’application mobile Plaidoc et des services associés proposés par " +
-        P.denomination +
-        " (« nous », « l’éditeur »).",
-      "En créant un compte ou en utilisant le service, vous acceptez sans réserve les présentes CGU. Si vous n’y consentez pas, vous ne devez pas utiliser Plaidoc.",
+      "Plaidoc est un service édité par " + PUBLISHER_IDENTITY_FR + " (« PLAIDOC », « nous »). Contact : " + P.contactEmail + ".",
+      "Les présentes conditions générales d’utilisation et de vente (« Conditions ») s’appliquent à l’utilisation de l’application Plaidoc (iPhone, Android et web) et du site plaidoc.fr, ainsi qu’à la souscription des abonnements payants.",
+      "En créant un compte, vous acceptez les présentes Conditions. Si vous ne les acceptez pas, n’utilisez pas Plaidoc.",
     ],
   },
   {
-    title: "2. Description du service",
+    title: "2. Le service",
     paragraphs: [
-      "Plaidoc permet notamment de stocker, organiser et consulter des documents numériques, d’utiliser un assistant conversationnel basé sur l’intelligence artificielle, d’analyser ou générer des contenus, de signer des documents, d’importer des pièces jointes via une connexion e-mail facultative, et — selon l’offre souscrite — de gérer un espace Famille (Premium) ou un espace Professionnel (Pro) avec facturation, contacts et collaborateurs.",
-      "Le service est fourni « en l’état » dans le cadre d’un MVP ; des interruptions, évolutions ou limitations de fonctionnalités peuvent survenir. Nous visons une disponibilité raisonnable sans garantie de performance absolue.",
+      "Plaidoc vous aide à gérer vos papiers : stocker, ranger et retrouver vos documents ; recevoir des rappels d’échéances ; utiliser Archi, l’assistant fondé sur l’intelligence artificielle, pour comprendre un document, préparer un courrier ou une démarche ; signer et remplir des documents ; importer les pièces jointes de votre boîte mail si vous la connectez ; et, avec l’offre Pro, gérer un espace Professionnel (factures, clients, contacts, collaborateurs).",
+      "Nous faisons évoluer le service régulièrement. Nous faisons le nécessaire pour qu’il soit disponible et fiable, sans pouvoir garantir l’absence totale d’interruption, notamment pendant les opérations de maintenance.",
     ],
   },
   {
-    title: "3. Espaces partagés, invitations et rôles",
+    title: "3. Votre compte",
     paragraphs: [
-      "Un compte utilisateur correspond à une personne identifiée par son adresse e-mail. L’utilisateur peut travailler dans un espace Personnel et, le cas échéant, dans un ou plusieurs espaces Famille ou Professionnel auxquels il a été admis ou qu’il gère en tant que propriétaire.",
-      "Le propriétaire d’un espace partagé est responsable des invitations qu’il envoie et des membres qu’il autorise. Il ne doit inviter que des personnes ayant un lien légitime avec l’espace (foyer, activité professionnelle) et ne partager que des contenus qu’il est autorisé à communiquer.",
-      "Une personne invitée peut accepter ou refuser une invitation. Les membres non propriétaires peuvent quitter l’espace. Le propriétaire peut retirer un membre ou annuler une invitation selon les fonctionnalités proposées dans l’application.",
-      "L’accès aux documents et fonctionnalités au sein d’un espace partagé dépend du rôle attribué (ex. membre, lecture seule, collaborateur). Plaidoc ne garantit pas une disponibilité permanente d’un espace si l’offre du propriétaire expire ou si le compte du propriétaire est suspendu.",
-      "Les membres invités à un espace Famille ou Professionnel n’ont pas, en principe, à souscrire individuellement le même abonnement que le propriétaire pour rejoindre cet espace, dans les limites de l’offre en vigueur au moment de l’invitation.",
+      "Le service est réservé aux personnes âgées d’au moins 15 ans. Vous devez fournir des informations exactes et garder votre mot de passe secret. Toute action faite depuis votre compte est présumée faite par vous ; prévenez-nous sans délai en cas d’utilisation non autorisée.",
+      "Vous pouvez supprimer votre compte à tout moment depuis Profil › Confidentialité et légal. La suppression efface vos documents et vos données dans les conditions décrites dans la politique de confidentialité. Supprimer le compte ne résilie pas un abonnement souscrit auprès d’Apple ou de Google : pensez à le résilier aussi (article 9).",
     ],
   },
   {
-    title: "4. Offre Pro et espace Professionnel",
+    title: "4. Espace Professionnel et espaces partagés",
     paragraphs: [
-      "L’offre Pro donne accès à l’espace Professionnel : documents et outils liés à une activité (factures, contacts d’entité, tableau de bord, etc., selon les versions). L’utilisateur Pro reste seul responsable de la conformité de ses documents professionnels (facturation, conservation légale, mentions obligatoires).",
-      "Plaidoc fournit des outils d’aide et d’organisation ; il ne se substitue pas à un expert-comptable, avocat ou conseiller fiscal sauf accord écrit spécifique.",
-      "L’essai Pro ou les modes démo n’engagent pas de paiement réel tant qu’aucun abonnement payant n’est souscrit via les canaux officiels prévus.",
+      "L’offre Pro donne accès à un espace Professionnel, séparé de votre espace Personnel. Vous restez seul responsable de la conformité de vos documents professionnels (mentions obligatoires des factures, conservation légale, déclarations).",
+      "Le titulaire d’un espace Professionnel peut y inviter des collaborateurs. Il n’invite que des personnes qui ont un lien légitime avec son activité et ne partage que des documents qu’il a le droit de communiquer. L’accès de chaque membre dépend du rôle que le titulaire lui donne. Les membres invités n’ont pas besoin de souscrire eux-mêmes l’offre Pro pour rejoindre l’espace.",
+      "Si l’abonnement du titulaire prend fin, l’accès des membres à l’espace peut être limité.",
     ],
   },
   {
-    title: "5. Compte utilisateur",
+    title: "5. Archi et l’intelligence artificielle",
     paragraphs: [
-      "Vous devez fournir des informations exactes et maintenir la confidentialité de vos identifiants. Toute activité réalisée depuis votre compte est présumée effectuée par vous.",
-      "Vous devez nous informer sans délai de toute utilisation non autorisée. Nous pouvons suspendre ou clôturer un compte en cas de violation des présentes CGU ou de risque pour la sécurité.",
+      "Archi utilise l’intelligence artificielle pour lire vos documents, proposer un rangement, répondre à vos questions et préparer des brouillons. Il ne travaille que dans l’espace que vous avez choisi (Personnel ou Professionnel).",
+      "Les réponses d’Archi peuvent contenir des erreurs. Elles sont une aide et ne remplacent pas l’avis d’un avocat, d’un expert-comptable, d’un médecin ou de l’administration. Relisez toujours un courrier, une déclaration, un contrat ou une facture avant de l’envoyer : vous restez responsable de ce que vous envoyez.",
+      "Le détail des données transmises à l’intelligence artificielle figure dans l’écran « Assistant IA » et dans la politique de confidentialité.",
     ],
   },
   {
     title: "6. Utilisations interdites",
     paragraphs: [
-      "Il est interdit d’utiliser Plaidoc : pour des activités illégales, frauduleuses ou portant atteinte aux droits de tiers ; pour stocker ou diffuser des contenus illicites, haineux, violents ou pornographiques non autorisés ; pour tenter de contourner les mesures de sécurité, d’accéder à des comptes tiers ou de surcharger les infrastructures ; pour revendre ou louer l’accès au service sans accord écrit.",
-      "L’éditeur peut retirer tout contenu ou suspendre tout compte manifestement contraire à ces règles, sans préjudice d’éventuelles poursuites.",
+      "Il est interdit d’utiliser Plaidoc pour une activité illégale ou frauduleuse ; pour stocker ou diffuser des contenus illicites ou portant atteinte aux droits d’autrui ; pour fabriquer de faux documents ; pour tenter d’accéder au compte d’une autre personne, de contourner la sécurité ou de surcharger le service ; ou pour revendre l’accès au service sans notre accord écrit.",
+      "En cas de manquement grave, nous pouvons suspendre ou fermer le compte concerné, après vous avoir prévenu lorsque c’est possible.",
     ],
   },
   {
-    title: "7. Contenus et propriété intellectuelle",
+    title: "7. Vos documents et nos droits",
     paragraphs: [
-      "Vous conservez les droits sur les contenus que vous déposez dans Plaidoc. Vous nous accordez une licence limitée, non exclusive, mondiale et gratuite pour héberger, sauvegarder, afficher, traiter et reproduire techniquement ces contenus uniquement pour fournir le service et améliorer sa fiabilité (sauvegardes, sécurité).",
-      "Les éléments de l’application (marque, design, code, textes hors contenus utilisateurs) restent la propriété de l’éditeur ou de ses concédants. Aucune licence n’est accordée sur ces éléments sauf droit d’utilisation personnelle du service.",
+      "Vos documents restent les vôtres. Vous nous autorisez seulement à les héberger, les sauvegarder, les afficher et les traiter dans la mesure nécessaire pour vous fournir le service. Nous ne les vendons pas et ne les utilisons pas à des fins publicitaires.",
+      "La marque Plaidoc, l’application, le site et leur contenu appartiennent à PLAIDOC. Votre abonnement vous donne un droit personnel d’utiliser le service, sans autre droit sur ces éléments.",
     ],
   },
   {
-    title: "8. Assistant IA et intelligence artificielle",
+    title: "8. Offres et prix",
     paragraphs: [
-      "L’assistant Plaidoc utilise des technologies d’IA pour comprendre vos demandes et proposer des actions ou réponses. Il fonctionne dans le cadre de l’espace actif que vous avez choisi et selon les limites de votre offre.",
-      "Les sorties générées (textes, suggestions, classements, brouillons) sont fournies à titre indicatif. Vous restez seul responsable de l’usage que vous en faites, notamment pour les courriers officiels, déclarations, contrats, factures ou pièces transmises à des tiers.",
-      "Il est interdit d’utiliser l’assistant pour générer des contenus illicites, trompeurs ou portant atteinte aux droits de tiers. Ne transmettez pas de données excessivement sensibles si ce n’est pas nécessaire à votre demande.",
-      "Pour le détail des données traitées : écran « Assistant IA » dans Confidentialité et légal.",
+      "Plaidoc propose deux abonnements mensuels : Personnel, à 6,99 € par mois, et Pro, à 29,99 € par mois. L’abonnement Pro comprend aussi l’espace Personnel. Les prix sont indiqués toutes taxes comprises (" + P.tva + ").",
+      "Essai gratuit : 7 jours pour l’offre Personnel et 14 jours pour l’offre Pro, une seule fois par personne. Aucun paiement n’est prélevé pendant l’essai. Si vous ne résiliez pas avant la fin de l’essai, l’abonnement commence et le premier mois est facturé à la fin de l’essai. Pendant l’essai, l’appli vous rappelle sa date de fin.",
+      "Parrainage : lorsqu’une personne que vous avez parrainée paie son premier mois d’abonnement, vous recevez chacun un mois gratuit. Le mois offert ne peut pas être échangé contre de l’argent.",
+      "Le prix applicable est celui affiché au moment de la souscription. Nous pouvons faire évoluer nos prix ; nous vous prévenons au moins 30 jours à l’avance, et vous pouvez résilier avant que le nouveau prix s’applique.",
     ],
   },
   {
-    title: "9. Tarification et évolution",
+    title: "9. Souscription, paiement et résiliation",
     paragraphs: [
-      "Certaines fonctionnalités peuvent être gratuites ou payantes selon les offres publiées. Toute évolution tarifaire substantielle pourra être notifiée conformément à la réglementation applicable (notamment pour les consommateurs).",
-      "« À compléter : modalités d’abonnement, essai gratuit, facturation, remboursement selon votre modèle économique réel. »",
+      "Achat dans l’application iPhone ou Android : l’abonnement est vendu et encaissé par Apple (App Store) ou Google (Google Play), selon leurs propres conditions. Le paiement est débité sur votre compte Apple ou Google. Pour résilier, ouvrez les réglages d’abonnement de votre téléphone (le bouton « Gérer mon abonnement » dans Profil › Abonnement vous y conduit). Les demandes de remboursement de ces achats se font auprès d’Apple ou de Google.",
+      "Achat sur le site plaidoc.fr : l’abonnement est vendu par PLAIDOC et payé par carte bancaire via notre prestataire de paiement sécurisé Stripe. Vous pouvez résilier à tout moment, en quelques clics, depuis Profil › Abonnement ; une confirmation vous est envoyée par e-mail.",
+      "Dans tous les cas, l’abonnement se renouvelle automatiquement chaque mois jusqu’à sa résiliation. La résiliation prend effet à la fin du mois en cours, déjà payé : vous gardez l’accès jusqu’à cette date, et aucun nouveau paiement n’est prélevé. Le mois commencé n’est pas remboursé, sauf droit de rétractation (article 10).",
+      "Si un paiement échoue, l’accès aux fonctions payantes peut être suspendu jusqu’à régularisation. Vos documents restent consultables et téléchargeables.",
     ],
   },
   {
-    title: "10. Durée et résiliation",
+    title: "10. Droit de rétractation (consommateurs)",
     paragraphs: [
-      "Les CGU s’appliquent pendant toute la durée d’utilisation du service. Vous pouvez cesser d’utiliser Plaidoc et supprimer votre compte depuis les Paramètres de l’application ; la suppression entraîne l’effacement des données associées dans les limites décrites dans la politique de confidentialité.",
-      "Nous pouvons résilier ou suspendre l’accès au service en cas de manquement grave, après notification lorsque cela est possible.",
+      "Si vous êtes un consommateur, vous disposez d’un délai de 14 jours à compter de la souscription pour vous rétracter, sans avoir à donner de motif (articles L. 221-18 et suivants du Code de la consommation). Pendant l’essai gratuit, il vous suffit de résilier : rien n’est prélevé.",
+      "Pour un abonnement acheté sur le site, écrivez à " + P.contactEmail + " ou utilisez le bouton de résiliation. Si vous avez demandé à utiliser le service payant avant la fin du délai, le montant correspondant à la période déjà utilisée reste dû (article L. 221-25) ; le reste vous est remboursé sous 14 jours. Pour un achat fait auprès d’Apple ou de Google, la demande se fait auprès d’eux.",
     ],
   },
   {
-    title: "11. Responsabilité",
+    title: "11. Données personnelles",
     paragraphs: [
-      "Dans les limites autorisées par la loi, la responsabilité de l’éditeur ne saurait être engagée pour les dommages indirects, perte de données due à une négligence de l’utilisateur, ou indisponibilités indépendantes de notre volonté.",
-      "Pour les consommateurs, les dispositions impératives du Code de la consommation et du Code civil demeurent applicables.",
+      "Nous traitons vos données personnelles conformément au RGPD, comme expliqué dans la politique de confidentialité, accessible dans Profil › Confidentialité et légal et sur plaidoc.fr.",
     ],
   },
   {
-    title: "12. Droit applicable et litiges",
+    title: "12. Responsabilité",
     paragraphs: [
-      "Les présentes CGU sont régies par le droit français, sous réserve des dispositions impératives du pays de résidence des consommateurs.",
-      "En cas de litige, vous pouvez recourir à une médiation de la consommation ou à toute voie de recours prévue par la loi. « À compléter : coordonnées médiateur si vous y êtes tenu après seuils légaux. »",
-      "Tribunaux compétents : « À compléter : tribunal compétent en l’absence de règle impérative contraire. »",
+      "Nous mettons en œuvre des moyens sérieux pour assurer la sécurité et le bon fonctionnement du service. Nous ne sommes pas responsables des dommages indirects, des conséquences d’une réponse d’Archi utilisée sans vérification, ni des indisponibilités dues à un cas de force majeure ou à un prestataire extérieur (opérateur, Apple, Google, messagerie).",
+      "Gardez une copie des documents importants. Rien dans ces Conditions ne limite les droits que vous accorde la loi si vous êtes un consommateur, notamment la garantie de conformité des contenus et services numériques (articles L. 224-25-12 et suivants du Code de la consommation).",
     ],
   },
   {
-    title: "12. Contact",
-    paragraphs: ["Pour toute question relative aux présentes CGU : " + P.contactEmail + " ou " + P.contactSupport + "."],
-  },
-  {
-    title: "14. Modifications des CGU",
+    title: "13. Réclamations, médiation et litiges",
     paragraphs: [
-      "Nous pouvons modifier les CGU ; la date de mise à jour sera indiquée en tête de document. La poursuite de l’utilisation après notification d’un changement substantiel vaut acceptation sauf si la loi impose une procédure spécifique (consommateurs).",
+      "Pour toute réclamation, écrivez d’abord à " + P.contactEmail + " : nous vous répondons et cherchons une solution amiable.",
+      "Si vous êtes un consommateur et que le désaccord persiste, vous pouvez recourir gratuitement à un médiateur de la consommation (articles L. 612-1 et suivants du Code de la consommation). Ses coordonnées vous sont communiquées sur simple demande à " + P.contactEmail + ".",
+      "Les présentes Conditions sont soumises au droit français. À défaut d’accord amiable, le litige est porté devant le tribunal compétent ; si vous êtes un consommateur, vous pouvez saisir le tribunal de votre domicile.",
     ],
+  },
+  {
+    title: "14. Modification des Conditions",
+    paragraphs: [
+      "Nous pouvons modifier ces Conditions pour suivre l’évolution du service ou de la loi. La date de mise à jour est indiquée en haut. En cas de changement important, nous vous prévenons dans l’application ou par e-mail avant son entrée en vigueur ; si vous refusez, vous pouvez résilier votre abonnement et supprimer votre compte.",
+    ],
+  },
+  {
+    title: "15. Contact",
+    paragraphs: ["Pour toute question : " + P.contactEmail + "."],
   },
 ];
 
-export const TERMS_DISCLAIMER_FR =
-  "Base rédigée pour un MVP : faites relire par un juriste (clauses de responsabilité, consommateurs, médiation, abonnements, garanties).";
+export const TERMS_DISCLAIMER_FR = "Une question sur ces conditions : contact@plaidoc.fr.";

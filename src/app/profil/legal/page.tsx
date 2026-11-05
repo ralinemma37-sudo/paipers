@@ -22,8 +22,8 @@ const ROWS: {
     href: "/legal/politique-confidentialite",
   },
   {
-    title: "Conditions générales (CGU)",
-    desc: "Assistant, Pro, Famille, responsabilités.",
+    title: "Conditions générales (CGU/CGV)",
+    desc: "Abonnements, Archi, Pro, responsabilités.",
     href: "/legal/cgu",
   },
   {
@@ -33,7 +33,7 @@ const ROWS: {
   },
   {
     title: "Espaces partagés",
-    desc: "Famille (Premium), Pro : membres, invitations.",
+    desc: "Espace Pro : membres, invitations.",
     href: null,
   },
   {
@@ -44,7 +44,7 @@ const ROWS: {
   {
     title: "Mentions légales",
     desc: "Éditeur, hébergement, propriété intellectuelle.",
-    href: null,
+    href: "/legal/mentions-legales",
   },
 ];
 
