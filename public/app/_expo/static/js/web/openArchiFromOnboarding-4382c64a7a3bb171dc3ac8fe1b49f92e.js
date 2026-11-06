@@ -1,0 +1,3 @@
+var _sentryDebugIds,_sentryDebugIdIdentifier;void 0===_sentryDebugIds&&(_sentryDebugIds={});try{var stack=(new Error).stack;stack&&(_sentryDebugIds[stack]="0447fb0b-ffe2-4f9b-9517-2643abd1f0b7",_sentryDebugIdIdentifier="sentry-dbid-0447fb0b-ffe2-4f9b-9517-2643abd1f0b7")}catch(e){}
+var SENTRY_RELEASE;SENTRY_RELEASE={name: "Plaidoc", version: "1.0.0"};
+__d(function(g,r,i,a,m,e,d){"use strict";Object.defineProperty(e,'__esModule',{value:!0}),e.openArchiFromOnboarding=function(n){t.router.replace("/(tabs)/assistant")};var t=r(d[0])},5075,[591]);
