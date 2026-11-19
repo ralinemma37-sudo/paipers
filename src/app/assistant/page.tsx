@@ -21,6 +21,7 @@ import AssistantComposer, {
 import AssistantMascot from "@/components/assistant/AssistantMascot";
 import AssistantDocumentPicker from "@/components/assistant/AssistantDocumentPicker";
 import { invokeAdminChat, type AdminChatResult } from "@/lib/adminChat";
+import { webAdminChatSpaceState } from "@/lib/adminChatSpace";
 import { computeAdminScore } from "@/lib/adminScore";
 import {
   assistantOutOfScopeReplyText,
@@ -65,7 +66,7 @@ function mapHelpHref(href: string): string | null {
 }
 
 export default function AssistantPage() {
-  const { showProTabs, loaded: spaceLoaded } = useNavSpace();
+  const { showProTabs, loaded: spaceLoaded, confirmedScope } = useNavSpace();
   const isProMode = showProTabs;
 
   const [firstName, setFirstName] = useState("toi");
@@ -242,6 +243,8 @@ export default function AssistantPage() {
       const result: AdminChatResult = await invokeAdminChat({
         message: userText,
         documentId: attachedId,
+        // Lot « espace actif » : jamais le Perso par défaut, seulement l'espace confirmé.
+        spaceState: webAdminChatSpaceState({ loaded: spaceLoaded, confirmedScope }),
       });
       appendAssistant({
         text: result.answer,

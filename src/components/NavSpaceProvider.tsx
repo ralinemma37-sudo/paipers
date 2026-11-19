@@ -31,6 +31,11 @@ import {
 
 type NavSpaceContextValue = {
   space: NavSpace;
+  /**
+   * Lot « espace actif » : espace réellement confirmé (valeur mémorisée valide ou choix de la personne).
+   * null tant que rien n'est confirmé : le Perso affiché par défaut ne vaut pas confirmation.
+   */
+  confirmedScope: "personal" | "pro" | "family" | null;
   spaceLabel: string;
   showProTabs: boolean;
   tabs: NavTab[];
@@ -51,13 +56,17 @@ export function NavSpaceProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [space, setSpaceState] = useState<NavSpace>("personal");
+  const [confirmedScope, setConfirmedScope] = useState<"personal" | "pro" | "family" | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     try {
-      setSpaceState(scopeToNavSpace(localStorage.getItem(NAV_SCOPE_STORAGE_KEY)));
+      const raw = localStorage.getItem(NAV_SCOPE_STORAGE_KEY);
+      setSpaceState(scopeToNavSpace(raw));
+      setConfirmedScope(raw === "personal" || raw === "pro" || raw === "family" ? raw : null);
     } catch {
       setSpaceState("personal");
+      setConfirmedScope(null);
     }
     setLoaded(true);
   }, []);
@@ -65,6 +74,7 @@ export function NavSpaceProvider({ children }: { children: ReactNode }) {
   const setSpace = useCallback(
     (next: NavSpace) => {
       setSpaceState(next);
+      setConfirmedScope(next);
       try {
         localStorage.setItem(NAV_SCOPE_STORAGE_KEY, next);
       } catch {
@@ -81,6 +91,7 @@ export function NavSpaceProvider({ children }: { children: ReactNode }) {
   const value = useMemo<NavSpaceContextValue>(
     () => ({
       space,
+      confirmedScope,
       spaceLabel: NAV_SPACE_LABELS[space],
       showProTabs: space === "pro",
       tabs: getVisibleTabs(space),
@@ -88,7 +99,7 @@ export function NavSpaceProvider({ children }: { children: ReactNode }) {
       loaded,
       setSpace,
     }),
-    [space, loaded, setSpace],
+    [space, confirmedScope, loaded, setSpace],
   );
 
   return (

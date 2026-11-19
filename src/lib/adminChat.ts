@@ -9,6 +9,11 @@ import {
   sanitizeAssistantReply,
   userMessageForFunctionsInvokeError,
 } from "@/lib/assistantScopeGuard";
+import {
+  finalizeWebAdminChatReply,
+  sendWebAdminChatGuarded,
+  type WebAdminChatSpaceState,
+} from "@/lib/adminChatSpace";
 
 export type AssistantExternalAction = {
   label: string;
@@ -93,13 +98,20 @@ function parsePayload(data: Record<string, unknown>) {
 export async function invokeAdminChat(input: {
   message: string;
   documentId?: string;
+  /** Lot « espace actif » : espace confirmé par NavSpaceProvider (voir webAdminChatSpaceState). */
+  spaceState: WebAdminChatSpaceState;
 }): Promise<AdminChatResult> {
-  const { data, error } = await supabase.functions.invoke("admin-chat", {
-    body: {
-      message: input.message,
-      ...(input.documentId ? { document_id: input.documentId } : {}),
-    },
+  // Espace pas confirmé : pièce jointe / recherche documentaire / parcours incertain → message local, sans requête.
+  const guarded = await sendWebAdminChatGuarded({
+    message: input.message,
+    documentId: input.documentId,
+    state: input.spaceState,
+    invoke: (body) => supabase.functions.invoke("admin-chat", { body }),
   });
+  if (guarded.kind === "blocked") {
+    return { answer: guarded.text, documentIds: [], externalActions: [], sources: [], helpActions: [] };
+  }
+  const { data, error } = guarded;
 
   if (error) {
     throw new Error(userMessageForFunctionsInvokeError(error));
@@ -119,8 +131,14 @@ export async function invokeAdminChat(input: {
   }
 
   const parsed = parsePayload(payload);
-  return {
-    answer: sanitizeAssistantReply(payload.answer),
-    ...parsed,
-  };
+  // Recherche fermée par le nouveau serveur → message web ; liens vers les pièces seulement si le serveur
+  // confirme l'espace envoyé (comme l'appli mobile).
+  const reply = finalizeWebAdminChatReply({
+    payload,
+    state: input.spaceState,
+    sentSpace: guarded.sentSpace,
+    serverAnswer: sanitizeAssistantReply(payload.answer),
+    documentIds: parsed.documentIds,
+  });
+  return { ...parsed, answer: reply.answer, documentIds: reply.documentIds };
 }
