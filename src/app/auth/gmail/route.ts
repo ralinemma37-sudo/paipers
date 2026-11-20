@@ -1,11 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
-
 /**
- * Point d’entrée mobile : /auth/gmail?user_id=…&platform=mobile&account_scope=personal
- * → /auth/gmail/open (référence alignée sur Outlook).
+ * SEC-1C phase 0 — verrou OAuth : entrée Gmail.
+ * Ancien parcours (/auth/gmail?user_id=…) refusé : réponse 410, page neutre, aucune redirection, aucun appel, aucune écriture.
+ * La requête n'est pas lue (aucun user_id, state ni code utilisé). Voir src/lib/server/oauth/legacyRefusal.ts.
  */
-export async function GET(req: NextRequest) {
-  const dest = req.nextUrl.clone();
-  dest.pathname = "/auth/gmail/open";
-  return NextResponse.redirect(dest);
+import { legacyOAuthRefusalResponse } from "@/lib/server/oauth/legacyRefusal";
+
+export async function GET() {
+  return legacyOAuthRefusalResponse("gmail");
 }

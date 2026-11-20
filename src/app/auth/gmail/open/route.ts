@@ -1,43 +1,10 @@
-import { parseAccountScope } from "../../../../lib/accountScope";
-import { resolveGmailOAuthEnv } from "../../../../lib/gmailOAuthEnv";
-import { GMAIL_SCOPES } from "../../../../lib/gmailScopes";
-import { encodeOAuthState } from "../../../../lib/oauthState";
-import { NextRequest, NextResponse } from "next/server";
-
 /**
- * Démarre le flux OAuth Google (Gmail).
- * Query : user_id (obligatoire), platform, account_scope.
- * access_type=offline + prompt=consent → refresh_token à chaque reconnexion.
+ * SEC-1C phase 0 — verrou OAuth : ouverture Gmail.
+ * Ancien parcours (/auth/gmail/open?user_id=…) refusé : réponse 410, page neutre, aucune redirection, aucun appel, aucune écriture.
+ * La requête n'est pas lue (aucun user_id, state ni code utilisé). Voir src/lib/server/oauth/legacyRefusal.ts.
  */
-export async function GET(req: NextRequest) {
-  const userId = req.nextUrl.searchParams.get("user_id")?.trim();
-  const platform = req.nextUrl.searchParams.get("platform")?.trim() || "mobile";
-  const accountScope = parseAccountScope(req.nextUrl.searchParams.get("account_scope"));
+import { legacyOAuthRefusalResponse } from "@/lib/server/oauth/legacyRefusal";
 
-  if (!userId) {
-    return NextResponse.json({ error: "missing_user_id" }, { status: 400 });
-  }
-
-  const oauth = resolveGmailOAuthEnv();
-  if (!oauth.ok) {
-    return NextResponse.json(
-      { error: oauth.error, missing: oauth.missing },
-      { status: 500 }
-    );
-  }
-  const { clientId, redirectUri } = oauth;
-
-  const state = encodeOAuthState({ user_id: userId, platform, account_scope: accountScope });
-
-  const authorize = new URL("https://accounts.google.com/o/oauth2/v2/auth");
-  authorize.searchParams.set("client_id", clientId);
-  authorize.searchParams.set("response_type", "code");
-  authorize.searchParams.set("redirect_uri", redirectUri);
-  authorize.searchParams.set("scope", GMAIL_SCOPES.join(" "));
-  authorize.searchParams.set("access_type", "offline");
-  authorize.searchParams.set("prompt", "consent");
-  authorize.searchParams.set("include_granted_scopes", "true");
-  authorize.searchParams.set("state", state);
-
-  return NextResponse.redirect(authorize.toString());
+export async function GET() {
+  return legacyOAuthRefusalResponse("gmail");
 }
