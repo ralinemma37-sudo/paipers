@@ -1,17 +1,16 @@
-import { NextResponse } from "next/server";
+/**
+ * POST /api/classify-document — session obligatoire + quota (SEC-1).
+ * Logique : src/lib/server/routes/classifyDocumentRoute.ts
+ */
+import { defaultAuthDeps, quotaDepsFromServiceClient } from "@/lib/server/apiAuth";
 import { classifyDocumentWithOpenAI } from "@/lib/server/classifyWithOpenAI";
+import { handleClassifyDocument } from "@/lib/server/routes/classifyDocumentRoute";
+import { getServiceSupabase } from "@/lib/supabaseAdmin";
 
 export async function POST(req: Request) {
-  try {
-    const { fileName, extractedText } = await req.json();
-    const result = await classifyDocumentWithOpenAI({
-      fileName: fileName || "document",
-      extractedText: extractedText || "",
-    });
-    return NextResponse.json(result);
-  } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Erreur IA classification";
-    const status = message === "openai_not_configured" ? 503 : 500;
-    return NextResponse.json({ error: message }, { status });
-  }
+  return handleClassifyDocument(req, {
+    auth: defaultAuthDeps(),
+    quota: quotaDepsFromServiceClient(getServiceSupabase),
+    classify: classifyDocumentWithOpenAI,
+  });
 }
