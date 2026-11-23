@@ -1,40 +1,11 @@
-import { NextResponse } from "next/server";
+/**
+ * SEC-1C (complément, 23/11/2026) — verrou de l'ancienne entrée Gmail /api/gmail/auth.
+ * Ancien parcours : user_id libre mis dans un state non signé, puis redirection vers Google. Désormais refusé :
+ * réponse 410, page neutre, aucune redirection, aucun appel, aucune écriture. La requête n'est pas lue.
+ * Voir src/lib/server/oauth/legacyRefusal.ts et legacyApiKillswitch.verify.ts.
+ */
+import { legacyOAuthRefusalResponse } from "@/lib/server/oauth/legacyRefusal";
 
-export async function GET(req: Request) {
-  const url = new URL(req.url);
-
-  const platform = url.searchParams.get("platform") ?? "web";
-  const userId = url.searchParams.get("user_id") ?? "";
-
-  const clientId = process.env.GOOGLE_CLIENT_ID!;
-  const redirectUri =
-    process.env.GOOGLE_GMAIL_REDIRECT_URI ??
-    "https://paipers.vercel.app/api/gmail/callback";
-
-  const scope = [
-    "https://www.googleapis.com/auth/gmail.readonly",
-    "https://www.googleapis.com/auth/gmail.modify",
-  ].join(" ");
-
-  const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
-
-  authUrl.searchParams.set("client_id", clientId);
-  authUrl.searchParams.set("redirect_uri", redirectUri);
-  authUrl.searchParams.set("response_type", "code");
-  authUrl.searchParams.set("access_type", "offline");
-  authUrl.searchParams.set("prompt", "consent");
-  authUrl.searchParams.set("scope", scope);
-
-  // ✅ ON PASSE userId DANS LE STATE
-  authUrl.searchParams.set(
-    "state",
-    encodeURIComponent(
-      JSON.stringify({
-        platform,
-        userId,
-      })
-    )
-  );
-
-  return NextResponse.redirect(authUrl.toString());
+export async function GET() {
+  return legacyOAuthRefusalResponse("gmail");
 }

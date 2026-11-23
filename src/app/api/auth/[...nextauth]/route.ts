@@ -1,45 +1,15 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
+/**
+ * SEC-1C (complément, 23/11/2026) — verrou de NextAuth (/api/auth/*), connexion Google avec accès Gmail.
+ * Sans appelant (la connexion à Plaidoc passe par Supabase) ; elle fournissait la session utilisée par
+ * /api/google/save-connection. GET et POST sont refusés : réponse 410, page neutre, aucune redirection,
+ * aucun appel, aucun cookie. La requête n'est pas lue. Voir legacyApiKillswitch.verify.ts.
+ */
+import { legacyOAuthRefusalResponse } from "@/lib/server/oauth/legacyRefusal";
 
-export const authOptions: NextAuthOptions = {
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-      authorization: {
-        params: {
-          access_type: "offline",
-          prompt: "consent",
-          scope: [
-            "openid",
-            "email",
-            "profile",
-            "https://www.googleapis.com/auth/gmail.readonly",
-            "https://www.googleapis.com/auth/gmail.modify",
-          ].join(" "),
-        },
-      },
-    }),
-  ],
+export async function GET() {
+  return legacyOAuthRefusalResponse("gmail");
+}
 
-  callbacks: {
-    async jwt({ token, account, profile }) {
-      if (account) {
-        token.accessToken = account.access_token;
-        token.refreshToken = account.refresh_token; // ✅ important pour enregistrer en DB
-        token.expiresAt = account.expires_at ? account.expires_at * 1000 : null;
-        token.googleEmail = (profile as any)?.email ?? token.email;
-      }
-      return token;
-    },
-
-    async session({ session, token }) {
-      (session as any).accessToken = (token as any).accessToken;
-      (session.user as any).googleEmail = (token as any).googleEmail;
-      return session;
-    },
-  },
-};
-
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
+export async function POST() {
+  return legacyOAuthRefusalResponse("gmail");
+}
