@@ -1,17 +1,12 @@
-import { NextResponse } from "next/server";
-import { classifyDocumentWithOpenAI } from "@/lib/server/classifyWithOpenAI";
+/**
+ * SEC-A1/A2 (E13, 23/11/2026) — route désactivée : réponse 410 neutre.
+ * Ancien comportement : sans contrôle ; classait un texte libre avec OpenAI (seul appelant :
+ * process-new-document, désactivée).
+ * Aucun appelant actif dans le site, dans l'appli V2 (/app) ni dans les versions mobiles (audit E12).
+ * Le code d'origine reste dans l'historique Git. Voir src/lib/server/aiRoutesLockdown.verify.ts.
+ */
+import { legacyApiGoneResponse } from "@/lib/server/legacyApiGone";
 
-export async function POST(req: Request) {
-  try {
-    const { fileName, extractedText } = await req.json();
-    const result = await classifyDocumentWithOpenAI({
-      fileName: fileName || "document",
-      extractedText: extractedText || "",
-    });
-    return NextResponse.json(result);
-  } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "Erreur IA classification";
-    const status = message === "openai_not_configured" ? 503 : 500;
-    return NextResponse.json({ error: message }, { status });
-  }
+export async function POST() {
+  return legacyApiGoneResponse();
 }

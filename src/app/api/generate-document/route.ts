@@ -1,15 +1,41 @@
+/**
+ * Rédaction d'un document (secours de la page /generer/rediger-document quand la fonction Supabase échoue).
+ * SEC-A2 (E13, 23/11/2026) : session obligatoire (401), entrées bornées avant tout appel OpenAI (413),
+ * 503 si la clé est absente, erreurs internes jamais renvoyées. Réponse inchangée : { text }.
+ * Voir src/lib/server/aiRoutesLockdown.verify.ts.
+ */
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { requireWebUser } from "@/lib/server/requireWebUser";
+
+const GENERATE_TYPE_MAX = 200;
+const GENERATE_DETAILS_MAX = 8000;
+/** Corps brut maximal (les deux champs + JSON) : refus avant analyse. */
+const GENERATE_BODY_MAX = 20000;
 
 export async function POST(req: Request) {
-  try {
-    const { type, details } = await req.json();
+  const auth = await requireWebUser(req);
+  if ("response" in auth) return auth.response;
 
-    if (!type || !details) {
-      return NextResponse.json(
-        { error: "Missing parameters" },
-        { status: 400 }
-      );
+  try {
+    const raw = await req.text();
+    if (raw.length > GENERATE_BODY_MAX) {
+      return NextResponse.json({ error: "Demande trop longue." }, { status: 413 });
+    }
+
+    let body: unknown;
+    try {
+      body = JSON.parse(raw);
+    } catch {
+      return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
+    }
+    const { type, details } = (body ?? {}) as { type?: unknown; details?: unknown };
+
+    if (typeof type !== "string" || typeof details !== "string" || !type.trim() || !details.trim()) {
+      return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
+    }
+    if (type.length > GENERATE_TYPE_MAX || details.length > GENERATE_DETAILS_MAX) {
+      return NextResponse.json({ error: "Demande trop longue." }, { status: 413 });
     }
 
     const apiKey = process.env.OPENAI_API_KEY?.trim();
@@ -47,10 +73,8 @@ Ne fais aucun meta-commentaire.
 
     return NextResponse.json({ text });
 
-  } catch (e: any) {
-    return NextResponse.json(
-      { error: e.message || "Erreur IA" },
-      { status: 500 }
-    );
+  } catch {
+    // Jamais de message interne (OpenAI, réseau, clé) dans la réponse.
+    return NextResponse.json({ error: "Erreur IA" }, { status: 500 });
   }
 }

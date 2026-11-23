@@ -1,52 +1,11 @@
-import { NextResponse } from "next/server";
-import OpenAI from "openai";
+/**
+ * SEC-A1/A2 (E13, 23/11/2026) — route désactivée : réponse 410 neutre.
+ * Ancien comportement : sans contrôle ; envoyait une adresse de fichier libre à OpenAI.
+ * Aucun appelant actif dans le site, dans l'appli V2 (/app) ni dans les versions mobiles (audit E12).
+ * Le code d'origine reste dans l'historique Git. Voir src/lib/server/aiRoutesLockdown.verify.ts.
+ */
+import { legacyApiGoneResponse } from "@/lib/server/legacyApiGone";
 
-export async function POST(req: Request) {
-  try {
-    const { fileUrl } = await req.json();
-
-    if (!fileUrl) {
-      return NextResponse.json(
-        { error: "Missing fileUrl" },
-        { status: 400 }
-      );
-    }
-
-    const client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY!,
-    });
-
-    const prompt = `
-      Voici un document PDF.
-      Extrais tout le texte utile de façon brute, sans résumé.
-    `;
-
-    const completion = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "text", text: prompt } as any,
-            {
-              type: "input_resource",
-              resource: { file_url: fileUrl },
-            } as any,
-          ],
-        },
-      ],
-    });
-
-    const extracted =
-      (completion.choices?.[0]?.message?.content?.[0] as any)?.text || "";
-
-    return NextResponse.json({ extractedText: extracted });
-
-  } catch (e: any) {
-    console.error("❌ OCR ERROR", e);
-    return NextResponse.json(
-      { error: e.message },
-      { status: 500 }
-    );
-  }
+export async function POST() {
+  return legacyApiGoneResponse();
 }

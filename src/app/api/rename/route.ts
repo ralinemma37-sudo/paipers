@@ -1,43 +1,11 @@
-import { NextResponse } from "next/server";
-import OpenAI from "openai";
+/**
+ * SEC-A1/A2 (E13, 23/11/2026) — route désactivée : réponse 410 neutre.
+ * Ancien comportement : sans contrôle ; envoyait un nom de fichier et un texte libres à OpenAI.
+ * Aucun appelant actif dans le site, dans l'appli V2 (/app) ni dans les versions mobiles (audit E12).
+ * Le code d'origine reste dans l'historique Git. Voir src/lib/server/aiRoutesLockdown.verify.ts.
+ */
+import { legacyApiGoneResponse } from "@/lib/server/legacyApiGone";
 
-export async function POST(req: Request) {
-  try {
-    const { fileName, extractedText } = await req.json();
-
-    const client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY!,
-    });
-
-    const prompt = `
-      Tu dois générer un titre clair, professionnel et court
-      pour un document administratif français.
-
-      Nom du fichier :
-      "${fileName}"
-
-      Texte extrait :
-      "${extractedText || "Aucun texte"}"
-
-      Si c'est un bulletin de salaire :
-      → Format recommandé :
-      "Bulletin de salaire – Mois Année – Nom Prénom"
-
-      Réponds uniquement par le titre, sans extension.
-    `;
-
-    const result = await client.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [{ role: "user", content: prompt }],
-    });
-
-    const title = result.choices[0].message?.content?.trim() || fileName;
-    return NextResponse.json({ title });
-
-  } catch (e: any) {
-    return NextResponse.json(
-      { error: e.message },
-      { status: 500 }
-    );
-  }
+export async function POST() {
+  return legacyApiGoneResponse();
 }

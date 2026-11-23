@@ -1,92 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
-import OpenAI from "openai";
-
 /**
- * Client OpenAI créé à la requête (pas au chargement du module) pour que
- * `next build` réussisse sans OPENAI_API_KEY en environnement CI.
- * Comportement IA inchangé lorsque la clé est présente.
+ * SEC-A1/A2 (E13, 23/11/2026) — route désactivée : réponse 410 neutre.
+ * Ancien comportement : sans contrôle ; téléchargeait un fichier du stockage et l'envoyait en entier à
+ * OpenAI. La V2 utilise la fonction Supabase analyze-document, pas cette route.
+ * Aucun appelant actif dans le site, dans l'appli V2 (/app) ni dans les versions mobiles (audit E12).
+ * Le code d'origine reste dans l'historique Git. Voir src/lib/server/aiRoutesLockdown.verify.ts.
  */
-function getOpenAIClient(): OpenAI | null {
-  const apiKey = process.env.OPENAI_API_KEY?.trim();
-  if (!apiKey) return null;
-  return new OpenAI({ apiKey });
-}
+import { legacyApiGoneResponse } from "@/lib/server/legacyApiGone";
 
-export async function POST(req: NextRequest) {
-  try {
-    const openai = getOpenAIClient();
-    if (!openai) {
-      return NextResponse.json(
-        {
-          error: "openai_not_configured",
-          userMessage:
-            "Analyse document indisponible : la clé OpenAI n’est pas configurée sur le serveur.",
-        },
-        { status: 503 },
-      );
-    }
-
-    const { filename, storage_path } = await req.json();
-
-    if (!filename || !storage_path) {
-      return NextResponse.json(
-        { error: "Missing filename or storage_path" },
-        { status: 400 },
-      );
-    }
-
-    const { data: fileData, error } = await supabase.storage
-      .from("documents")
-      .download(storage_path);
-
-    if (error || !fileData) {
-      console.error("SUPABASE DOWNLOAD ERROR:", error);
-      return NextResponse.json({ error: "File download failed" }, { status: 500 });
-    }
-
-    const buffer = Buffer.from(await fileData.arrayBuffer());
-    const base64PDF = buffer.toString("base64");
-
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content:
-            "Tu es un expert administratif. Analyse un document PDF donné en base64. " +
-            "Retourne STRICTEMENT un JSON avec: title, file_type, category, extracted_text, metadata.",
-        },
-        {
-          role: "user",
-          content:
-            "Voici un document PDF encodé en base64. Analyse-le et répond STRICTEMENT en JSON.\n\n" +
-            base64PDF,
-        },
-      ],
-      temperature: 0,
-    });
-
-    let raw = completion.choices[0].message.content?.trim() || "{}";
-    raw = raw.replace(/```json/g, "").replace(/```/g, "");
-
-    let json;
-    try {
-      json = JSON.parse(raw);
-    } catch {
-      json = {
-        title: filename,
-        file_type: "unknown",
-        category: "other",
-        extracted_text: raw,
-        metadata: {},
-      };
-    }
-
-    return NextResponse.json(json);
-  } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : "AI error";
-    console.error("AI ERROR:", e);
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
+export async function POST() {
+  return legacyApiGoneResponse();
 }
