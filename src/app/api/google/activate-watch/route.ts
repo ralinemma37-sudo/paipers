@@ -1,47 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+/**
+ * SEC-GMAIL-LEGACY (phase 2B, 24/11/2026) — route désactivée : réponse 410 neutre.
+ * Ancien comportement : sans authentification ; abonnait n'importe quelle boîte Gmail (jeton fourni) au sujet Pub/Sub du projet.
+ * Aucun appelant dans l'appli V2 (/app), l'appli iOS ni les fonctions Supabase (audit phase 2A).
+ * Le code d'origine reste dans l'historique Git. Voir src/lib/server/aiRoutesLockdown.verify.ts.
+ */
+import { legacyApiGoneResponse } from "@/lib/server/legacyApiGone";
 
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-
-    const { access_token } = body;
-
-    if (!access_token) {
-      return NextResponse.json(
-        { error: "Missing access_token" },
-        { status: 400 }
-      );
-    }
-
-    const topicName = "projects/paipers/topics/paipers-gmail";
-
-    const response = await fetch(
-      "https://gmail.googleapis.com/gmail/v1/users/me/watch",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          topicName,
-          labelIds: ["INBOX"],
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: data },
-        { status: response.status }
-      );
-    }
-
-    return NextResponse.json({ success: true, data });
-  } catch (e: any) {
-    console.error("WATCH ERROR CATCH:", e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
-  }
+export async function POST() {
+  return legacyApiGoneResponse();
 }

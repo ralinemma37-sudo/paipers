@@ -85,16 +85,27 @@ import * as rename from "@/app/api/rename/route";
 import * as classifyDocument from "@/app/api/classify-document/route";
 import * as processEmail from "@/app/api/google/process-email/route";
 import * as generateDocument from "@/app/api/generate-document/route";
+import * as gmailDownloadAttachment from "@/app/api/gmail/download-attachment/route";
+import * as gmailScan from "@/app/api/gmail/scan/route";
+import * as cronGmailScan from "@/app/api/cron/gmail-scan/route";
+import * as googleActivateWatch from "@/app/api/google/activate-watch/route";
+import * as documentsClassify from "@/app/api/documents/classify/route";
 
 type Handler = (req: Request) => Promise<Response>;
 
-const DISABLED: { file: string; path: string; mod: Record<string, unknown> }[] = [
+const DISABLED: { file: string; path: string; mod: Record<string, unknown>; method?: "GET" | "POST" }[] = [
   { file: "src/app/api/process-new-document/route.ts", path: "/api/process-new-document", mod: processNewDocument },
   { file: "src/app/api/ai/analyze-document/route.ts", path: "/api/ai/analyze-document", mod: analyzeDocument },
   { file: "src/app/api/read-pdf/route.ts", path: "/api/read-pdf", mod: readPdf },
   { file: "src/app/api/rename/route.ts", path: "/api/rename", mod: rename },
   { file: "src/app/api/classify-document/route.ts", path: "/api/classify-document", mod: classifyDocument },
   { file: "src/app/api/google/process-email/route.ts", path: "/api/google/process-email", mod: processEmail },
+  // SEC-GMAIL-LEGACY (phase 2B) — anciennes routes Gmail sans authentification et classification OpenAI.
+  { file: "src/app/api/gmail/download-attachment/route.ts", path: "/api/gmail/download-attachment", mod: gmailDownloadAttachment },
+  { file: "src/app/api/gmail/scan/route.ts", path: "/api/gmail/scan", mod: gmailScan },
+  { file: "src/app/api/cron/gmail-scan/route.ts", path: "/api/cron/gmail-scan", mod: cronGmailScan, method: "GET" },
+  { file: "src/app/api/google/activate-watch/route.ts", path: "/api/google/activate-watch", mod: googleActivateWatch },
+  { file: "src/app/api/documents/classify/route.ts", path: "/api/documents/classify", mod: documentsClassify },
 ];
 
 /** Cookie de session au format @supabase/ssr (sb-<ref>-auth-token = « base64- » + base64url(JSON)). */
@@ -143,13 +154,17 @@ const generate = generateDocument.POST as Handler;
 const tests: { name: string; fn: () => Promise<void> | void }[] = [];
 const test = (name: string, fn: () => Promise<void> | void) => tests.push({ name, fn });
 
-// T1 — les six routes désactivées : 410 neutre, aucun service appelé, corps non lu.
+// T1 — les onze routes désactivées : 410 neutre, aucun service appelé, corps non lu.
 for (const r of DISABLED) {
+  const method = r.method ?? "POST";
   test(`T1 ${r.path} : 410 { error: "gone" }, no-store, aucun appel, corps non lu`, async () => {
     resetCalls();
-    assert.deepEqual(Object.keys(r.mod).filter((k) => k !== "default").sort(), ["POST"], "méthodes exportées");
-    const req = post(r.path, { filename: "x.pdf", storage_path: `${USER_B}/x.pdf`, email: "b@exemple.invalid" });
-    const res = await (r.mod.POST as Handler)(req);
+    assert.deepEqual(Object.keys(r.mod).filter((k) => k !== "default").sort(), [method], "méthodes exportées");
+    const req =
+      method === "GET"
+        ? new Request(`https://app.exemple.invalid${r.path}?secret=fake-cron-secret`, { method: "GET" })
+        : post(r.path, { filename: "x.pdf", storage_path: `${USER_B}/x.pdf`, email: "b@exemple.invalid" });
+    const res = await (r.mod[method] as Handler)(req);
     assert.equal(res.status, 410);
     assert.equal(res.headers.get("cache-control"), "no-store");
     const text = await res.text();
@@ -174,6 +189,93 @@ test("T2 process-new-document, faux webhook sur le document d'un autre : 410, au
   assert.equal(res.status, 410);
   assert.equal(req.bodyUsed, false);
   assert.equal(calls.auth + calls.openai + calls.other.length, 0);
+});
+
+// T2b — SEC-GMAIL-LEGACY : charges d'attaque fictives (compte ou document d'un autre, jetons, cookie, JSON
+// invalide, corps énorme) → 410 identique, corps jamais lu, aucun service appelé, 5 répétitions sans effet.
+const GMAIL_ATTACKS: { path: string; mod: Record<string, unknown>; reqs: () => Request[] }[] = [
+  {
+    path: "/api/gmail/download-attachment",
+    mod: gmailDownloadAttachment,
+    reqs: () => [
+      post("/api/gmail/download-attachment", { documentId: "00000000-0000-4000-8000-00000000d0c1" }),
+      post(
+        "/api/gmail/download-attachment",
+        { documentId: "00000000-0000-4000-8000-00000000d0c1" },
+        sessionCookie(VALID_TOKEN, USER_A),
+      ),
+      post("/api/gmail/download-attachment", "pas du json"),
+      post("/api/gmail/download-attachment", { documentId: "x".repeat(100000) }),
+    ],
+  },
+  {
+    path: "/api/gmail/scan",
+    mod: gmailScan,
+    reqs: () => [
+      post("/api/gmail/scan", { userId: USER_B }),
+      post("/api/gmail/scan", { userId: USER_B }, sessionCookie(VALID_TOKEN, USER_A)),
+      post("/api/gmail/scan", {}),
+    ],
+  },
+  {
+    path: "/api/google/activate-watch",
+    mod: googleActivateWatch,
+    reqs: () => [
+      post("/api/google/activate-watch", { access_token: "fake-google-access-token" }),
+      post("/api/google/activate-watch", "pas du json"),
+    ],
+  },
+  {
+    path: "/api/documents/classify",
+    mod: documentsClassify,
+    reqs: () => [
+      new Request("https://app.exemple.invalid/api/documents/classify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", authorization: `Bearer ${VALID_TOKEN}` },
+        body: JSON.stringify({ documentIds: Array.from({ length: 30 }, (_, i) => `doc-${i}`) }),
+      }),
+    ],
+  },
+];
+for (const a of GMAIL_ATTACKS) {
+  test(`T2b ${a.path} : charges d'attaque → 410 identique, corps non lu, aucun appel, 5 répétitions`, async () => {
+    resetCalls();
+    const bodies = new Set<string>();
+    for (let i = 0; i < 5; i += 1) {
+      for (const req of a.reqs()) {
+        const res = await (a.mod.POST as Handler)(req);
+        assert.equal(res.status, 410);
+        assert.equal(req.bodyUsed, false, "le corps de la requête a été lu");
+        const text = await res.text();
+        assertNoLeak(text);
+        bodies.add(text);
+      }
+    }
+    assert.deepEqual([...bodies], [JSON.stringify({ error: "gone" })]);
+    assert.equal(calls.auth + calls.openai + calls.other.length, 0, "un service a été appelé");
+  });
+}
+test("T2b /api/cron/gmail-scan : avec ou sans secret, en-têtes divers → 410, aucun appel, secret non lu", async () => {
+  resetCalls();
+  const saved = process.env.CRON_SECRET;
+  process.env.CRON_SECRET = "fake-cron-secret";
+  try {
+    for (const q of ["", "?secret=fake-cron-secret", "?secret=mauvais", "?secret=" + "s".repeat(5000)]) {
+      const res = await (cronGmailScan.GET as Handler)(
+        new Request(`https://app.exemple.invalid/api/cron/gmail-scan${q}`, {
+          headers: { authorization: "Bearer fake-cron-secret", "x-vercel-cron": "1" },
+        }),
+      );
+      assert.equal(res.status, 410);
+      const text = await res.text();
+      assert.deepEqual(JSON.parse(text), { error: "gone" });
+      assert.ok(!text.includes("fake-cron-secret"));
+    }
+    assert.equal(calls.auth + calls.openai + calls.other.length, 0);
+  } finally {
+    if (saved === undefined) delete process.env.CRON_SECRET;
+    else process.env.CRON_SECRET = saved;
+  }
 });
 
 // T3 — generate-document anonyme ou avec une fausse preuve : 401, OpenAI jamais appelé.
@@ -332,10 +434,30 @@ test("T8 routes désactivées : aucune lecture de documents, de stockage ni de c
       "req.json",
       "process.env",
       "fetch(",
+      "gmail_connections",
+      "external_connections",
+      "resolveEmailRefreshToken",
+      "refresh_token",
+      "googleapis",
+      "CRON_SECRET",
+      "searchParams",
+      "headers.get",
+      "cookies",
     ]) {
       assert.ok(!src.includes(forbidden), `${r.file} contient encore « ${forbidden} »`);
     }
     assert.ok(src.includes("legacyApiGoneResponse()"), `${r.file} : réponse 410 absente`);
+  }
+});
+
+// T8b — SEC-GMAIL-LEGACY : chaque gestionnaire désactivé ne reçoit aucun paramètre (rien de la requête n'est lu).
+test("T8b routes désactivées : gestionnaire sans paramètre, une seule exportation", () => {
+  for (const r of DISABLED) {
+    const method = r.method ?? "POST";
+    const fn = r.mod[method] as (...args: unknown[]) => unknown;
+    assert.equal(typeof fn, "function");
+    assert.equal(fn.length, 0, `${r.path} : le gestionnaire reçoit la requête`);
+    assert.ok(read(r.file).includes(`export async function ${method}() {`), `${r.file} : signature attendue`);
   }
 });
 
