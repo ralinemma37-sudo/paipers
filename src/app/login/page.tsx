@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import AuthFormCard from "@/components/auth/AuthFormCard";
 import { authErrorMessageFr } from "@/lib/authErrorMessageFr";
 import { PAIPERS_ASSETS, PAIPERS_COLORS, PAIPERS_PALETTES } from "@/lib/paipersTheme";
+import { safeInternalRedirect } from "@/lib/safeInternalRedirect";
 import { supabase } from "@/lib/supabase";
 
 const inputStyle: CSSProperties = {
@@ -24,14 +25,6 @@ const inputStyle: CSSProperties = {
   color: PAIPERS_COLORS.textPrimary,
   outline: "none",
 };
-
-function safeInternalRedirect(raw: string | null): string {
-  if (!raw) return "/assistant";
-  const t = raw.trim();
-  if (!t.startsWith("/") || t.startsWith("//")) return "/assistant";
-  if (t === "/") return "/assistant";
-  return t;
-}
 
 function LoginForm() {
   const router = useRouter();
